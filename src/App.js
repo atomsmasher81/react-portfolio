@@ -15,7 +15,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Towards a better future
+          Towards a better future.
         </a>
       </header>
     </div>
