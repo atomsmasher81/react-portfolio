@@ -13,6 +13,7 @@ function App() {
           className="App-link"
           href="https://reactjs.org"
           target="_blank"
+          onClick="Counter()"
           rel="noopener noreferrer"
         >
           Towards a better future.
