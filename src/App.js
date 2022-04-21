@@ -16,7 +16,7 @@ function App() {
           onClick="Counter()"
           rel="noopener noreferrer"
         >
-          Towards a better future.
+           Towards a better future.
         </a>
       </header>
     </div>
