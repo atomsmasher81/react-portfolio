@@ -17,7 +17,7 @@ function App() {
       <header className="App-header">
         <div >
           <div>Hi there !! </div>
-          <div>I am Kartik Gautam</div>
+          <div>I am Kartik Gautam.</div>
         </div>
         <a
           className="App-link"
@@ -26,11 +26,11 @@ function App() {
           onClick="Counter()"
           rel="noopener noreferrer"
         >
-           Towards a better future..
+           Towards a better future.
         </a>
       </header>
     </div>
   );
 }
 
-export default App;
+export default App; 
