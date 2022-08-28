@@ -1,18 +1,19 @@
 {
   "files": {
-    "main.css": "/react-portfolio/static/css/main.ed68134b.css",
-    "main.js": "/react-portfolio/static/js/main.67f1c684.js",
+    "main.css": "/react-portfolio/static/css/main.b8b6efa8.css",
+    "main.js": "/react-portfolio/static/js/main.b54cf992.js",
     "static/js/787.99d6efb7.chunk.js": "/react-portfolio/static/js/787.99d6efb7.chunk.js",
     "static/media/Programming.gif": "/react-portfolio/static/media/Programming.8be99f5053c311aae3ef.gif",
     "static/media/Programming-black.gif": "/react-portfolio/static/media/Programming-black.1619c678e42f472da667.gif",
+    "static/media/Kartik Gautam_Resume.pdf": "/react-portfolio/static/media/Kartik Gautam_Resume.e6fad7462e48e05fa84c.pdf",
     "static/media/sun.svg": "/react-portfolio/static/media/sun.2da3b1beefcbe99ce71caaf798a28d7b.svg",
     "index.html": "/react-portfolio/index.html",
-    "main.ed68134b.css.map": "/react-portfolio/static/css/main.ed68134b.css.map",
-    "main.67f1c684.js.map": "/react-portfolio/static/js/main.67f1c684.js.map",
+    "main.b8b6efa8.css.map": "/react-portfolio/static/css/main.b8b6efa8.css.map",
+    "main.b54cf992.js.map": "/react-portfolio/static/js/main.b54cf992.js.map",
     "787.99d6efb7.chunk.js.map": "/react-portfolio/static/js/787.99d6efb7.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ed68134b.css",
-    "static/js/main.67f1c684.js"
+    "static/css/main.b8b6efa8.css",
+    "static/js/main.b54cf992.js"
   ]
 }
