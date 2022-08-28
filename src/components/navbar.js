@@ -3,7 +3,22 @@ import KartikName from '../assets/kartik.png';
 import KartikNameWhite from '../assets/kartik-white.png';
 import Moon from '../assets/moon-white.png';
 import { ReactComponent as Sun } from '../assets/svgs/sun.svg'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+
+const notify = () => {
+
+    toast('Coming soon :)', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+}
 
 const setDark = (setTheme) => {
     console.log("setting dark")
@@ -42,11 +57,23 @@ storedTheme = localStorage.getItem("theme");
 
              </div>
              <div className="grow flex flex-row justify-around text-violet-900 dark:text-violet-100">
-                 <div>About</div>
-                 <div>Project</div>
-                 <div>Resume</div>
-                 <div>Contact</div>
+                 <a onClick={() => notify()}>About</a>
+                 <a  onClick={() => notify()}>Project</a>
+                 <a  onClick={() => notify()}>Resume</a>
+                 <a  onClick={() => notify()}>Contact</a>
              </div>
+             <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                // className="text-black text-xl"
+                />
              <div className="mr-4 w-1/4 flex justify-center ">
                  {storedTheme === 'dark' ? (
 

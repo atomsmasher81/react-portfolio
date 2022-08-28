@@ -1,5 +1,6 @@
 import React from 'react';
 import  VectorGif  from '../assets/Programming.gif'
+import  Resume  from '../assets/Kartik Gautam_Resume.pdf'
 import  VectorGifBlack  from '../assets/Programming-black.gif'
 import TextTransition, { presets } from "react-text-transition";
 
@@ -41,11 +42,12 @@ const Home=({currTheme})=>
                     Experienced Lead Software Engineer with a demonstrated history of working in the financial services industry. Skilled in Python,Django, Jinja, C++, and JavaScript. Strong engineering professional with a Bachelor's degree focused in Information Technology.
                 </div>
                 <div className="mt-10 font-medium  text-lg text-slate-900 dark:text-white">
-                    <a href="" className="">
-                        <i className="link link-underline link-underline-black text-black" /> Download Resume
+                    <a href={Resume} target="_blank" download="Kartik Gauatam Resume" className="hover:text-slate-500">
+                        <i className="link link-underline link-underline-black text-black " /> Download Resume
 
                     </a>
-                    <a href="#contact" className="ml-16 py-10">Reach Out!</a></div>
+                    <a href="https://twitter.com/messages/compose?recipient_id=2893896902&text=Hey%20there!" target="_blank"
+                       className="ml-16 py-10 hover:text-slate-500">Reach Out on twitter</a></div>
             </div>
         </div>
         <div className="w-2/5 flex justify-end" >
