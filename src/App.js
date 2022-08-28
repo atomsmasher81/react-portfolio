@@ -1,9 +1,7 @@
-import logo from './logo.svg';
 import './App.css';
-import Header from "./components/header";
 import Navbar from "./components/navbar";
 import React from "react";
-
+import Home from "./components/Home";
 function App() {
     if (localStorage.theme === 'dark' ){
   document.documentElement.classList.add('dark')
@@ -12,23 +10,9 @@ function App() {
 }
 
   return (
-    <div className="App">
+    <div className="App h-screen">
         <Navbar/>
-      <header className="App-header">
-        <div >
-          <div>Hi there !! </div>
-          <div>I am Kartik Gautam.</div>
-        </div>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          onClick="Counter()"
-          rel="noopener noreferrer"
-        >
-           Towards a better future.
-        </a>
-      </header>
+        <Home/>
     </div>
   );
 }

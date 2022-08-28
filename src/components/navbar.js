@@ -28,17 +28,17 @@ storedTheme = localStorage.getItem("theme");
 
   return (
       <div>
-         <div className="h-10 flex flex-row justify-between items-center dark:bg-black">
+         <div className="h-28 flex flex-row justify-between items-center dark:bg-black">
              <div className="ml-4 w-1/4 flex justify-center" >
                  <div><img className="h-10" src={KartikName} alt="Kartik"/></div>
              </div>
-             <div className="grow flex flex-row justify-around">
+             <div className="grow flex flex-row justify-around text-violet-900">
                  <div>About</div>
                  <div>Project</div>
                  <div>Resume</div>
                  <div>Contact</div>
              </div>
-             <div className="mr-4 w-1/4 flex justify-center">
+             <div className="mr-4 w-1/4 flex justify-center ">
                  {storedTheme === 'dark' ? (
 
                      <div onClick={() => setLight() }>
