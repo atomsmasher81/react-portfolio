@@ -14,7 +14,7 @@ function App() {
     <div className="App h-screen dark:bg-black dark:text-white">
         <Navbar currTheme = {Theme} changeTheme={setTheme}/>
         <Home  currTheme = {Theme}/>
-    </div>
+    </div> 
   );
 }
 
