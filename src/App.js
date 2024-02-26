@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className="App h-screen dark:bg-black dark:text-white">
-        <Navbar currTheme = {Theme} changeTheme={setTheme}/>
+        {/* <Navbar currTheme = {Theme} changeTheme={setTheme}/> */}
         <Home  currTheme = {Theme}/>
     </div> 
   );
