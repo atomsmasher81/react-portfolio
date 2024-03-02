@@ -6,6 +6,7 @@ import TextTransition, { presets } from "react-text-transition";
 // import MyThree from './mythree';
 import WaveComponent from './wave';
 import HeroBackground from './heroBackground';
+import HeroForeground from './heroForeground';
 const TEXTS = [
   "Software Developer",
   "Web Designer",
@@ -27,7 +28,7 @@ const Home=({currTheme})=>
           }, []);
         return (
           <div>
-
+            <HeroForeground/>
             <HeroBackground/>
           </div>
   );
