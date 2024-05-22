@@ -8,28 +8,3 @@
   }
 }
 
-
-body {
-  background-color: pink;
-}
-
-section {
-  border-bottom: 1px solid red;
-  height: 800px;
-}
-
-footer {
-  height: 800px;
-}
-
-.section-title-underlay {
-  font-style: italic;
-  color: red;
-  font-size: 8rem;
-  position: fixed;
-  left: 50%;
-  top:50%;
-  transform: translate(-50%, -50%);
-  opacity: 1;
-}
-
