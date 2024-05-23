@@ -16,7 +16,41 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8">
+      <div className="flex flex-col items-center text-center">
+        <Avatar>
+          <AvatarImage alt="Profile Picture" src="/placeholder.svg?height=128&width=128" />
+        </Avatar>
+        <h1 className="mt-4 mb-2 text-4xl sm:text-4xl ">Kartik Gautam</h1>
+        <p className="text-md font-light">Engineer & Product Enthusiast</p>
+        <div className="flex space-x-8 mt-8">
+          <Link href="https://github.com/atomsmasher81" target="_blank">
+              <Image src="/svg/github.svg" width={30} height={30} alt="github"/>
+          </Link>
+          <Link href="https://www.linkedin.com/in/kartik-gautam/" target="_blank">
+            <Image src="/svg/linkedin.svg" width={30} height={30} alt="linkedin" />
+          </Link>
+          <Link href="https://x.com/kartik_gautam_" target="_blank">
+              <Image src="/svg/twitter.svg" width={30} height={30} alt="twitter" />
+          </Link>
+        </div>
+      </div>
+      <hr className="my-6 sm:my-8" />
+      <nav className="flex justify-center space-x-4 sm:space-x-6">
 
+        <Link className="page-button active" href="/public">
+          About
+        </Link>
+        <Link className="page-button" href="/blogs">
+          Blogs
+        </Link>
+        <Link className="page-button" href="/projects">
+          Projects
+        </Link>
+        <Link className="page-button" href="/contact">
+          Contact
+        </Link>
+      </nav>
+      <hr className="my-6 sm:my-8" />
       <div className="text-base sm:text-lg">
         <p className="mb-6 sm:mb-8">
           Founding Software Engineer & Designer at Speedy (YC-W23). Passionate about crafting tools that empower
@@ -37,7 +71,29 @@ export default function Home() {
           </li>
         </ul>
         <h2 className="text-xl sm:text-2xl font-bold mt-6 sm:mt-8 mb-4">Projects</h2>
-
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Card className="w-full">
+            <CardContent>
+              {/*<CodeIcon className="h-6 w-6 mb-2" />*/}
+              <h3 className="font-bold">syntaxUI</h3>
+              <p>Ready-to-use UI elements designed for rapid development.</p>
+            </CardContent>
+          </Card>
+          <Card className="w-full">
+            <CardContent>
+              {/*<ImageIcon className="h-6 w-6 mb-2" />*/}
+              <h3 className="font-bold">Prettyfolio</h3>
+              <p>A curated collection of portfolios for inspiration.</p>
+            </CardContent>
+          </Card>
+          <Card className="w-full">
+            <CardContent>
+              {/*<EggIcon className="h-6 w-6 mb-2" />*/}
+              <h3 className="font-bold">Enchant</h3>
+              <p>A vibrant theme for Visual Studio Code.</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

@@ -1,4 +1,31 @@
 @tailwind base;
   @tailwind components;
   @tailwind utilities;
-  
+
+
+
+.page-button {
+  @apply text-base sm:text-lg font-medium
+}
+
+.page-button {
+    position: relative;
+    height: 30px;
+    width: 60px;
+    padding: 5px;
+
+}
+
+.active-indicator {
+  background-color: black;
+  /*color: aliceblue;*/
+  /*position: fixed;*/
+  /*top: 0px;*/
+  /*  left: 0px;*/
+  z-index: -1;
+    width: inherit;
+    height: inherit;
+    margin-top: -30px;
+  border-radius: 10px;
+
+}
