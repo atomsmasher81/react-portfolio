@@ -67,7 +67,7 @@ function TopLayout() {
                             // scale: selectedTab === tab.id ? 1.1 : 1 ,
 
                             color: selectedTab === tab.id ? "#ffffff" : "#000000",}}
-                        transition={{ duration: 0.5 ,ease: [0.43, 0.13, 0.23, 0.96],delay: 0.1}}
+                        transition={{ duration: 0.2 ,ease: [0.43, 0.13, 0.23, 0.96],}}
                     >
                         {tab.label}
                     </motion.span>
