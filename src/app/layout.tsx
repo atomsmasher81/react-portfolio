@@ -56,12 +56,12 @@ function TopLayout() {
         </div>
       </div>
       <hr className="my-6 sm:my-8" />
-      <nav className="flex justify-center space-x-4 sm:space-x-6">
+      <nav className="flex justify-center space-x-4 sm:space-x-6 relative">
           {tabs.map((tab) => (
               <Link key= {tab.id} className="page-button active"
                     href={tab.route}
                     // onClick={() => setSelectedTab(tab.id)}>
-                    onMouseEnter={() => setSelectedTab(tab.id)}>
+                    onClick={() => setSelectedTab(tab.id)}>
                     <motion.span
                         animate={{
                             // scale: selectedTab === tab.id ? 1.1 : 1 ,
