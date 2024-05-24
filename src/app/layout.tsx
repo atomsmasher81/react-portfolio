@@ -6,7 +6,7 @@ import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import Link from "next/link";
 import Image from "next/image";
 import React from "react";
-import { motion } from "framer-motion"
+import {AnimatePresence, motion} from "framer-motion";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,8 +38,8 @@ function TopLayout() {
     return (
         <div className="max-w-4xl mx-auto p-4 sm:p-8">
       <div className="flex flex-col items-center text-center">
-        <Avatar>
-          <AvatarImage alt="Profile Picture" src="/placeholder.svg?height=128&width=128" />
+        <Avatar className="h-20 w-auto">
+          <AvatarImage alt="Profile Picture" src="/img/img.png" />
         </Avatar>
         <h1 className="mt-4 mb-2 text-4xl sm:text-4xl ">Kartik Gautam</h1>
         <p className="text-md font-light">Engineer & Product Enthusiast</p>
@@ -60,6 +60,7 @@ function TopLayout() {
           {tabs.map((tab) => (
               <Link key= {tab.id} className="page-button active"
                     href={tab.route}
+                    scroll={false}
                     // onClick={() => setSelectedTab(tab.id)}>
                     onClick={() => setSelectedTab(tab.id)}>
                     <motion.span
@@ -104,6 +105,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <TopLayout />
         {children}
+
       </body>
 
       </html>

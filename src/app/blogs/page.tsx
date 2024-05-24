@@ -1,10 +1,13 @@
 import React from 'react';
+import {PageWrapper} from "@/components/page-wrappper";
 
 const Blog = () => {
   return (
-    <div>
-      <h1>Hello, Next.js!</h1>
-    </div>
+      <PageWrapper>
+        <div>
+          <h1>Hello, Next.js!</h1>
+        </div>
+      </PageWrapper>
   );
 };
 

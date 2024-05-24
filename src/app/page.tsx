@@ -12,34 +12,37 @@ import { CardContent, Card } from "@/components/ui/card"
 import React from "react";
 import Image from 'next/image'
 import Link from "next/link";
+import {PageWrapper} from "@/components/page-wrappper";
 
 export default function Home() {
   return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-8">
+      <PageWrapper>
+        <div className="max-w-4xl mx-auto p-4 pt-0 sm:p-8">
 
-      <div className="text-base sm:text-lg">
-        <p className="mb-6 sm:mb-8">
-          Founding Software Engineer & Designer at Speedy (YC-W23). Passionate about crafting tools that empower
-          developers and designers to express themselves seamlessly.
-        </p>
-        <h2 className="text-xl sm:text-2xl font-bold mb-4">Experience</h2>
-        <ul className="list-disc pl-5 space-y-2">
-          <li>
-            <span className="font-bold">Founding Software Engineer</span>
-            <span className="text-sm">(PRESENT)</span>
-            <br />
-            Speedybrand (YC-W23)
-          </li>
-          <li>
-            <span className="font-bold">Front-End Engineer</span>
-            <br />
-            Maya Labs (YC-S22)
-          </li>
-        </ul>
-        <h2 className="text-xl sm:text-2xl font-bold mt-6 sm:mt-8 mb-4">Projects</h2>
+          <div className="text-base sm:text-lg">
+            <p className="mb-6 sm:mb-8">
+              Founding Software Engineer & Designer at Speedy (YC-W23). Passionate about crafting tools that empower
+              developers and designers to express themselves seamlessly.
+            </p>
+            <h2 className="text-xl sm:text-2xl font-bold mb-4">Experience</h2>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                <span className="font-bold">Founding Software Engineer</span>
+                <span className="text-sm">(PRESENT)</span>
+                <br />
+                Speedybrand (YC-W23)
+              </li>
+              <li>
+                <span className="font-bold">Front-End Engineer</span>
+                <br />
+                Maya Labs (YC-S22)
+              </li>
+            </ul>
+            <h2 className="text-xl sm:text-2xl font-bold mt-6 sm:mt-8 mb-4">Projects</h2>
 
-      </div>
-    </div>
+          </div>
+        </div>
+      </PageWrapper>
   )
 }
 
