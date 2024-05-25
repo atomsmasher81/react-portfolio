@@ -30,7 +30,7 @@ const Blog = () => {
                           initial={{opacity: 0, y: 20}}
                           animate={{opacity: 1, y: 0}}
                           exit={{opacity: 0, y: 20}}
-                          transition={{delay: 0.1}}
+                          transition={{delay: 0.3}}
               >
                 <div id="substack-feed-embed" className="w-4/5"></div>
               </motion.div>

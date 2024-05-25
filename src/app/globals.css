@@ -31,6 +31,7 @@
 
 /* HTML: <div class="loader"></div> */
 .loader {
+  margin-top: 10%;
   width: 30px;
   aspect-ratio: 1;
   display: grid;
