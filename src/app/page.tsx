@@ -53,9 +53,9 @@ export default function Home() {
 
           <div className="text-base sm:text-lg">
             <p className="mb-6 sm:mb-8">
-              With over 5 years of engineering experience, I've worn many hats: Backend (my forte),
+              With over 5 years of engineering experience, I&apos;ve worn many hats: Backend (my forte),
               Frontend, DevOps, Product Management, and Leadership.
-              I've worked with startups and have been part of founding teams.
+              I&apos;ve worked with startups and have been part of founding teams.
 
             </p>
             <h2 className="text-xl sm:text-2xl font-bold mb-4">Experience</h2>

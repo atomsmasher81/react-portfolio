@@ -45,21 +45,21 @@ const Project = () => {
                                 <div className="flex justify-between align-middle pt-4">
                                     <h3 className="font-bold ">{project.title}</h3>
                                     <div className="flex justify-around">
-                                        {project.github ? (
-                                            <Tooltip showArrow={true} title="github" mouseEnterDelay={0.3} overlayClassName={"text-xs"}>
-                                                <Link href={project.github} target="_blank">
-                                                    <Image src="/svg/github.svg" width={20} height={20} alt="github"/>
-                                                </Link>
-                                            </Tooltip>
-                                        ) : null}
+                                        {/*{project.github ? (*/}
+                                        {/*    <Tooltip showArrow={true} title="github" mouseEnterDelay={0.3} overlayClassName={"text-xs"}>*/}
+                                        {/*        <Link href={project.github} target="_blank">*/}
+                                        {/*            <Image src="/svg/github.svg" width={20} height={20} alt="github"/>*/}
+                                        {/*        </Link>*/}
+                                        {/*    </Tooltip>*/}
+                                        {/*) : null}*/}
 
-                                        {project.website ? (
-                                            <Tooltip  showArrow={true}  title="website" mouseEnterDelay={0.3} overlayClassName={"text-xs"}>
-                                                <Link href={project.website} target="_blank">
-                                                    <Image className="ml-2" src="/svg/external-link.svg" width={18} height={18} alt="site link"/>
-                                                </Link>
-                                            </Tooltip>
-                                        ) : null}
+                                        {/*{project.website ? (*/}
+                                        {/*    <Tooltip  showArrow={true}  title="website" mouseEnterDelay={0.3} overlayClassName={"text-xs"}>*/}
+                                        {/*        <Link href={project.website} target="_blank">*/}
+                                        {/*            <Image className="ml-2" src="/svg/external-link.svg" width={18} height={18} alt="site link"/>*/}
+                                        {/*        </Link>*/}
+                                        {/*    </Tooltip>*/}
+                                        {/*) : null}*/}
                                     </div>
                                 </div>
 

@@ -5,7 +5,7 @@ import "./globals.css";
 import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import Link from "next/link";
 import Image from "next/image";
-import React from "react";
+import React, {useEffect} from "react";
 import {AnimatePresence, motion} from "framer-motion";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,6 +35,14 @@ const tabs = [
 
 function TopLayout() {
     const [selectedTab, setSelectedTab] = React.useState<string | null>("about");
+
+    useEffect(() => {
+        const currentTab = tabs.find((tab) => tab.route === window.location.pathname);
+        if (currentTab) {
+            setSelectedTab(currentTab.id);
+        }
+    },[])
+
     return (
         <div className="max-w-4xl mx-auto p-4 pb-0 sm:p-8 sm:pb-0">
       <div className="flex flex-col items-center text-center">
@@ -55,7 +63,7 @@ function TopLayout() {
           </Link>
         </div>
       </div>
-      <hr className="my-2 sm:my-4" />
+      <hr className="my-4 sm:my-4" />
       <nav className="flex justify-center space-x-4 sm:space-x-6 relative">
           {tabs.map((tab) => (
               <Link key= {tab.id} className="page-button active"
@@ -84,7 +92,7 @@ function TopLayout() {
           ))}
 
       </nav>
-        <hr className="my-2 sm:my-4" />
+        <hr className="my-4  mb-6 sm:my-4 " />
     </div>
 
   );

@@ -7,7 +7,8 @@ const Blog = () => {
 
 
   useEffect(() => {
-    window.SubstackFeedWidget = {
+    // @ts-ignore
+      window.SubstackFeedWidget = {
       substackUrl: "kartikgautam.substack.com",
       posts: 8
     };
