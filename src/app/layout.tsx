@@ -36,7 +36,7 @@ const tabs = [
 function TopLayout() {
     const [selectedTab, setSelectedTab] = React.useState<string | null>("about");
     return (
-        <div className="max-w-4xl mx-auto p-4 sm:p-8">
+        <div className="max-w-4xl mx-auto p-4 pb-0 sm:p-8 sm:pb-0">
       <div className="flex flex-col items-center text-center">
         <Avatar className="h-20 w-auto">
           <AvatarImage alt="Profile Picture" src="/img/img.png" />
@@ -55,7 +55,7 @@ function TopLayout() {
           </Link>
         </div>
       </div>
-      <hr className="my-6 sm:my-8" />
+      <hr className="my-2 sm:my-4" />
       <nav className="flex justify-center space-x-4 sm:space-x-6 relative">
           {tabs.map((tab) => (
               <Link key= {tab.id} className="page-button active"
@@ -84,7 +84,7 @@ function TopLayout() {
           ))}
 
       </nav>
-        <hr className="my-6 sm:my-8" />
+        <hr className="my-2 sm:my-4" />
     </div>
 
   );

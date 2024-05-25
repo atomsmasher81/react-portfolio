@@ -8,24 +8,28 @@ import Link from "next/link";
 const projects = [
     {
         title: 'Hereme',
-        description: 'Ready-to-use UI elements designed for rapid development.',
-        website: 'https://hereme.com'
+        description: 'Network management app ',
+        subtext : 'That lets you create and share personalized cards while tracking detailed view statistics.'
+        // website: 'https://hereme.com'
+    },
+
+    {
+        title: 'OneLLM',
+        description: 'A unified interface for LLMs',
+        subtext: 'Pay for one and get all the LLMs in one place.',
+        // github: 'https://github.com/atomsmasher81'
     },
     {
         title: 'MicroBites',
-        description: 'A curated collection of portfolios for inspiration.',
-        website: 'https://microbites.com'
-    },
-    {
-        title: 'OneLLM',
-        description: 'A vibrant theme for Visual Studio Code.',
-        github: 'https://github.com/atomsmasher81'
+        description: 'Get daily summaries of your WhatsApp groups',
+        subtext: 'Helping you stay updated without sifting through hundreds of messages.',
+        // website: 'https://microbites.dorik.io/'
     },
     {
         title: 'AlertCam',
         description: 'Transforms your device camera into a security system.',
         subtext:  'Using OpenCV for facial recognition, instantly alerting the admin when an unknown face is detected.',
-        github: 'https://github.com/atomsmasher81'
+        // github: 'https://github.com/atomsmasher81'
     }
 
 ]

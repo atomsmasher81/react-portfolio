@@ -13,7 +13,39 @@ import React from "react";
 import Image from 'next/image'
 import Link from "next/link";
 import {PageWrapper} from "@/components/page-wrappper";
+const Jobs = [
+  {
+    title: 'TopHire.co',
+    child : [
+        {title: 'Senior Software Engineer',
+        content: 'Owns full-stack development of several features, deploying and managing LLMs and servers.'},
+        ],
+    titleSubText: '(Present)',
+    companyLink: 'https://tophire.co'
+  },
+  {
+    title: 'Credgenics',
+    company: 'Tech Lead',
+    companyLink: 'https://credgenics.com',
+      child : [
+          {title: 'Lead Backend Engineer', content: 'Owned and scaled Payments Product and lead the payments team.'},
+           {title: 'Software Engineer',
+               content: 'Built and managed the payments product from scratch, setup the building blocks for the product.'}
+      ]
+    // duration: ''
+  },
+    {
+        title: 'Credicxo',
+        child: [
+            {title: 'Lead Backend Engineer',
+                content: 'Owned and scaled several Products and lead the Backend team, owned Product roadmap.'},
+            {title: 'Software Engineer',
+                content: 'Built and managed the several products from scratch,wrote migration scripts,configured servers.'}
+        ],
+        companyLink: 'https://www.f6s.com/company/credicxo#about'
+    },
 
+]
 export default function Home() {
   return (
       <PageWrapper>
@@ -21,24 +53,44 @@ export default function Home() {
 
           <div className="text-base sm:text-lg">
             <p className="mb-6 sm:mb-8">
-              Founding Software Engineer & Designer at Speedy (YC-W23). Passionate about crafting tools that empower
-              developers and designers to express themselves seamlessly.
+              With over 5 years of engineering experience, I've worn many hats: Backend (my forte),
+              Frontend, DevOps, Product Management, and Leadership.
+              I've worked with startups and have been part of founding teams.
+
             </p>
             <h2 className="text-xl sm:text-2xl font-bold mb-4">Experience</h2>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>
-                <span className="font-bold">Founding Software Engineer</span>
-                <span className="text-sm">(PRESENT)</span>
-                <br />
-                Speedybrand (YC-W23)
-              </li>
-              <li>
-                <span className="font-bold">Front-End Engineer</span>
-                <br />
-                Maya Labs (YC-S22)
-              </li>
+            <ul className="list-disc pl-5 space-y-4 ">
+              {Jobs.map((company) => (
+                  <li key={company.title}>
+
+
+                      <Link href={company.companyLink}>
+                          <span className="font-bold ">{company.title}</span>
+                      </Link>
+                      <span className="text-sm"> {company.titleSubText}</span>
+                      <br/>
+                        <ul className="relative">
+                            {company.child.map((job) => (
+                                <div key={job.title} >
+                                    <li><span>{job.title}</span> </li>
+                                    <div className="my-2 list-disc">
+                                        <p className="text-sm font-light"> - {job.content}</p>
+                                    </div>
+                                    {/*<br/>*/}
+                                </div>
+                            ))}
+                            {/*{company.child.length > 1 && <div className="line absolute w-2 bg-black"></div>}*/}
+                        </ul>
+
+
+
+
+
+
+                  </li>
+              ))}
+
             </ul>
-            <h2 className="text-xl sm:text-2xl font-bold mt-6 sm:mt-8 mb-4">Projects</h2>
 
           </div>
         </div>
