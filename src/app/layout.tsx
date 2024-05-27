@@ -34,7 +34,7 @@ const tabs = [
 ];
 
 function TopLayout() {
-    const [selectedTab, setSelectedTab] = React.useState<string | null>("about");
+    const [selectedTab, setSelectedTab] = React.useState<string | null>("");
 
     useEffect(() => {
         const currentTab = tabs.find((tab) => tab.route === window.location.pathname);
