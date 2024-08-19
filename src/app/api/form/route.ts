@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   // }
 
   // Create the response with CORS headers
-  const response = NextResponse.json({ message: `You sent:}` });
+  const response = NextResponse.json({ message: `You sent:}`,result: "success" });
 
   // Append the CORS headers to the response
   headers.forEach((value, key) => {
