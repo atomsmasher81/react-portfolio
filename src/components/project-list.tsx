@@ -1,6 +1,6 @@
 'use client';
 import { ProjectCard } from "@/components/project-card";
-import { projects } from "@/app/projects/page";
+import { projects } from "@/data/projects";
 
 const ProjectsList = ({highlight}: {highlight: boolean}) => {
     const filteredProjects = projects.filter(project => project.highlight === highlight);
