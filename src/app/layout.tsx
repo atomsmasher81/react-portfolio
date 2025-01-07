@@ -8,9 +8,12 @@ import React, {useEffect} from "react";
 import {AnimatePresence, motion} from "framer-motion";
 import { usePathname } from "next/navigation";
 import TopLayout from "@/components/TopLayout";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 const inter = Inter({ subsets: ["latin"] });
 
+// Your Google Analytics Measurement ID
+const GA_MEASUREMENT_ID = "G-ZPHPHMKFVR"; 
 
 export const metadata: Metadata = {
   title: "Kartik Gautam",
@@ -27,13 +30,11 @@ export default function RootLayout({
 }>) {
   return (
       <html lang="en">
-
       <body className={inter.className}>
+        <GoogleAnalytics GA_MEASUREMENT_ID={GA_MEASUREMENT_ID} />
         <TopLayout />
         {children}
-
       </body>
-
       </html>
   );
 }
