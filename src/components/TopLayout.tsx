@@ -48,21 +48,19 @@ function TopLayout() {
                 <Avatar className="h-20 w-20">
                     <AvatarImage alt="Profile Picture" src="/img/img.png" />
                 </Avatar>
-                <div className="flex items-center justify-center relative">
-                    <h1 className="mt-4 mb-2 text-4xl sm:text-4xl">Kartik Gautam</h1>
-                    <div className="absolute sm:translate-x-full sm:pl-6 sm:ml-2 flex items-center 
-                                  -right-3 sm:right-auto translate-y-8 sm:translate-y-0">
+                <div className="flex flex-col items-center justify-center relative">
+                    <h1 className="mt-4 mb-2 text-4xl">Kartik Gautam</h1>
+                    <div className="flex items-center justify-center mb-2">
                         <span className="relative flex h-3 w-3">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                         </span>
-                        <span className={"text-sm sm:text-m text-green-600 ml-2 transition-opacity duration-200 " + 
-                              ((showText || isHovered) ? "opacity-100" : "opacity-0")}>
+                        <span className="text-m text-green-500 px-2 py-1 ml-2">
                             Available for projects
                         </span>
                     </div>
+                    <p className="text-md font-light">Engineer & Product Enthusiast</p>
                 </div>
-                <p className="text-md font-light">Engineer & Product Enthusiast</p>
                 <div className="flex space-x-8 mt-8">
                     <Link href="https://github.com/atomsmasher81" target="_blank">
                         <Image src="/svg/github.svg" width={30} height={30} alt="github"/>
