@@ -48,20 +48,18 @@ function TopLayout() {
                 <Avatar className="h-20 w-20">
                     <AvatarImage alt="Profile Picture" src="/img/img.png" />
                 </Avatar>
-                <div className="flex items-center justify-center relative"
-                     onMouseEnter={() => setIsHovered(true)}
-                     onMouseLeave={() => setIsHovered(false)}>
+                <div className="flex items-center justify-center relative">
                     <h1 className="mt-4 mb-2 text-4xl sm:text-4xl">Kartik Gautam</h1>
-                    <div className="absolute translate-x-full pl-6 ml-2 flex items-center">
+                    <div className="absolute sm:translate-x-full sm:pl-6 sm:ml-2 flex items-center 
+                                  -right-3 sm:right-auto translate-y-8 sm:translate-y-0">
                         <span className="relative flex h-3 w-3">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                         </span>
-                        {/* {(showText || isHovered) && ( */}
-                            <span className={"text-m text-green-600 ml-2 transition-opacity duration-200 " + ((showText || isHovered) ? "opacity-100" : "opacity-0")}>
-                                Available for projects
-                            </span>
-                        {/* )} */}
+                        <span className={"text-sm sm:text-m text-green-600 ml-2 transition-opacity duration-200 " + 
+                              ((showText || isHovered) ? "opacity-100" : "opacity-0")}>
+                            Available for projects
+                        </span>
                     </div>
                 </div>
                 <p className="text-md font-light">Engineer & Product Enthusiast</p>
