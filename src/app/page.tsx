@@ -13,6 +13,7 @@ import React from "react";
 import Image from 'next/image'
 import Link from "next/link";
 import {PageWrapper} from "@/components/page-wrappper";
+import {ProjectSection} from "@/components/project-section";
 const Jobs = [
   {
     title: 'TopHire.co',
@@ -20,7 +21,7 @@ const Jobs = [
         {title: 'Senior Software Engineer',
         content: 'Owns full-stack development of several features, deploying and managing LLMs and servers.'},
         ],
-    titleSubText: '(Present)',
+    titleSubText: '',
     companyLink: 'https://tophire.co'
   },
   {
@@ -30,7 +31,7 @@ const Jobs = [
       child : [
           {title: 'Lead Backend Engineer', content: 'Owned and scaled Payments Product and lead the payments team.'},
            {title: 'Software Engineer',
-               content: 'Built and managed the payments product from scratch, setup the building blocks for the product.'}
+               content: 'Built and managed the payments product from scratch,setup the building blocks for the product.'}
       ]
     // duration: ''
   },
@@ -38,7 +39,7 @@ const Jobs = [
         title: 'Credicxo',
         child: [
             {title: 'Lead Backend Engineer',
-                content: 'Owned and scaled several Products and lead the Backend team, owned Product roadmap.'},
+                content: 'Owned and scaled several Products and lead the Backend team,owned Product roadmap.'},
             {title: 'Software Engineer',
                 content: 'Built and managed the several products from scratch,wrote migration scripts,configured servers.'}
         ],
@@ -49,23 +50,41 @@ const Jobs = [
 export default function Home() {
   return (
       <PageWrapper>
-        <div className="max-w-4xl mx-auto p-4 pt-0 sm:p-8">
+        <div>
 
           <div className="text-base sm:text-lg">
             <p className="mb-6 sm:mb-8">
-              With over 5 years of engineering experience, I&apos;ve worn many hats: Backend (my forte),
-              Frontend, DevOps, Product Management, and Leadership.
-              I&apos;ve worked with startups and have been part of founding teams.
-
+            With 6+ years as a full-stack developer, I’ve built seamless frontends, robust backends, and efficient DevOps pipelines while shaping product strategies. As a consultant and freelancer, I’ve helped startups bring ideas to life, scale platforms, and lead technical teams.
             </p>
-            <h2 className="text-xl sm:text-2xl font-bold mb-4">Experience</h2>
+            <h2 className="text-xl sm:text-2xl font-bold mb-4">Projects</h2>
+
+            <ProjectSection highlight={true} />
+
+            <div className="flex justify-end my-4">
+            
+            <Link 
+              href="/projects" 
+              className="text-gray-500  transition-transform hover:text-gray-900 group hover:scale-105 flex items-center"
+            >
+              <span className="mr-1">Checkout all projects</span>
+              <span className="inline-block transition-transform group-hover:translate-x-1"> →</span>
+            </Link>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold mt-8 mb-4">Experience</h2>
             <ul className="list-disc pl-5 space-y-4 ">
               {Jobs.map((company) => (
-                  <li key={company.title}>
-
-
-                      <Link href={company.companyLink}>
-                          <span className="font-bold ">{company.title}</span>
+                  <li key={company.title} className="group">
+                      <Link href={company.companyLink} className="h-6 inline-flex items-center" target="_blank">
+                        <div className="flex justify-start items-center">
+                          <span className="font-bold mr-2">{company.title}</span>
+                          <Image 
+                            src="/svg/external-link.svg" 
+                            width={20} 
+                            height={20} 
+                            alt="site link"
+                            className="transition-all duration-200 hover:scale-110 hover:brightness-110 opacity-0 group-hover:opacity-100"
+                          />
+                        </div>
                       </Link>
                       <span className="text-sm"> {company.titleSubText}</span>
                       <br/>
@@ -81,12 +100,6 @@ export default function Home() {
                             ))}
                             {/*{company.child.length > 1 && <div className="line absolute w-2 bg-black"></div>}*/}
                         </ul>
-
-
-
-
-
-
                   </li>
               ))}
 

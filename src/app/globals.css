@@ -71,3 +71,65 @@
   100% {transform: scaleY(0.3) translate(0.1px,-0.1px)}
 }
 
+.animate-circle {
+    @apply pointer-events-none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    opacity: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.5s ease-out;
+    transform: scale(0);
+}
+
+.group:hover .animate-circle {
+    opacity: 1;
+    transform: scale(2);
+}
+
+/* Add multiple circles with different delays */
+.group:hover .animate-circle::before,
+.group:hover .animate-circle::after {
+    content: '';
+    position: absolute;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    animation: ripple 1.5s ease-out infinite;
+}
+
+.group:hover .animate-circle::after {
+    animation-delay: 0.5s;
+}
+
+@keyframes ripple {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(5);
+        opacity: 0;
+    }
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader {
+    @apply bg-white rounded-lg;
+    z-index: 2;
+}

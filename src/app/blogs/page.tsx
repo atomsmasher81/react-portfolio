@@ -1,42 +1,38 @@
 'use client';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {PageWrapper} from "@/components/page-wrappper";
 import {motion} from "framer-motion";
+import {blogs} from "@/data/blogs";
+import {BlogCard} from "@/components/blog-card";
 
 const Blog = () => {
-
-
-  useEffect(() => {
-    // @ts-ignore
-      window.SubstackFeedWidget = {
-      substackUrl: "kartikgautam.substack.com",
-      posts: 8
-    };
-
-    const script = document.createElement('script');
-    script.src = "https://substackapi.com/embeds/feed.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    }
-  }, []);
-
+  const sortedBlogs = blogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
   return (
       <PageWrapper>
-        <div className="max-w-4xl mx-auto flex justify-center items-center">
+<div className="max-w-4xl mx-auto px-4">
 
-              <motion.div className="max-w-4xl mx-auto sm:p-8 flex justify-center"
-                          initial={{opacity: 0, y: 20}}
-                          animate={{opacity: 1, y: 0}}
-                          exit={{opacity: 0, y: 20}}
-                          transition={{delay: 0.3}}
+          <motion.div 
+            className="space-y-8"
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            transition={{delay: 0.3}}
+          >
+            {sortedBlogs.map((blog, index) => (
+              <motion.div
+                key={blog.id}
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{
+                  delay: 0.1 * (index + 1),
+                  duration: 0.5,
+                  ease: "easeOut"
+                }}
               >
-                <div id="substack-feed-embed" className="w-4/5"></div>
+                <BlogCard blog={blog} />
               </motion.div>
-
-
+            ))}
+          </motion.div>
         </div>
       </PageWrapper>
   );

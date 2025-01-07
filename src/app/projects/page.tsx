@@ -1,80 +1,188 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Card, CardContent} from "@/components/ui/card";
 import {PageWrapper} from "@/components/page-wrappper";
 import Image from "next/image";
 import { Tooltip } from 'antd';
 import Link from "next/link";
+import { ProjectCard } from "@/components/project-card";
 
-const projects = [
+let projects = [
     {
-        title: 'Hereme',
-        description: 'Network management app ',
-        subtext : 'That lets you create and share personalized cards while tracking detailed view statistics.'
-        // website: 'https://hereme.com'
+        title: 'Kimaru.ai',
+        description: 'Faster time-to-decision with Agentic AI',
+        subtext : 'Kimaru.ai helps managers facing challenges with retail supply chain to reduce time-to-decision',
+        highlight: true,
+        link: 'https://kimaru.ai',
+        year: 'Dec 2024'
+    },
+    {
+        title: 'SignWith.co',
+        description: 'Get e-signatures done faster',
+        subtext : 'SignWith is a platform that helps you get e-signatures done faster by reducing complexity and cost.',
+        highlight: true,
+        link: 'https://signwith.co',
+        year: 'Dec 2024'
+
     },
 
     {
-        title: 'OneLLM',
-        description: 'A unified interface for LLMs',
-        subtext: 'Pay for one and get all the LLMs in one place.',
-        // github: 'https://github.com/atomsmasher81'
+        title: 'OptimusHealth',
+        description: 'Help people get better healthcare',
+        subtext: 'A platform that improves your healthcare with personalized doctor recommendations.',
+        highlight: true,
+        link: 'https://www.optimahealth.co.uk/',
+        year: 'Jan 2025'
+    },
+    {
+        title: 'MindFry.in',
+        description: 'Internal Dashboard for Operations',
+        subtext: 'A mental health startup, dedicated to supporting the unique challenges faced by individuals in their 20s.',
+        highlight: false,
+        link: 'https://mindfry.in/',
+        year: 'Jan 2024'
+    },
+    {
+        title: 'SapienHire',
+        description: 'Tech Jobs for top 2% of the tech talent',
+        subtext: 'Solving digital marketing hiring for GCCs and fast-growing companies.',
+        highlight: false,
+        year: 'July 2024',
+        link: 'https://sapienhire.com/',
+    },
+    {
+        title: 'Tophire.co',
+        description: 'Tech Jobs for top 2% of the tech talent',
+        subtext: 'A platform that helps you find the best tech jobs for top 2% of the tech talent.',
+        highlight: false,
+        year: 'Dec 2023',
+        link: 'https://tophire.co/',
+    },
+    {
+        title: '(Stealth)',
+        description: 'A startup buildin in stealth mode',
+        subtext: 'Helped in building the product from scratch with stuff like payment integration and admin dashboard.',
+        highlight: false,
+        year: 'Oct 2023',
+
     },
     {
         title: 'MicroBites',
         description: 'Get daily summaries of your WhatsApp groups',
         subtext: 'Helping you stay updated without sifting through hundreds of messages.',
-        // website: 'https://microbites.dorik.io/'
+        highlight: false,
+        year: 'Oct 2023',
+
+    },
+    {
+        title: 'Billzy',
+        description: 'A payment deeplink infrastructure for Cregenics',
+        subtext: 'Hanlding loan repayments and collections, handling scale of 10M+ transactions daily.',
+        highlight: false,
+        year: 'March 2023',
+        link: 'https://billzy.in/',
+    },
+    {
+        title: 'Credgenics',
+        description: 'Supercharge debt collections with AI-driven technology platform',
+        subtext: 'Leverage Machine Learning based insights for collections strategy, personalized engagements and digital empowered operations.',
+        highlight: false,
+        year: 'Nov 2022',
+        link: 'https://www.credgenics.com/',
+    },
+
+   {
+        title: 'Hereme',
+        description: 'Network management app ',
+        subtext : 'That lets you create and share personalized cards while tracking detailed view statistics.',
+        highlight: false,
+        year: 'Jan 2022',
+        link: 'https://x.com/hereme_digital'
+
+   },
+   {
+    title: 'CashTray',
+    description: 'A small ticket lending platform',
+    subtext : 'Helping people get small loans for their daily needs.',
+    highlight: false,
+    year: 'Jan 2020',
+
+    },
+    {
+        title: 'Finaxco',
+        description: 'A insurance marketplace',
+        subtext : 'Comparing insurance plans and getting the best deals for your needs.',
+        highlight: false,
+        year: 'Jan 2020',
+
     },
     {
         title: 'AlertCam',
         description: 'Transforms your device camera into a security system.',
         subtext:  'Using OpenCV for facial recognition, instantly alerting the admin when an unknown face is detected.',
-        // github: 'https://github.com/atomsmasher81'
-    }
+        highlight: false,
+        year: 'June 2020',
+        link: 'https://github.com/atomsmasher81/security_cam_web_app'
+    },
+    {
+        title: 'Credicxo',
+        description: 'Admin dashboard and app for lending through SMEs',
+        subtext : 'Helping in building the admin dashboard and app for lending through SMEs.',
+        highlight: false,
+        year: 'Nov 2019',
+    
+    },
+    {
+        title: 'Duit.io',
+        description: 'Electronic Business Cards for Corporates, Businesses and Startups',
+        subtext : 'Ecards facilitate direct business along with deep integration with e-commerce website, chatbots, CRM Tools and other platforms.',
+        highlight: false,
+        year: 'Aug 2019',
+        link: 'https://duit.io/'
+    
+    },
+    {
+        title: 'VGeekers',
+        description: 'Building web apps for startups',
+        subtext : 'Building web apps for startups and helping them scale.',
+        highlight: false,
+        year: 'Feb 2019',
+        link: 'https://www.linkedin.com/company/vgeekers/'
+    
+    },
+
+
 
 ]
 
-const Project = () => {
-  return (
-      <PageWrapper>
-          <div className="max-w-4xl mx-auto p-4 pt-0 sm:p-8">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {projects.map((project) => (
-                        <Card className="w-full" key={project.title}>
-                            <CardContent>
-                                <div className="flex justify-between align-middle pt-4">
-                                    <h3 className="font-bold ">{project.title}</h3>
-                                    <div className="flex justify-around">
-                                        {/*{project.github ? (*/}
-                                        {/*    <Tooltip showArrow={true} title="github" mouseEnterDelay={0.3} overlayClassName={"text-xs"}>*/}
-                                        {/*        <Link href={project.github} target="_blank">*/}
-                                        {/*            <Image src="/svg/github.svg" width={20} height={20} alt="github"/>*/}
-                                        {/*        </Link>*/}
-                                        {/*    </Tooltip>*/}
-                                        {/*) : null}*/}
-
-                                        {/*{project.website ? (*/}
-                                        {/*    <Tooltip  showArrow={true}  title="website" mouseEnterDelay={0.3} overlayClassName={"text-xs"}>*/}
-                                        {/*        <Link href={project.website} target="_blank">*/}
-                                        {/*            <Image className="ml-2" src="/svg/external-link.svg" width={18} height={18} alt="site link"/>*/}
-                                        {/*        </Link>*/}
-                                        {/*    </Tooltip>*/}
-                                        {/*) : null}*/}
-                                    </div>
-                                </div>
-
-                                <p className="pt-4">{project.description}</p>
-                                <br/>
-                                <p className="font-light text-sm">{project.subtext}</p>
-                            </CardContent>
-                        </Card>
-                  ))}
-
-              </div>
-          </div>
-      </PageWrapper>
-
-  );
+// Create a base component for the projects list
+const ProjectsList = ({highlight}: {highlight: boolean}) => {
+    const filteredProjects = projects.filter(project => project.highlight === highlight);
+    
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {filteredProjects.map((project) => (
+                <ProjectCard key={project.title} project={project} />
+            ))}
+        </div>
+    );
 };
 
-export default Project;
+export const ProjectComponent = ({highlight}: {highlight: boolean}) => {
+    return <ProjectsList highlight={highlight} />;
+};
+
+const ProjectPage = () => {
+    return (
+        <PageWrapper>
+            <div className="space-y-4">
+                    <ProjectsList highlight={true} />
+                    <ProjectsList highlight={false} />
+            </div>
+        </PageWrapper>
+    );
+};
+
+export default ProjectPage;
+
+
+
