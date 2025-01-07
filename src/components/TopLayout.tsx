@@ -56,7 +56,7 @@ function TopLayout() {
                             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                         </span>
                         <span className="text-m text-green-500 px-2 py-1 ml-2">
-                            Available for projects
+                        Available for hire
                         </span>
                     </div>
                     <p className="text-md font-light">Engineer & Product Enthusiast</p>
