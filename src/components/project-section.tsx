@@ -1,5 +1,5 @@
 'use client';
-import { ProjectComponent } from "@/app/projects/page";
+import { ProjectComponent } from "@/components/project-list";
 
 export const ProjectSection = ({ highlight }: { highlight: boolean }) => {
     return (

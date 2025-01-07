@@ -1,12 +1,9 @@
-import React, { useEffect } from 'react';
-import {Card, CardContent} from "@/components/ui/card";
+'use client';
+import React from 'react';
 import {PageWrapper} from "@/components/page-wrappper";
-import Image from "next/image";
-import { Tooltip } from 'antd';
-import Link from "next/link";
-import { ProjectCard } from "@/components/project-card";
+import { ProjectComponent } from "@/components/project-list";
 
-let projects = [
+export const projects = [
     {
         title: 'Kimaru.ai',
         description: 'Faster time-to-decision with Agentic AI',
@@ -154,29 +151,12 @@ let projects = [
 
 ]
 
-// Create a base component for the projects list
-const ProjectsList = ({highlight}: {highlight: boolean}) => {
-    const filteredProjects = projects.filter(project => project.highlight === highlight);
-    
-    return (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {filteredProjects.map((project) => (
-                <ProjectCard key={project.title} project={project} />
-            ))}
-        </div>
-    );
-};
-
-export const ProjectComponent = ({highlight}: {highlight: boolean}) => {
-    return <ProjectsList highlight={highlight} />;
-};
-
 const ProjectPage = () => {
     return (
         <PageWrapper>
             <div className="space-y-4">
-                    <ProjectsList highlight={true} />
-                    <ProjectsList highlight={false} />
+                <ProjectComponent highlight={true} />
+                <ProjectComponent highlight={false} />
             </div>
         </PageWrapper>
     );
