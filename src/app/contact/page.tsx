@@ -31,7 +31,7 @@ const Contact = () => {
     return (
         <PageWrapper>
             <div className="max-w-2xl mx-auto space-y-8">
-                <h1 className="text-2xl font-bold mb-6">Let's Connect</h1>
+                <h1 className="text-2xl font-bold mb-6">Let&apos;s Connect</h1>
                 
                 <div className="space-y-4">
                     <Link href="mailto:kartikgautam171@gmail.com" 
@@ -84,6 +84,7 @@ const Contact = () => {
                                 onLoad={handleLoad}
                                 title="Book a call"
                             ></iframe>
+                            {isLoading && <p className="text-gray-600 mt-4">Meow... Loading your calendar</p>}
                         </motion.div>
                     )}
                 </AnimatePresence>
