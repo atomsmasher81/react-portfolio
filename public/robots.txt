@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://kartik-gautam.com/sitemap.xml 
+Sitemap: https://kartikgautam.com/sitemap.xml 

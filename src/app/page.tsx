@@ -61,8 +61,8 @@ export default function Home() {
                 "name": "Kartik Gautam",
                 "jobTitle": "Full Stack Developer & Technical Consultant",
                 "description": "Full Stack Developer with 6+ years of experience in building scalable applications, leading teams, and consulting for startups.",
-                "url": "https://kartik-gautam.com",
-                "image": "https://kartik-gautam.com/img/kartik.png",
+                "url": "https://kartikgautam.com",
+                "image": "https://kartikgautam.com/img/kartik.png",
                 "email": "kartikgautam171@gmail.com",
                 "sameAs": [
                   "https://linkedin.com/in/kartik-gautam",
@@ -162,19 +162,19 @@ export default function Home() {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": "https://kartik-gautam.com"
+                    "item": "https://kartikgautam.com"
                   }
                 ]
               },
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                "url": "https://kartik-gautam.com",
+                "url": "https://kartikgautam.com",
                 "name": "Kartik Gautam - Full Stack Developer & Technical Consultant",
                 "description": "Portfolio and professional profile of Kartik Gautam, a Full Stack Developer and Technical Consultant with expertise in web development, cloud computing, and technical leadership.",
                 "potentialAction": {
                   "@type": "SearchAction",
-                  "target": "https://kartik-gautam.com/search?q={search_term_string}",
+                  "target": "https://kartikgautam.com/search?q={search_term_string}",
                   "query-input": "required name=search_term_string"
                 }
               }

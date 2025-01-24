@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { blogs } from '@/data/blogs'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://kartik-gautam.com'
+  const baseUrl = 'https://kartikgautam.com'
   
   // Add all your static routes
   const staticRoutes = [

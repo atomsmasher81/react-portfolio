@@ -33,22 +33,22 @@ const BlogPost = ({params}: BlogPostProps) => {
         author: {
             '@type': 'Person',
             name: 'Kartik Gautam',
-            url: 'https://kartik-gautam.com'
+            url: 'https://kartikgautam.com'
         },
         datePublished: blog.date,
         dateModified: blog.date,
-        image: 'https://kartik-gautam.com/img/kartik.png',
+        image: 'https://kartikgautam.com/img/kartik.png',
         publisher: {
             '@type': 'Person',
             name: 'Kartik Gautam',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://kartik-gautam.com/img/kartik.png'
+                url: 'https://kartikgautam.com/img/kartik.png'
             }
         },
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `https://kartik-gautam.com/blogs/${blog.id}`
+            '@id': `https://kartikgautam.com/blogs/${blog.id}`
         },
         keywords: blog.tags?.join(', '),
         articleBody: blog.content
