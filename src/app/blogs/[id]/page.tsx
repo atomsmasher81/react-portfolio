@@ -36,8 +36,8 @@ const BlogPost = ({params}: BlogPostProps) => {
             url: 'https://kartik-gautam.com'
         },
         datePublished: blog.date,
-        dateModified: blog.lastModified || blog.date,
-        image: blog.coverImage || 'https://kartik-gautam.com/img/kartik.png',
+        dateModified: blog.date,
+        image: 'https://kartik-gautam.com/img/kartik.png',
         publisher: {
             '@type': 'Person',
             name: 'Kartik Gautam',
