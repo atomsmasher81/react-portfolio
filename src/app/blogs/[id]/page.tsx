@@ -7,6 +7,7 @@ import {motion} from "framer-motion";
 import {notFound} from "next/navigation";
 import ReactMarkdown from 'react-markdown';
 import Link from "next/link";
+import Script from 'next/script';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import remarkGfm from 'remark-gfm';
@@ -24,15 +25,59 @@ const BlogPost = ({params}: BlogPostProps) => {
         notFound();
     }
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: blog.title,
+        description: blog.description || blog.title,
+        author: {
+            '@type': 'Person',
+            name: 'Kartik Gautam',
+            url: 'https://kartik-gautam.com'
+        },
+        datePublished: blog.date,
+        dateModified: blog.lastModified || blog.date,
+        image: blog.coverImage || 'https://kartik-gautam.com/img/kartik.png',
+        publisher: {
+            '@type': 'Person',
+            name: 'Kartik Gautam',
+            logo: {
+                '@type': 'ImageObject',
+                url: 'https://kartik-gautam.com/img/kartik.png'
+            }
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `https://kartik-gautam.com/blogs/${blog.id}`
+        },
+        keywords: blog.tags?.join(', '),
+        articleBody: blog.content
+    };
+
     return (
         <PageWrapper>
+            <Script id="blog-jsonld" type="application/ld+json">
+                {JSON.stringify(jsonLd)}
+            </Script>
             <motion.article
                 className="max-w-3xl mx-auto px-4 py-8"
                 initial={{opacity: 0, y: 20}}
                 animate={{opacity: 1, y: 0}}
                 exit={{opacity: 0, y: 20}}
                 transition={{delay: 0.3}}
+                itemScope
+                itemType="https://schema.org/BlogPosting"
             >
+                <nav aria-label="Breadcrumb" className="mb-4">
+                    <ol className="flex space-x-2 text-sm text-gray-600">
+                        <li><Link href="/" className="hover:text-blue-600">Home</Link></li>
+                        <li>/</li>
+                        <li><Link href="/blogs" className="hover:text-blue-600">Blogs</Link></li>
+                        <li>/</li>
+                        <li className="text-gray-900" aria-current="page">{blog.title}</li>
+                    </ol>
+                </nav>
+
                 <Link 
                     href="/blogs" 
                     className="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 mb-12 group transition-colors"
@@ -41,33 +86,38 @@ const BlogPost = ({params}: BlogPostProps) => {
                     <span>all blogs</span>
                 </Link>
 
-                <header className="mb-12">
-                    <h1 className="text-4xl sm:text-5xl font-bold mb-6 leading-tight">{blog.title}</h1>
-                    <div className="flex flex-wrap gap-4 items-center text-gray-600 dark:text-gray-300 mb-8">
-                        <time dateTime={blog.date} className="text-sm">{blog.date}</time>
-                        <span className="text-sm">•</span>
+                <header className="mb-8">
+                    <h1 itemProp="headline" className="text-4xl font-bold mb-4">{blog.title}</h1>
+                    <div className="flex flex-wrap gap-4 items-center text-gray-600">
+                        <time itemProp="datePublished" dateTime={blog.date} className="text-sm">{blog.date}</time>
+                        <span>•</span>
                         <span className="text-sm">{blog.readTime}</span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                        {blog.tags?.map((tag) => (
-                            <span
-                                key={tag}
-                                className="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm text-gray-700 dark:text-gray-300"
-                            >
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
+                    {blog.tags && (
+                        <div className="flex flex-wrap gap-2 mt-4">
+                            {blog.tags.map((tag) => (
+                                <Link 
+                                    key={tag} 
+                                    href={`/blogs/tag/${tag.toLowerCase()}`}
+                                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700"
+                                >
+                                    {tag}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                 </header>
 
-                <div className="prose dark:prose-invert max-w-none 
-                    prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h2:mt-8 
-                    prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-p:my-4 prose-p:leading-relaxed
-                    prose-li:text-gray-600 dark:prose-li:text-gray-300
-                    prose-strong:text-gray-900 dark:prose-strong:text-white
-                    prose-ul:my-6 prose-ul:list-disc prose-ol:list-decimal prose-li:my-2
-                    prose-pre:my-0 prose-pre:bg-transparent prose-pre:p-0
-                    prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-700 prose-blockquote:pl-4 prose-blockquote:italic">
+                <div 
+                    itemProp="articleBody"
+                    className="prose dark:prose-invert max-w-none 
+                        prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h2:mt-8 
+                        prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-p:my-4 prose-p:leading-relaxed
+                        prose-li:text-gray-600 dark:prose-li:text-gray-300
+                        prose-strong:text-gray-900 dark:prose-strong:text-white
+                        prose-ul:my-6 prose-ul:list-disc prose-ol:list-decimal prose-li:my-2
+                        prose-pre:my-0 prose-pre:bg-transparent prose-pre:p-0
+                        prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-700 prose-blockquote:pl-4 prose-blockquote:italic">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
@@ -112,6 +162,25 @@ const BlogPost = ({params}: BlogPostProps) => {
                         {blog.content}
                     </ReactMarkdown>
                 </div>
+
+                <footer className="mt-12 pt-8 border-t">
+                    <h2 className="text-2xl font-bold mb-4">Related Posts</h2>
+                    <div className="grid gap-6 md:grid-cols-2">
+                        {blogs
+                            .filter(p => p.id !== blog.id && p.tags?.some(t => blog.tags?.includes(t)))
+                            .slice(0, 2)
+                            .map(relatedPost => (
+                                <Link 
+                                    key={relatedPost.id} 
+                                    href={`/blogs/${relatedPost.id}`}
+                                    className="block p-4 border rounded-lg hover:shadow-md transition-shadow"
+                                >
+                                    <h3 className="font-semibold mb-2">{relatedPost.title}</h3>
+                                    <p className="text-sm text-gray-600">{relatedPost.description}</p>
+                                </Link>
+                            ))}
+                    </div>
+                </footer>
             </motion.article>
         </PageWrapper>
     );

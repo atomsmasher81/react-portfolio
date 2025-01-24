@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { ProjectCard } from "@/components/project-card";
 import { projects } from "@/data/projects";
 
@@ -14,6 +15,6 @@ const ProjectsList = ({highlight}: {highlight: boolean}) => {
     );
 };
 
-export const ProjectComponent = ({highlight}: {highlight: boolean}) => {
+export function ProjectComponent({ highlight }: { highlight: boolean }) {
     return <ProjectsList highlight={highlight} />;
-}; 
+} 

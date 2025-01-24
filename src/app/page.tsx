@@ -14,6 +14,8 @@ import Image from 'next/image'
 import Link from "next/link";
 import {PageWrapper} from "@/components/page-wrappper";
 import {ProjectSection} from "@/components/project-section";
+import Script from 'next/script';
+
 const Jobs = [
   {
     title: 'TopHire.co',
@@ -50,63 +52,192 @@ const Jobs = [
 export default function Home() {
   return (
       <PageWrapper>
-        <div>
-
-          <div className="text-base sm:text-lg">
+        <Script id="schema-org" type="application/ld+json">
+          {`
+            [
+              {
+                "@context": "https://schema.org",
+                "@type": "Person",
+                "name": "Kartik Gautam",
+                "jobTitle": "Full Stack Developer & Technical Consultant",
+                "description": "Full Stack Developer with 6+ years of experience in building scalable applications, leading teams, and consulting for startups.",
+                "url": "https://kartik-gautam.com",
+                "image": "https://kartik-gautam.com/img/kartik.png",
+                "email": "kartikgautam171@gmail.com",
+                "sameAs": [
+                  "https://linkedin.com/in/kartik-gautam",
+                  "https://github.com/atomsmasher81",
+                  "https://x.com/kartik_gautam_"
+                ],
+                "knowsAbout": [
+                  "Full Stack Development",
+                  "Software Architecture",
+                  "Technical Leadership",
+                  "DevOps",
+                  "React",
+                  "Node.js",
+                  "Python",
+                  "Cloud Computing",
+                  "System Design",
+                  "Database Design",
+                  "API Development",
+                  "Microservices"
+                ],
+                "alumniOf": [
+                  {
+                    "@type": "CollegeOrUniversity",
+                    "name": "AKTU",
+                    "sameAs": "https://aktu.ac.in"
+                  }
+                ],
+                "skills": [
+                  "JavaScript",
+                  "TypeScript",
+                  "Python",
+                  "React",
+                  "Node.js",
+                  "AWS",
+                  "Docker",
+                  "Kubernetes",
+                  "MongoDB",
+                  "PostgreSQL",
+                  "System Design",
+                  "Technical Leadership"
+                ],
+                "award": [
+                  {
+                    "@type": "Award",
+                    "name": "Best Performer Award",
+                    "description": "Awarded for exceptional performance and leadership in technical projects",
+                    "awardedBy": {
+                      "@type": "Organization",
+                      "name": "Credgenics"
+                    },
+                    "date": "2022"
+                  }
+                ],
+                "workExperience": [
+                  {
+                    "@type": "WorkPosition",
+                    "name": "Senior Software Engineer",
+                    "startDate": "2023",
+                    "worksFor": {
+                      "@type": "Organization",
+                      "name": "TopHire.co",
+                      "url": "https://tophire.co"
+                    },
+                    "description": "Owns full-stack development of several features, deploying and managing LLMs and servers."
+                  },
+                  {
+                    "@type": "WorkPosition",
+                    "name": "Lead Backend Engineer",
+                    "startDate": "2021",
+                    "endDate": "2023",
+                    "worksFor": {
+                      "@type": "Organization",
+                      "name": "Credgenics",
+                      "url": "https://credgenics.com"
+                    },
+                    "description": "Owned and scaled Payments Product and lead the payments team."
+                  },
+                  {
+                    "@type": "WorkPosition",
+                    "name": "Lead Backend Engineer",
+                    "startDate": "2019",
+                    "endDate": "2021",
+                    "worksFor": {
+                      "@type": "Organization",
+                      "name": "Credicxo",
+                      "url": "https://www.f6s.com/company/credicxo"
+                    },
+                    "description": "Owned and scaled several Products and lead the Backend team, owned Product roadmap."
+                  }
+                ]
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": "https://kartik-gautam.com"
+                  }
+                ]
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "url": "https://kartik-gautam.com",
+                "name": "Kartik Gautam - Full Stack Developer & Technical Consultant",
+                "description": "Portfolio and professional profile of Kartik Gautam, a Full Stack Developer and Technical Consultant with expertise in web development, cloud computing, and technical leadership.",
+                "potentialAction": {
+                  "@type": "SearchAction",
+                  "target": "https://kartik-gautam.com/search?q={search_term_string}",
+                  "query-input": "required name=search_term_string"
+                }
+              }
+            ]
+          `}
+        </Script>
+        <main>
+          <section className="text-base sm:text-lg">
+            <h1 className="sr-only">Full Stack Developer & Technical Consultant</h1>
             <p className="mb-6 sm:mb-8">
-            With 6+ years as a full-stack developer, I’ve built seamless frontends, robust backends, and efficient DevOps pipelines while shaping product strategies. As a consultant and freelancer, I’ve helped startups bring ideas to life, scale platforms, and lead technical teams.
+              With 6+ years as a full-stack developer, I&apos;ve built seamless frontends, robust backends, and efficient DevOps pipelines while shaping product strategies. As a consultant and freelancer, I&apos;ve helped startups bring ideas to life, scale platforms, and lead technical teams.
             </p>
-            <h2 className="text-xl sm:text-2xl font-bold mb-4">Projects</h2>
-
-            <ProjectSection highlight={true} />
-
-            <div className="flex justify-end my-4">
             
-            <Link 
-              href="/projects" 
-              className="text-gray-500  transition-transform hover:text-gray-900 group hover:scale-105 flex items-center"
-            >
-              <span className="mr-1">Checkout all projects</span>
-              <span className="inline-block transition-transform group-hover:translate-x-1"> →</span>
-            </Link>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold mt-8 mb-4">Experience</h2>
-            <ul className="list-disc pl-5 space-y-4 ">
-              {Jobs.map((company) => (
-                  <li key={company.title} className="group">
-                      <Link href={company.companyLink} className="h-6 inline-flex items-center" target="_blank">
-                        <div className="flex justify-start items-center">
-                          <span className="font-bold mr-2">{company.title}</span>
-                          <Image 
-                            src="/svg/external-link.svg" 
-                            width={20} 
-                            height={20} 
-                            alt="site link"
-                            className="transition-all duration-200 hover:scale-110 hover:brightness-110 opacity-0 group-hover:opacity-100"
-                          />
-                        </div>
-                      </Link>
-                      <span className="text-sm"> {company.titleSubText}</span>
-                      <br/>
-                        <ul className="relative">
+            <section aria-labelledby="projects-heading">
+              <h2 id="projects-heading" className="text-xl sm:text-2xl font-bold mb-4">Featured Projects</h2>
+              <ProjectSection highlight={true} />
+              <div className="flex justify-end my-4">
+                <Link 
+                  href="/projects" 
+                  className="text-gray-500 transition-transform hover:text-gray-900 group hover:scale-105 flex items-center"
+                  aria-label="View all projects"
+                >
+                  <span className="mr-1">Checkout all projects</span>
+                  <span className="inline-block transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </section>
+
+            <section aria-labelledby="experience-heading">
+              <h2 id="experience-heading" className="text-xl sm:text-2xl font-bold mt-8 mb-4">Professional Experience</h2>
+              <ul className="list-disc pl-5 space-y-4" role="list">
+                {Jobs.map((company) => (
+                    <li key={company.title} className="group">
+                        <Link href={company.companyLink} className="h-6 inline-flex items-center" target="_blank" rel="noopener noreferrer">
+                          <div className="flex justify-start items-center">
+                            <span className="font-bold mr-2">{company.title}</span>
+                            <Image 
+                              src="/svg/external-link.svg" 
+                              width={20} 
+                              height={20} 
+                              alt={`Visit ${company.title} website`}
+                              className="transition-all duration-200 hover:scale-110 hover:brightness-110 opacity-0 group-hover:opacity-100"
+                            />
+                          </div>
+                        </Link>
+                        <span className="text-sm"> {company.titleSubText}</span>
+                        <br/>
+                        <ul className="relative" role="list">
                             {company.child.map((job) => (
-                                <div key={job.title} >
-                                    <li><span>{job.title}</span> </li>
+                                <div key={job.title}>
+                                    <li><h3 className="text-lg font-semibold">{job.title}</h3></li>
                                     <div className="my-2 list-disc">
                                         <p className="text-sm font-light"> - {job.content}</p>
                                     </div>
-                                    {/*<br/>*/}
                                 </div>
                             ))}
-                            {/*{company.child.length > 1 && <div className="line absolute w-2 bg-black"></div>}*/}
                         </ul>
-                  </li>
-              ))}
-
-            </ul>
-
-          </div>
-        </div>
+                    </li>
+                ))}
+              </ul>
+            </section>
+          </section>
+        </main>
       </PageWrapper>
   )
 }
