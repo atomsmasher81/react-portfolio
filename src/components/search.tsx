@@ -132,7 +132,7 @@ export function Search() {
                             </ul>
                         ) : (
                             <div className="px-4 py-3 text-sm text-gray-600">
-                                No results found for "{query}"
+                                No results found for &quot;{query}&quot;
                             </div>
                         )}
                     </motion.div>
