@@ -1,37 +1,78 @@
 export const projects = [
     {
-        title: 'Kimaru.ai',
-        description: 'Faster time-to-decision with Agentic AI',
-        subtext : 'Kimaru.ai helps managers facing challenges with retail supply chain to reduce time-to-decision',
-        highlight: true,
-        link: 'https://kimaru.ai',
-        year: 'Dec 2024'
-    },
-    {
         title: 'SignWith.co',
         description: 'Get e-signatures done faster',
         subtext : 'SignWith is a platform that helps you get e-signatures done faster by reducing complexity and cost.',
         highlight: true,
         link: 'https://signwith.co',
-        year: 'Dec 2024'
+        year: 'March 2025',
+        details : {
+            'technology' : [ 'Next.js', 'Tailwind CSS', 'TypeScript', 'Python', 'FastAPI', 'MongoDB'],
+            'role' : 'CTO',
+            'duration' : ['March 2025', 'Present'],
+            'description' : 'SignWith is a platform that helps you get e-signatures done faster by reducing complexity and cost.'
 
+        }
     },
-
     {
         title: 'OptimusHealth',
         description: 'Help people get better healthcare',
         subtext: 'A platform that improves your healthcare with personalized doctor recommendations.',
         highlight: true,
         link: 'https://www.optimahealth.co.uk/',
-        year: 'Jan 2025'
+        year: 'Jan 2025',
+        details : {
+            'technology' : [ 'Next.js', 'Tailwind CSS', 'TypeScript', 'Python', 'FastAPI', 'Postgres'],
+            'role' : 'Full Stack Developer',
+            'duration' : ['Jan 2025', 'Feb 2025'],
+            'description' : 'OptimusHealth is a platform that improves your healthcare with personalized doctor recommendations.'
+        }
     },
+    {
+        title: 'SignWith.co Website',
+        description: 'Get e-signatures done faster',
+        subtext : 'SignWith is a platform that helps you get e-signatures done faster by reducing complexity and cost.',
+        highlight: false,
+        link: 'https://signwith.co',
+        year: 'Jan 2025',
+        details : {
+            'technology' : [ 'Next.js', 'Tailwind CSS', 'TypeScript',],
+            'role' : 'CTO',
+            'duration' : ['Jan 2025', 'Feb 2025'],
+            'description' : 'SignWith is a platform that helps you get e-signatures done faster by reducing complexity and cost.'
+        }
+
+    },
+    {
+        title: 'Kimaru.ai',
+        description: 'Faster time-to-decision with Agentic AI',
+        subtext : 'Kimaru.ai helps managers facing challenges with retail supply chain to reduce time-to-decision',
+        highlight: true,
+        link: 'https://kimaru.ai',
+        year: 'Dec 2024',
+        details : {
+            'technology' : [ 'Next.js', 'Tailwind CSS', 'TypeScript', 'Python', 'FastAPI', 'MongoDB'],
+            'role' : 'Head of Engineering & Product development',
+            'duration' : ['Dec 2024', 'Present'],
+            'description' : 'Kimaru.ai is a platform that helps managers facing challenges with retail supply chain to reduce time-to-decision'
+
+        }
+    },
+
+
     {
         title: 'MindFry.in',
         description: 'Internal Dashboard for Operations',
         subtext: 'A mental health startup, dedicated to supporting the unique challenges faced by individuals in their 20s.',
         highlight: false,
         link: 'https://mindfry.in/',
-        year: 'Jan 2024'
+        year: 'Jan 2024',
+        details : {
+            'technology' : [ 'Next.js', 'Tailwind CSS', 'TypeScript', 'Python', 'FastAPI', 'Postgres'],
+            'role' : 'Full Stack Developer',
+            'duration' : ['Jan 2024', 'March 2024'],
+            'description' : 'MindFry.in is a platform that improves your mental health with advance matching algorithm to connect you with the right therapist.'
+        }
     },
     {
         title: 'SapienHire',
@@ -40,6 +81,12 @@ export const projects = [
         highlight: false,
         year: 'July 2024',
         link: 'https://sapienhire.com/',
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Full Stack Developer',
+            'duration' : ['July 2024', 'Present'],
+            'description' : 'SapienHire is a platform that helps you find the best tech jobs for top 2% of the tech talent.'
+        }
     },
     {
         title: 'Tophire.co',
@@ -48,6 +95,12 @@ export const projects = [
         highlight: false,
         year: 'Dec 2023',
         link: 'https://tophire.co/',
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Full Stack Developer',
+            'duration' : ['Dec 2023', 'Present'],
+            'description' : 'Tophire.co is a platform that helps you find the best tech jobs for top 2% of the tech talent.'
+        }
     },
     {
         title: '(Stealth)',
@@ -55,6 +108,12 @@ export const projects = [
         subtext: 'Helped in building the product from scratch with stuff like payment integration and admin dashboard.',
         highlight: false,
         year: 'Oct 2023',
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Full Stack Developer',
+            'duration' : ['Oct 2023', 'Dec 2023'],
+            'description' : 'A startup building in stealth mode'
+        }
 
     },
     {
@@ -63,7 +122,12 @@ export const projects = [
         subtext: 'Helping you stay updated without sifting through hundreds of messages.',
         highlight: false,
         year: 'Oct 2023',
-
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Full Stack Developer',
+            'duration' : ['Oct 2023', 'April 2024'],
+            'description' : 'MicroBites is a platform that helps you get daily summaries of your WhatsApp groups'
+        }
     },
     {
         title: 'Billzy',
@@ -72,6 +136,12 @@ export const projects = [
         highlight: false,
         year: 'March 2023',
         link: 'https://billzy.in/',
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Tech Lead',
+            'duration' : ['March 2023', 'Oct 2023'],
+            'description' : 'Billzy is a payment deeplink infrastructure for Cregenics'
+        }
     },
     {
         title: 'Credgenics',
@@ -80,6 +150,12 @@ export const projects = [
         highlight: false,
         year: 'Nov 2022',
         link: 'https://www.credgenics.com/',
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Tech Lead',
+            'duration' : ['Nov 2022', 'March 2023'],
+            'description' : 'Credgenics is a platform that helps you supercharge debt collections with AI-driven technology platform'
+        }
     },
 
    {
@@ -88,7 +164,13 @@ export const projects = [
         subtext : 'That lets you create and share personalized cards while tracking detailed view statistics.',
         highlight: false,
         year: 'Jan 2022',
-        link: 'https://x.com/hereme_digital'
+        link: 'https://x.com/hereme_digital',
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Full Stack Developer',
+            'duration' : ['Jan 2022', 'March 2022'],
+            'description' : 'Hereme is a network management app that lets you create and share personalized cards while tracking detailed view statistics.'
+        }
 
    },
    {
@@ -97,7 +179,13 @@ export const projects = [
     subtext : 'Helping people get small loans for their daily needs.',
     highlight: false,
     year: 'Jan 2020',
-
+    // link: 'https://cashtray.in/',
+    details : {
+        'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+        'role' : 'Lead Backend Developer',
+        'duration' : ['Jan 2020', 'March 2020'],
+        'description' : 'CashTray is a small ticket lending platform that helps people get small loans for their daily needs.'
+    }
     },
     {
         title: 'Finaxco',
@@ -105,7 +193,13 @@ export const projects = [
         subtext : 'Comparing insurance plans and getting the best deals for your needs.',
         highlight: false,
         year: 'Jan 2020',
-
+        // link: 'https://finaxco.com/',
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Lead Backend Developer',
+            'duration' : ['Jan 2020', 'March 2020'],
+            'description' : 'Finaxco is a insurance marketplace that compares insurance plans and gets the best deals for your needs.'
+        }
     },
     {
         title: 'AlertCam',
@@ -113,7 +207,13 @@ export const projects = [
         subtext:  'Using OpenCV for facial recognition, instantly alerting the admin when an unknown face is detected.',
         highlight: false,
         year: 'June 2020',
-        link: 'https://github.com/atomsmasher81/security_cam_web_app'
+        link: 'https://github.com/atomsmasher81/security_cam_web_app',
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Full Stack Developer',
+            'duration' : ['June 2020', 'August 2020'],
+            'description' : 'AlertCam is a security system that transforms your device camera into a security system.'
+        }
     },
     {
         title: 'Credicxo',
@@ -121,7 +221,13 @@ export const projects = [
         subtext : 'Helping in building the admin dashboard and app for lending through SMEs.',
         highlight: false,
         year: 'Nov 2019',
-    
+        link: 'https://github.com/atomsmasher81/security_cam_web_app',
+        details : {
+            'technology' : [ 'Python', 'FastAPI', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Tech Lead',
+            'duration' : ['Nov 2019', 'March 2020'],
+            'description' : 'Credicxo is a admin dashboard and app for lending through SMEs.'
+        }
     },
     {
         title: 'Duit.io',
@@ -129,7 +235,13 @@ export const projects = [
         subtext : 'Ecards facilitate direct business along with deep integration with e-commerce website, chatbots, CRM Tools and other platforms.',
         highlight: false,
         year: 'Aug 2019',
-        link: 'https://duit.io/'
+        link: 'https://duit.io/',
+        details : {
+            'technology' : [ 'Python', 'Django', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Full Stack Developer',
+            'duration' : ['Aug 2019', 'March 2020'],
+            'description' : 'Duit.io is a electronic business cards for corporates, businesses and startups.'
+        }
     
     },
     {
@@ -138,7 +250,13 @@ export const projects = [
         subtext : 'Building web apps for startups and helping them scale.',
         highlight: false,
         year: 'Feb 2019',
-        link: 'https://www.linkedin.com/company/vgeekers/'
+        link: 'https://www.linkedin.com/company/vgeekers/',
+        details : {
+            'technology' : [ 'Python', 'Django', 'Postgres','Elasticsearch','Redis','Celery'],
+            'role' : 'Python Developer',
+            'duration' : ['Feb 2019', 'March 2020'],
+            'description' : 'VGeekers is a startup that builds web apps for startups and helps them scale.'
+        }
     
     },
 

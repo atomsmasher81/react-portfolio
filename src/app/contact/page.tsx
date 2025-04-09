@@ -34,14 +34,14 @@ const Contact = () => {
                 <h1 className="text-2xl font-bold mb-6">Let&apos;s Connect</h1>
                 
                 <div className="space-y-4">
-                    <Link href="mailto:kartikgautam171@gmail.com" 
+                    <Link href="mailto:hello@kartikgautam.com" 
                           className="flex items-center p-4 border rounded-lg hover:shadow-md transition-all group relative overflow-hidden"
                           onMouseMove={handleMouseMove}>
                         <span className="animate-circle"></span>
                         <Image src="/svg/email.svg" width={24} height={24} alt="email" className="mr-4"/>
                         <div>
                             <h2 className="font-semibold">Email</h2>
-                            <p className="text-sm text-gray-600">kartikgautam171@gmail.com</p>
+                            <p className="text-sm text-gray-600">hello@kartikgautam.com</p>
                         </div>
                     </Link>
 
