@@ -15,17 +15,17 @@ export const projects = [
         }
     },
     {
-        title: 'OptimusHealth',
-        description: 'Help people get better healthcare',
-        subtext: 'A platform that improves your healthcare with personalized doctor recommendations.',
-        highlight: true,
-        link: 'https://www.optimahealth.co.uk/',
+        title: '(Stealth)',
+        description: 'SaaS in Healthcare Industry',
+        subtext: 'Build and deployed the saas from scratch, helped in shaping the product strategy and roadmap.',
+        highlight: false,
+        link: '',
         year: 'Jan 2025',
         details : {
             'technology' : [ 'Next.js', 'Tailwind CSS', 'TypeScript', 'Python', 'FastAPI', 'Postgres'],
             'role' : 'Full Stack Developer',
             'duration' : ['Jan 2025', 'Feb 2025'],
-            'description' : 'OptimusHealth is a platform that improves your healthcare with personalized doctor recommendations.'
+            'description' : 'Build and deployed the saas from scratch, helped in shaping the product strategy and roadmap.'
         }
     },
     {
@@ -63,15 +63,15 @@ export const projects = [
     {
         title: 'MindFry.in',
         description: 'Internal Dashboard for Operations',
-        subtext: 'A mental health startup, dedicated to supporting the unique challenges faced by individuals in their 20s.',
-        highlight: false,
+        subtext: 'A mental health startup, dedicated to supporting faced by people in their 20s.',
+        highlight: true,
         link: 'https://mindfry.in/',
         year: 'Jan 2024',
         details : {
             'technology' : [ 'Next.js', 'Tailwind CSS', 'TypeScript', 'Python', 'FastAPI', 'Postgres'],
             'role' : 'Full Stack Developer',
             'duration' : ['Jan 2024', 'March 2024'],
-            'description' : 'MindFry.in is a platform that improves your mental health with advance matching algorithm to connect you with the right therapist.'
+            'description' : 'Build the SaaS and product strategy for the company, automated call booking and managing the leads and subscriptions.'
         }
     },
     {
