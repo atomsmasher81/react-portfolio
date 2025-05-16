@@ -28,10 +28,9 @@ const Jobs = [
   },
   {
     title: 'Credgenics',
-    company: 'Tech Lead',
     companyLink: 'https://credgenics.com',
       child : [
-          {title: 'Lead Backend Engineer', content: 'Owned and scaled Payments Product and lead the payments team.'},
+          {title: 'Tech Lead', content: 'Owned and scaled Payments Product and lead the payments team.'},
            {title: 'Software Engineer',
                content: 'Built and managed the payments product from scratch,setup the building blocks for the product.'}
       ]
