@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import {Avatar, AvatarImage} from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import {motion} from "framer-motion";
 import { useState, useEffect } from 'react';
 
@@ -46,7 +46,14 @@ function TopLayout() {
         <div className="max-w-4xl mx-auto p-4 pb-0 sm:p-8 sm:pb-0">
             <div className="flex flex-col items-center text-center">
                 <Avatar className="h-20 w-20">
-                    <AvatarImage alt="Profile Picture" src="/img/img.png" />
+                    <Image
+                        alt="Profile Picture"
+                        src="/img/img.png"
+                        fill
+                        priority
+                        sizes="80px"
+                        className="object-cover"
+                    />
                 </Avatar>
                 <div className="flex flex-col items-center justify-center relative">
                     <h1 className="mt-4 mb-2 text-4xl">Kartik Gautam</h1>
