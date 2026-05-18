@@ -59,7 +59,7 @@ export default function Home() {
                 "@type": "Person",
                 "name": "Kartik Gautam",
                 "jobTitle": "Full Stack Developer & Technical Consultant",
-                "description": "Full Stack Developer with 6+ years of experience in building scalable applications, leading teams, and consulting for startups.",
+                "description": "Senior full-stack engineer who builds, ships, and scales products. Experienced across payments, hiring platforms, AI workflows, dashboards, and SaaS products.",
                 "url": "https://kartikgautam.com",
                 "image": "https://kartikgautam.com/img/kartik.png",
                 "email": "kartikgautam171@gmail.com",
@@ -170,7 +170,7 @@ export default function Home() {
                 "@type": "WebSite",
                 "url": "https://kartikgautam.com",
                 "name": "Kartik Gautam - Full Stack Developer & Technical Consultant",
-                "description": "Portfolio and professional profile of Kartik Gautam, a Full Stack Developer and Technical Consultant with expertise in web development, cloud computing, and technical leadership.",
+                "description": "Portfolio and professional profile of Kartik Gautam, a senior full-stack engineer who builds, ships, and scales products across payments, hiring, AI, dashboards, and SaaS.",
                 "potentialAction": {
                   "@type": "SearchAction",
                   "target": "https://kartikgautam.com/search?q={search_term_string}",
@@ -184,7 +184,10 @@ export default function Home() {
           <section className="text-base sm:text-lg">
             <h1 className="sr-only">Full Stack Developer & Technical Consultant</h1>
             <p className="mb-6 sm:mb-8">
-              With 6+ years as a full-stack developer, I&apos;ve built seamless frontends, robust backends, and efficient DevOps pipelines while shaping product strategies. As a consultant and freelancer, I&apos;ve helped startups bring ideas to life, scale platforms, and lead technical teams.
+              Senior full-stack engineer who builds, ships, and scales products. I&apos;ve worked on payments, hiring platforms, AI workflows, dashboards, and SaaS products, and led teams from architecture to launch.
+              <br />
+              <br />
+              Built 0→1 products across fintech, hiring, healthcare, AI, and e-signature SaaS, including systems handling 10M+ daily transactions and 500+ req/sec payment flows.
             </p>
             
             <section aria-labelledby="projects-heading">
