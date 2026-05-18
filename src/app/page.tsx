@@ -59,7 +59,7 @@ export default function Home() {
                 "@type": "Person",
                 "name": "Kartik Gautam",
                 "jobTitle": "Full Stack Developer & Technical Consultant",
-                "description": "Product-minded full-stack engineer and consultant with 6+ years of experience taking startup products from idea to production across fintech, hiring, healthcare, e-signature, and AI.",
+                "description": "Full Stack Developer with 6+ years of experience in building scalable applications, leading teams, and consulting for startups.",
                 "url": "https://kartikgautam.com",
                 "image": "https://kartikgautam.com/img/kartik.png",
                 "email": "kartikgautam171@gmail.com",
@@ -170,7 +170,7 @@ export default function Home() {
                 "@type": "WebSite",
                 "url": "https://kartikgautam.com",
                 "name": "Kartik Gautam - Full Stack Developer & Technical Consultant",
-                "description": "Portfolio and professional profile of Kartik Gautam, a product-minded full-stack engineer and consultant building startup products across frontend, backend, AI, payments, and cloud infrastructure.",
+                "description": "Portfolio and professional profile of Kartik Gautam, a Full Stack Developer and Technical Consultant with expertise in web development, cloud computing, and technical leadership.",
                 "potentialAction": {
                   "@type": "SearchAction",
                   "target": "https://kartikgautam.com/search?q={search_term_string}",
@@ -184,7 +184,7 @@ export default function Home() {
           <section className="text-base sm:text-lg">
             <h1 className="sr-only">Full Stack Developer & Technical Consultant</h1>
             <p className="mb-6 sm:mb-8">
-              Product-minded full-stack engineer and consultant with 6+ years of experience taking startup products from idea to production. I build across the stack — Next.js frontends, Python/FastAPI backends, payments, AI/LLM workflows, and cloud infrastructure — and have led teams across fintech, hiring, healthcare, e-signature, and agentic AI products.
+              With 6+ years as a full-stack developer, I&apos;ve built seamless frontends, robust backends, and efficient DevOps pipelines while shaping product strategies. As a consultant and freelancer, I&apos;ve helped startups bring ideas to life, scale platforms, and lead technical teams.
             </p>
             
             <section aria-labelledby="projects-heading">
