@@ -59,7 +59,7 @@ export default function Home() {
                 "@type": "Person",
                 "name": "Kartik Gautam",
                 "jobTitle": "Full Stack Developer & Technical Consultant",
-                "description": "Senior full-stack engineer who builds, ships, and scales products. Experienced across payments, hiring platforms, AI workflows, dashboards, and SaaS products.",
+                "description": "Senior full-stack engineer who builds, ships, and scales products. Built 0→1 products across fintech, hiring, healthcare, AI, and e-signature, including payment systems handling 10M+ daily transactions and 500+ req/sec.",
                 "url": "https://kartikgautam.com",
                 "image": "https://kartikgautam.com/img/kartik.png",
                 "email": "kartikgautam171@gmail.com",
@@ -170,7 +170,7 @@ export default function Home() {
                 "@type": "WebSite",
                 "url": "https://kartikgautam.com",
                 "name": "Kartik Gautam - Full Stack Developer & Technical Consultant",
-                "description": "Portfolio and professional profile of Kartik Gautam, a senior full-stack engineer who builds, ships, and scales products across payments, hiring, AI, dashboards, and SaaS.",
+                "description": "Portfolio and professional profile of Kartik Gautam, a senior full-stack engineer who builds, ships, and scales products across fintech, hiring, healthcare, AI, and e-signature.",
                 "potentialAction": {
                   "@type": "SearchAction",
                   "target": "https://kartikgautam.com/search?q={search_term_string}",
@@ -184,10 +184,7 @@ export default function Home() {
           <section className="text-base sm:text-lg">
             <h1 className="sr-only">Full Stack Developer & Technical Consultant</h1>
             <p className="mb-6 sm:mb-8">
-              Senior full-stack engineer who builds, ships, and scales products. I&apos;ve worked on payments, hiring platforms, AI workflows, dashboards, and SaaS products, and led teams from architecture to launch.
-              <br />
-              <br />
-              Built 0→1 products across fintech, hiring, healthcare, AI, and e-signature SaaS, including systems handling 10M+ daily transactions and 500+ req/sec payment flows.
+              Senior full-stack engineer who builds, ships, and scales products. I&apos;ve built 0→1 products across fintech, hiring, healthcare, AI, and e-signature, including payment systems handling 10M+ daily transactions and 500+ req/sec. I&apos;ve also led teams from architecture to launch.
             </p>
             
             <section aria-labelledby="projects-heading">

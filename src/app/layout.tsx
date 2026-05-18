@@ -17,7 +17,7 @@ const GA_MEASUREMENT_ID = "G-ZPHPHMKFVR";
 
 export const metadata: Metadata = {
   title: "Kartik Gautam | Consultant | Full Stack Developer | Entrepreneur",
-  description: "Senior full-stack engineer who builds, ships, and scales products across payments, hiring platforms, AI workflows, dashboards, and SaaS.",
+  description: "Senior full-stack engineer who builds, ships, and scales products across fintech, hiring, healthcare, AI, and e-signature.",
   keywords: ["Full Stack Developer", "Software Engineer", "Consultant", "React", "Node.js", "DevOps", "Technical Lead","Entrepreneur","python"],
   authors: [{ name: "Kartik Gautam" }],
   creator: "Kartik Gautam",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://kartikgautam.com",
     title: "Kartik Gautam | Consultant | Full Stack Developer | Entrepreneur",
-    description: "Senior full-stack engineer who builds, ships, and scales products across payments, hiring platforms, AI workflows, dashboards, and SaaS.",
+    description: "Senior full-stack engineer who builds, ships, and scales products across fintech, hiring, healthcare, AI, and e-signature.",
     siteName: "Kartik Gautam Portfolio",
     images: [
       {
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Kartik Gautam | Consultant | Full Stack Developer | Entrepreneur",
-    description: "Senior full-stack engineer who builds, ships, and scales products across payments, hiring platforms, AI workflows, dashboards, and SaaS.",
+    description: "Senior full-stack engineer who builds, ships, and scales products across fintech, hiring, healthcare, AI, and e-signature.",
     creator: "@kartik_gautam_",
     images: ["https://kartikgautam.com/img/kartik.png"]
   },

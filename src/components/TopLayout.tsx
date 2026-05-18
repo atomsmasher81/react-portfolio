@@ -57,6 +57,7 @@ function TopLayout() {
                 </Avatar>
                 <div className="flex flex-col items-center justify-center relative">
                     <h1 className="mt-4 mb-2 text-4xl">Kartik Gautam</h1>
+                    {/* Available for hire status hidden for now. Keep this block because we may need it later.
                     <div className="flex items-center justify-center mb-2">
                         <span className="relative flex h-3 w-3">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -66,6 +67,7 @@ function TopLayout() {
                         Available for hire
                         </span>
                     </div>
+                    */}
                     <p className="text-md font-light">Engineer & Product Enthusiast</p>
                 </div>
                 <div className="flex space-x-8 mt-8">
