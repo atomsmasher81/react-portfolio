@@ -18,6 +18,24 @@ import Script from 'next/script';
 
 const Jobs = [
   {
+    title: 'RapidClaims',
+    child : [
+        {title: 'SDE 3',
+        content: 'Builds and scales full-stack product systems for AI-powered revenue cycle management and healthcare claim workflows.'},
+        ],
+    titleSubText: '',
+    companyLink: 'https://www.rapidclaims.ai/'
+  },
+  {
+    title: 'SignWith',
+    child : [
+        {title: 'Chief Technology Officer',
+        content: 'Leads technology, architecture, and product engineering for a pay-per-document e-signature platform.'},
+        ],
+    titleSubText: '',
+    companyLink: 'https://signwith.co'
+  },
+  {
     title: 'TopHire.co',
     child : [
         {title: 'Senior Software Engineer',
@@ -116,6 +134,28 @@ export default function Home() {
                   }
                 ],
                 "workExperience": [
+                  {
+                    "@type": "WorkPosition",
+                    "name": "SDE 3",
+                    "startDate": "2025-11",
+                    "worksFor": {
+                      "@type": "Organization",
+                      "name": "RapidClaims",
+                      "url": "https://www.rapidclaims.ai/"
+                    },
+                    "description": "Builds and scales full-stack product systems for AI-powered revenue cycle management and healthcare claim workflows."
+                  },
+                  {
+                    "@type": "WorkPosition",
+                    "name": "Chief Technology Officer",
+                    "startDate": "2025-01",
+                    "worksFor": {
+                      "@type": "Organization",
+                      "name": "SignWith",
+                      "url": "https://signwith.co"
+                    },
+                    "description": "Leads technology, architecture, and product engineering for a pay-per-document e-signature platform."
+                  },
                   {
                     "@type": "WorkPosition",
                     "name": "Senior Software Engineer",
