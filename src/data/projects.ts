@@ -1,5 +1,20 @@
 export const projects = [
     {
+        title: 'FairShare',
+        description: 'Open-source Splitwise alternative',
+        subtext: 'Split bills with friends and track your own spending in one app. Add expenses by voice with Siri, settle up over UPI, self-host with Docker.',
+        highlight: true,
+        link: 'https://split.kartikgautam.com',
+        github: 'https://github.com/atomsmasher81/fairshare',
+        year: 'Sep 2026',
+        details : {
+            'technology' : [ 'Next.js', 'TypeScript', 'Tailwind CSS', 'Prisma', 'SQLite', 'Gemini', 'Web Push', 'MCP', 'Docker'],
+            'role' : 'Creator',
+            'duration' : ['March 2026', 'Present'],
+            'description' : 'An open-source, self-hostable Splitwise alternative with personal expense tracking: need-level budgeting (essential / semi / luxury), natural-language and Siri entry, UPI settle-up, push notifications, a full edit history, and an MCP server so AI assistants can log expenses.'
+        }
+    },
+    {
         title: 'SignWith.co',
         description: 'Get e-signatures done faster',
         subtext : 'SignWith is a platform that helps you get e-signatures done faster by reducing complexity and cost.',

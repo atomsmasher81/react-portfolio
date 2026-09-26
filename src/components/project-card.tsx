@@ -206,6 +206,16 @@ const ProjectCardElement = ({ project }: { project: any }) => {
                                     <ExternalLink className="h-4 w-4 ml-2" />
                                 </Link>
                             )}
+                            {project.github && (
+                                <Link
+                                    href={project.github}
+                                    target="_blank"
+                                    className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    Source on GitHub
+                                    <ExternalLink className="h-4 w-4 ml-2" />
+                                </Link>
+                            )}
                         </DialogFooter>
                     </div>
                 </DialogContent>
