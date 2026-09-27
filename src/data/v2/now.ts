@@ -14,7 +14,7 @@ export const now: NowEntry = {
     updated: "2026-09-27",
     location: "India",
     paragraphs: [
-        "Lately I've been **reading** Gertrude by Hermann Hesse, a worn old Penguin paperback that's been coming with me to the park.",
+        "Right now I'm **reading** Gertrude by Hermann Hesse. It's an old beat-up copy, and I've mostly been reading it in the park.",
         "I'm **learning** about the brain, mostly neuroplasticity and how it manages to rewire itself.",
         "And I'm **making** this site, trying to get it to feel more like me and less like a resume.",
     ],
