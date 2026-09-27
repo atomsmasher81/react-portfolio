@@ -1,0 +1,167 @@
+/* Site theme. Tokens swap per lens (work/life) and per page theme (dark on /photos, space on /sky). */
+
+.v2 {
+  --bg: #ffffff;
+  --ink: #111111;
+  --muted: #6b6b6b;
+  --faint: #ececec;
+  --card: #ffffff;
+  --accent: #6c5fd4;
+  --accent-soft: #f1effc;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv11", "ss01", "ss03";
+  min-height: 100dvh;
+  overflow-x: clip; /* full-bleed bands (e.g. the sky teaser) never cause sideways scroll */
+  position: relative;
+  isolation: isolate; /* lets page-wide background layers sit just above --bg */
+}
+
+.v2[data-lens="life"] {
+  --bg: #e9f0fa;
+  --ink: #0e1c33;
+  --muted: #5b6c87;
+  --faint: #d3deef;
+  --card: #f6f9fe;
+  --accent: #2d6ae3;
+  --accent-soft: #d6e4fb;
+}
+
+.v2[data-theme="dark"] {
+  --bg: #0c0c0c;
+  --ink: #f2f2f2;
+  --muted: #8a8a8a;
+  --faint: #262626;
+  --card: #151515;
+}
+
+/* The night sky page. */
+.v2[data-theme="space"] {
+  --bg: #05060f;
+  --ink: #e8ecff;
+  --muted: #8a93b8;
+  --faint: #1c2140;
+  --card: #0a0d1f;
+  --accent: #9db4ff;
+  --accent-soft: #1a2150;
+}
+
+/* Words marked **like this** in prose get a soft highlighter stroke. */
+.v2-mark {
+  background-image: linear-gradient(var(--accent-soft), var(--accent-soft));
+  background-repeat: no-repeat;
+  background-position: 0 88%;
+  background-size: 0% 0.5em;
+  transition: background-size 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  padding: 0 0.1em;
+}
+.v2-mark[data-drawn] {
+  background-size: 100% 0.5em;
+}
+
+/* The easter egg's little star. */
+@keyframes v2-twinkle {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.35; transform: scale(0.75) rotate(45deg); }
+}
+.v2-twinkle { animation: v2-twinkle 2.6s ease-in-out infinite; }
+
+/* Hold the page until the saved lens is applied, so there's no flash of the other side. */
+.v2:not([data-ready]) main,
+.v2:not([data-ready]) header nav,
+.v2:not([data-ready]) nav[aria-label="Main"] { opacity: 0; }
+.v2 main { transition: opacity 0.25s ease; }
+
+.v2 ::selection {
+  background: var(--accent);
+  color: white;
+}
+
+.v2-display {
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.v2-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.v2-eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Underline that draws in from the left and leaves to the right. */
+.v2-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.35s cubic-bezier(0.65, 0, 0.35, 1), color 0.2s ease;
+  padding-bottom: 2px;
+}
+.v2-link:hover,
+.v2-link:focus-visible {
+  background-size: 100% 1px;
+  background-position: 0% 100%;
+}
+
+/* Hovering one item in a list quietly dims its siblings. */
+@media (hover: hover) {
+  .v2-focus-list:hover > * { opacity: 0.4; }
+  .v2-focus-list > * { transition: opacity 0.25s ease; }
+  .v2-focus-list > *:hover { opacity: 1; }
+}
+
+/* Markdown bodies for notes and writing */
+.v2-prose {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.v2-prose > * + * { margin-top: 1.1em; }
+.v2-prose ul, .v2-prose ol { padding-left: 1.25em; }
+.v2-prose ul { list-style: disc; }
+.v2-prose ol { list-style: decimal; }
+.v2-prose li { margin: 0.35em 0; }
+.v2-prose li::marker { color: var(--accent); }
+.v2-prose strong { font-weight: 600; }
+.v2-prose em { font-style: italic; }
+.v2-prose a { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--faint); }
+.v2-prose h1 { display: none; }
+.v2-prose h2, .v2-prose h3 { font-weight: 600; letter-spacing: -0.02em; margin-top: 2em; }
+.v2-prose h2 { font-size: 1.4rem; }
+.v2-prose h3 { font-size: 1.15rem; }
+.v2-prose code { font-family: var(--font-mono), monospace; font-size: 0.88em; background: var(--faint); padding: 0.1em 0.35em; border-radius: 5px; }
+.v2-prose pre { background: #16161a; color: #e7e7ea; padding: 1rem 1.1rem; border-radius: 12px; overflow-x: auto; font-size: 0.85rem; line-height: 1.6; }
+.v2-prose pre code { background: none; padding: 0; color: inherit; }
+.v2-prose blockquote { border-left: 2px solid var(--accent); padding-left: 1rem; color: var(--muted); }
+.v2-prose table { width: 100%; font-size: 0.9rem; border-collapse: collapse; display: block; overflow-x: auto; }
+.v2-prose th, .v2-prose td { border-bottom: 1px solid var(--faint); padding: 0.4rem 0.6rem; text-align: left; }
+
+/* Film strip for contact sheet */
+.v2-sprockets {
+  height: 14px;
+  background-image: radial-gradient(circle at center, #0c0c0c 0 3px, transparent 3.5px);
+  background-size: 18px 14px;
+  background-repeat: repeat-x;
+  background-color: #1b1b1b;
+}
+
+/* Lens switch: the new theme grows as a circle out of the toggle (see useSwitchLens). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v2 main { transition: none; }
+  .v2-twinkle { animation: none; }
+}

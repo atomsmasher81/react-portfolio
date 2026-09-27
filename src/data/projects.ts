@@ -24,7 +24,7 @@ export const projects = [
         details : {
             'technology' : [ 'Next.js', 'Tailwind CSS', 'TypeScript', 'Python', 'FastAPI', 'MongoDB'],
             'role' : 'CTO',
-            'duration' : ['March 2025', 'Present'],
+            'duration' : ['March 2025', 'November 2025'],
             'description' : 'SignWith is a platform that helps you get e-signatures done faster by reducing complexity and cost.'
 
         }

@@ -1,41 +1,35 @@
-'use client';
-import React from 'react';
-import {PageWrapper} from "@/components/page-wrappper";
-import {motion} from "framer-motion";
-import {blogs} from "@/data/blogs";
-import {BlogCard} from "@/components/blog-card";
+import Link from "next/link";
+import { blogs } from "@/data/blogs";
 
-const Blog = () => {
-  const sortedBlogs = blogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  
-  return (
-      <PageWrapper>
-<div className="max-w-4xl mx-auto px-4">
+export const metadata = { title: "Blogs", description: "Longer posts on building and scaling software." };
 
-          <motion.div 
-            className="space-y-8"
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            transition={{delay: 0.3}}
-          >
-            {sortedBlogs.map((blog, index) => (
-              <motion.div
-                key={blog.id}
-                initial={{opacity: 0, y: 20}}
-                animate={{opacity: 1, y: 0}}
-                transition={{
-                  delay: 0.1 * (index + 1),
-                  duration: 0.5,
-                  ease: "easeOut"
-                }}
-              >
-                <BlogCard blog={blog} />
-              </motion.div>
-            ))}
-          </motion.div>
+export default function BlogsPage() {
+    const posts = [...blogs].sort((a, b) => b.date.localeCompare(a.date));
+
+    return (
+        <div className="mx-auto max-w-2xl">
+            <header className="pb-12 pt-14 sm:pt-24">
+                <h1 className="v2-display text-[2.75rem] sm:text-[3.25rem]">Blogs</h1>
+                <p className="mt-4 text-[17px] leading-relaxed text-[var(--muted)]">
+                    Longer posts on building and scaling software. Mostly things I wish someone had told me earlier.
+                </p>
+            </header>
+            <ul className="v2-focus-list border-t border-[var(--faint)]">
+                {posts.map((b) => (
+                    <li key={b.id} className="border-b border-[var(--faint)]">
+                        <Link href={`/blogs/${b.id}`} className="group block py-5">
+                            <div className="flex items-baseline justify-between gap-4">
+                                <h2 className="font-medium leading-snug">{b.title}</h2>
+                                <span className="v2-mono shrink-0 text-xs text-[var(--muted)]">
+                                    {new Date(b.date).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                                </span>
+                            </div>
+                            <p className="mt-1 line-clamp-2 text-[15px] text-[var(--muted)]">{b.description}</p>
+                            <p className="mt-2 text-xs text-[var(--muted)]">{b.readTime}</p>
+                        </Link>
+                    </li>
+                ))}
+            </ul>
         </div>
-      </PageWrapper>
-  );
-};
-
-export default Blog;
+    );
+}

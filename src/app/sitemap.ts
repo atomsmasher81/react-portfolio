@@ -1,23 +1,17 @@
 import { MetadataRoute } from 'next'
 import { blogs } from '@/data/blogs'
+import { notes } from '@/data/v2/notes'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://kartikgautam.com'
-  
-  // Add all your static routes
-  const staticRoutes = [
-    '',
-    '/projects',
-    '/blogs',
-    '/contact',
-  ].map((route) => ({
+
+  const staticRoutes = ['', '/projects', '/blogs', '/photos', '/notes', '/journey', '/now', '/sky'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: route === '' ? 1 : 0.8,
   }))
 
-  // Add blog posts
   const blogRoutes = blogs.map((blog) => ({
     url: `${baseUrl}/blogs/${blog.id}`,
     lastModified: new Date(blog.date),
@@ -25,5 +19,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }))
 
-  return [...staticRoutes, ...blogRoutes]
-} 
+  const noteRoutes = notes.map((note) => ({
+    url: `${baseUrl}/notes/${note.slug}`,
+    lastModified: new Date(note.date),
+    changeFrequency: 'monthly' as const,
+    priority: 0.5,
+  }))
+
+  return [...staticRoutes, ...blogRoutes, ...noteRoutes]
+}

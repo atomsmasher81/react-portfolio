@@ -1,26 +1,17 @@
-import Link from 'next/link'
+import Link from "next/link";
 import Image from "next/image";
-import React from "react";
-import {PageWrapper} from "@/components/page-wrappper";
 
-import { Button, Flex } from 'antd';
+export const metadata = { title: "Not found" };
+
 export default function NotFound() {
-  return (
-      <PageWrapper>
-      <div className="max-w-4xl mx-auto p-4 pt-0 sm:p-8 flex flex-col items-center">
-          <Image src="/img/cat.png"
-                 width={200} height={200}
-                 alt="cat"
-                 className=""
-          />
-          <p className="font-sans my-8 text-lg">even my magic cat couldn&apos;t find this page </p>
-
-
-          <button className="bg-black text-white p-2 px-4 rounded-lg" >
-              <Link href="/" className="">Back to About</Link>
-          </button>
-
-      </div>
-          </PageWrapper>
-  )
+    return (
+        <div className="mx-auto flex max-w-2xl flex-col items-start pb-24 pt-20 sm:pt-28">
+            <Image src="/img/cat.png" width={140} height={140} alt="A cat" />
+            <h1 className="v2-display mt-8 text-[2.5rem]">Nothing here.</h1>
+            <p className="mt-3 text-[17px] text-[var(--muted)]">Even my magic cat couldn&apos;t find this page.</p>
+            <Link href="/" className="v2-link mt-8 text-[15px]">
+                Back home
+            </Link>
+        </div>
+    );
 }

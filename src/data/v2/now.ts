@@ -1,0 +1,27 @@
+// A /now page, in the spirit of nownownow.com: what you'd tell a friend
+// you hadn't seen in a year. Written as prose, not a form. **Bold** words
+// get a hand-drawn highlight. Update `updated` whenever you edit it.
+
+export interface NowEntry {
+    updated: string; // ISO date
+    location: string;
+    paragraphs: string[];
+    reading?: { title: string; author: string; image: string; caption: string };
+}
+
+// DRAFT
+export const now: NowEntry = {
+    updated: "2026-09-27",
+    location: "India",
+    paragraphs: [
+        "Lately I've been **reading** Gertrude by Hermann Hesse, a worn old Penguin paperback that's been coming with me to the park.",
+        "I'm **learning** about the brain, mostly neuroplasticity and how it manages to rewire itself.",
+        "And I'm **making** this site, trying to get it to feel more like me and less like a resume.",
+    ],
+    reading: {
+        title: "Gertrude",
+        author: "Hermann Hesse",
+        image: "/images/reading-gertrude.jpg",
+        caption: "Gertrude, in the park",
+    },
+};
