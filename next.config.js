@@ -7,6 +7,9 @@ const nextConfig = {
     return [
       { source: '/contact', destination: '/?lens=work#contact', permanent: true },
       { source: '/testimonials', destination: '/?lens=work#words', permanent: false },
+      { source: '/notes/more-than-two-souls', destination: '/notes/steppenwolf', permanent: true },
+      { source: '/notes/the-instagram-years', destination: '/notes', permanent: true },
+      { source: '/notes/whats-left', destination: '/notes/worth-wanting', permanent: true },
       { source: '/v2', destination: '/', permanent: false },
       { source: '/v2/work', destination: '/projects', permanent: false },
       { source: '/v2/:path*', destination: '/:path*', permanent: false },

@@ -5,7 +5,7 @@
 
 export const journey = {
     summary:
-        "I grew up in Muzaffarnagar, UP, a kid who was always up to something, and always glancing up at night, wondering why the moon followed me home. I always said I'd be a scientist. Our first computer arrived in fourth grade, and after a lot of Vice City and Prince of Persia with my brother, I started digging through its settings and system files to see what made it tick. I've been tinkering with computers ever since. The night sky, photography and Hesse's Steppenwolf all left their mark on me along the way. And lately I keep coming back to one question: what is a person left with once you strip away the family expectations, the corporate ladder, the need to earn more and be known for something? Maybe that's where the meaning is. I'm still figuring it out.",
+        "I grew up in Muzaffarnagar, UP, a kid who was always up to something, and always glancing up at night, wondering why the moon followed me home. I always said I'd be a scientist. Our first computer arrived in fourth grade, and after a lot of Vice City and Prince of Persia with my brother, I started digging through its settings and system files to see what made it tick. I've been tinkering with computers ever since. The night sky, photography and Hesse's Steppenwolf all left their mark on me along the way. And lately I keep coming back to one question. Everyone around me seems to know what they want: the career, the title, being the supportive one, the easy-going one. But is the life we want actually worth wanting? I'm still figuring it out.",
     eras: [
         {
             era: "Growing up",
@@ -39,7 +39,7 @@ export const journey = {
                 "The sky never let go. Looking up still reminds me how much bigger everything is than we imagine, and how caught up we get in the mess we've made for ourselves. I genuinely believe that if everyone looked at the night sky once a night, they'd live a little differently.",
                 "I still take photos of the night sky, the moon and ordinary things that catch my eye, all on my phone for now. A proper camera is next.",
                 "Steppenwolf by Hermann Hesse hit me harder than most books ever have, and I keep going down rabbit holes about the brain, especially neuroplasticity and the way it can rewire itself.",
-                "Mostly, though, I'm figuring out what I want from life. The question I keep coming back to is this: what is a person left with once you strip away the family expectations, the corporate ladder, the need to earn more and be known for something? Maybe that's where the meaning is. I'm somewhere in the middle of finding out.",
+                "Mostly, though, I'm figuring out what I want from life, and the harder question after it. We're all defined by something, our jobs, our careers, how supportive or loving we are, or a trait someone pins on us. Those are exactly the things that bubble up when you ask yourself what kind of life you want. The question I keep coming back to is whether that life is actually worth wanting, or just the one everyone around me happened to want first. I'm somewhere in the middle of finding out.",
             ],
         },
     ],
