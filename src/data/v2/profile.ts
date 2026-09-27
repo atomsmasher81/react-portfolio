@@ -20,6 +20,6 @@ export const profile = {
 export const lifeIntro = {
     lines: ["I look up a lot,", "take photos of ordinary things that catch my eye,", "and lose hours reading philosophy and psychology."],
     interests:
-        "I'm happiest somewhere between **computer science**, **tinkering** with computers and building things, **photography**, **astronomy**, and the big questions in **science**, **philosophy** and **psychology**.",
+        "I'm happiest somewhere between **tinkering** with computers and building things, **photography**, **astronomy**, and the big questions in **science**, **philosophy** and **psychology**.",
     aside: "By day I write software. That lives on the other side of this site.",
 };

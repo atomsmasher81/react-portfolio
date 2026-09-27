@@ -87,7 +87,7 @@ export const photos: Photo[] = [
         "w": 640,
         "h": 480,
         "title": "If you forget me",
-        "caption": "",
+        "caption": "\"Well, Now,\nIf little by little you stop loving me i shall stop loving you little by little.\nIf suddenly you forget me do not look for me , for i shall already have forgotten you.\n If you it think long and mad , the wind of banners that passes through my life and you decide to leave me at the shore of the heart where i have roots ,\nremember that on that day , at that hour , i shall lift my arm and my roots will set off to seek another land\" - Pablo neurda , if you forget me\n\nAfter Pablo Neruda, “If You Forget Me”",
         "place": "Delhi, India",
         "date": "2020-06-16",
         "pick": false
@@ -109,7 +109,7 @@ export const photos: Photo[] = [
         "w": 640,
         "h": 640,
         "title": "Step by step",
-        "caption": "",
+        "caption": "Mein kaadam kaadam badalta hu yahi...\nYe zindgi badalti hi nahi...",
         "place": "",
         "date": "2020-03-01",
         "pick": false
@@ -142,7 +142,7 @@ export const photos: Photo[] = [
         "w": 640,
         "h": 456,
         "title": "Life will break you",
-        "caption": "",
+        "caption": "Life will break you.\nNobody can protect you from that,\nand living alone won't either,\nfor solitude will also break you with its yearning.\nYou have to love.\nYou have to feel.\nIt is the reason you are here on earth.\nYou are here to risk your heart.\nYou are here to be swallowed up.\nAnd when it happens that you are\nbroken, or betrayed, or left, or hurt,\nor death brushes near, let yourself\nsit by an apple tree and\nlisten to the apples falling all around you in heaps,\nwasting their sweetness. Tell yourself \"you tasted as many as you could.”\n\nAfter Louise Erdrich, The Painted Drum",
         "place": "",
         "date": "2019-10-16",
         "pick": false
@@ -175,7 +175,7 @@ export const photos: Photo[] = [
         "w": 640,
         "h": 398,
         "title": "After the rain",
-        "caption": "",
+        "caption": "Why don't we rewrite the star ,\nMay be the world could be ours....tonight.\n\nAfter “Rewrite the Stars”, from The Greatest Showman",
         "place": "",
         "date": "2018-02-02",
         "pick": false

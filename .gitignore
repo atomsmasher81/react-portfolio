@@ -35,3 +35,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# caption text pasted by hand, merged into src/data/v2/photos.ts
+/captions-inbox/
