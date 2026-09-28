@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion, useInView } from "framer-motion";
 import { LocalTime, Prose, Reveal, SectionTitle, StaggerText } from "@/components/v2/motion";
 import { NIGHT, NIGHT_VARS, SkyTeaser } from "@/components/v2/sky";
+import { OnLoop } from "@/components/v2/on-loop";
 import { ReadingPhoto } from "@/components/v2/reading-photo";
 import { ReadThisFar } from "@/components/v2/read-this-far";
 import type { NowEntry } from "@/data/v2/now";
@@ -18,7 +19,7 @@ export interface LifeHomeProps {
     interests: string;
     aside: string;
     photos: { id: string; src: string; title: string; place: string }[];
-    now: Pick<NowEntry, "updated" | "paragraphs" | "reading">;
+    now: Pick<NowEntry, "updated" | "paragraphs" | "reading" | "listening">;
     journey: string;
     notes: { slug: string; title: string; excerpt: string }[];
 }
@@ -247,7 +248,7 @@ function TheseDays({ now }: { now: LifeHomeProps["now"] }) {
                     These days
                 </SectionTitle>
                 <div className="gap-10 sm:grid sm:grid-cols-[1fr_170px] sm:items-start">
-                    <div className="space-y-4">
+                    <div className="min-w-0 space-y-4">
                         {now.paragraphs.map((p) => (
                             <Prose key={p} text={p} className="text-[1.2rem] leading-relaxed tracking-tight sm:text-[1.3rem]" />
                         ))}
@@ -258,6 +259,11 @@ function TheseDays({ now }: { now: LifeHomeProps["now"] }) {
                         </div>
                     )}
                 </div>
+                {now.listening && (
+                    <div className="mt-14 flex justify-center">
+                        <OnLoop song={now.listening} />
+                    </div>
+                )}
             </section>
         </Reveal>
     );

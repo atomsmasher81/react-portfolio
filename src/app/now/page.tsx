@@ -1,4 +1,5 @@
 import { Prose } from "@/components/v2/motion";
+import { OnLoop } from "@/components/v2/on-loop";
 import { ReadingPhoto } from "@/components/v2/reading-photo";
 import { now, type NowEntry } from "@/data/v2/now";
 
@@ -11,18 +12,25 @@ const longDate = (iso: string) => new Date(iso).toLocaleDateString("en-US", { mo
 
 function Letter({ entry }: { entry: NowEntry }) {
     return (
-        <div className="gap-10 sm:grid sm:grid-cols-[1fr_180px] sm:items-start">
-            <div className="space-y-5">
-                {entry.paragraphs.map((p) => (
-                    <Prose key={p} text={p} className="text-[1.2rem] leading-relaxed tracking-tight sm:text-[1.3rem]" />
-                ))}
+        <>
+            <div className="gap-10 sm:grid sm:grid-cols-[1fr_180px] sm:items-start">
+                <div className="min-w-0 space-y-5">
+                    {entry.paragraphs.map((p) => (
+                        <Prose key={p} text={p} className="text-[1.2rem] leading-relaxed tracking-tight sm:text-[1.3rem]" />
+                    ))}
+                </div>
+                {entry.reading && (
+                    <div className="mt-8 sm:mt-1">
+                        <ReadingPhoto {...entry.reading} />
+                    </div>
+                )}
             </div>
-            {entry.reading && (
-                <div className="mt-8 sm:mt-1">
-                    <ReadingPhoto {...entry.reading} />
+            {entry.listening && (
+                <div className="mt-14 flex justify-center">
+                    <OnLoop song={entry.listening} />
                 </div>
             )}
-        </div>
+        </>
     );
 }
 

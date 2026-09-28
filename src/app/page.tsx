@@ -54,7 +54,7 @@ export default function V2Home() {
             interests={lifeIntro.interests}
             aside={lifeIntro.aside}
             photos={picks.slice(0, 5).map((p) => ({ id: p.id, src: thumb(p, 480), title: p.title, place: p.place }))}
-            now={{ updated: now.updated, paragraphs: now.paragraphs, reading: now.reading }}
+            now={{ updated: now.updated, paragraphs: now.paragraphs, reading: now.reading, listening: now.listening }}
             journey={journey.summary}
             notes={notes.slice(0, 3).map((n) => ({ slug: n.slug, title: n.title, excerpt: n.excerpt }))}
         />

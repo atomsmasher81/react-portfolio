@@ -7,6 +7,8 @@ export interface NowEntry {
     location: string;
     paragraphs: string[];
     reading?: { title: string; author: string; image: string; caption: string };
+    // The song on loop. `youtube` is a video id (it plays inline), `spotify` a track id.
+    listening?: { title: string; artist: string; year: number; cover: string; youtube: string; spotify?: string };
 }
 
 // DRAFT
@@ -23,5 +25,13 @@ export const now: NowEntry = {
         author: "Hermann Hesse",
         image: "/images/reading-gertrude.jpg",
         caption: "Gertrude, in the park",
+    },
+    listening: {
+        title: "Ravi",
+        artist: "Sajjad Ali",
+        year: 2019,
+        cover: "/images/now-ravi.jpg",
+        youtube: "qaQ5soWs9sU",
+        spotify: "0sT56zcByY6pW1EQcNDCla",
     },
 };
