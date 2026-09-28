@@ -388,8 +388,12 @@ function Lightbox({
         };
     }, [state, go, close]);
 
+    // Drop the #id once a photo is closed. Only on close: on first load the gallery
+    // still needs to read that hash to know which photo to open.
+    const hasOpened = useRef(false);
     useEffect(() => {
-        if (!state && window.location.hash) history.replaceState(null, "", window.location.pathname);
+        if (state) hasOpened.current = true;
+        else if (hasOpened.current && window.location.hash) history.replaceState(null, "", window.location.pathname);
     }, [state]);
 
     const onDragEnd = (_: unknown, info: PanInfo) => {

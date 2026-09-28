@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { motion, useInView } from "framer-motion";
 import { LocalTime, Prose, Reveal, SectionTitle, StaggerText } from "@/components/v2/motion";
 import { NIGHT, NIGHT_VARS, SkyTeaser } from "@/components/v2/sky";
@@ -166,7 +165,6 @@ const PILE = [
 ];
 
 function PhotoStack({ photos }: { photos: LifeHomeProps["photos"] }) {
-    const router = useRouter();
     const [fanned, setFanned] = useState(false);
     const [hovered, setHovered] = useState<string | null>(null);
     const [lastDragged, setLastDragged] = useState<string | null>(null);
@@ -191,11 +189,12 @@ function PhotoStack({ photos }: { photos: LifeHomeProps["photos"] }) {
                     return (
                         <div
                             key={p.id}
-                            className="absolute left-1/2 top-1/2 w-[32%] -translate-x-1/2 -translate-y-1/2 sm:w-[30%]"
+                            className="pointer-events-none absolute left-1/2 top-1/2 w-[32%] -translate-x-1/2 -translate-y-1/2 sm:w-[30%]"
                             style={{ zIndex: hovered === p.id ? 30 : lastDragged === p.id ? 20 : i }}
                         >
                             <motion.div
-                                className="cursor-grab touch-none"
+                                // Only the card itself takes the pointer; its centred holder would otherwise block the cards beneath.
+                                className="pointer-events-auto cursor-grab touch-none"
                                 initial={{ opacity: 0, x: "0%", y: 60, rotate: 0 }}
                                 animate={
                                     inView
@@ -210,19 +209,39 @@ function PhotoStack({ photos }: { photos: LifeHomeProps["photos"] }) {
                                 whileHover={{ scale: 1.07, rotate: 0 }}
                                 whileDrag={{ scale: 1.1, rotate: 0, cursor: "grabbing" }}
                                 onHoverStart={() => setHovered(p.id)}
-                                onHoverEnd={() => setHovered(null)}
+                                // Moving straight onto the next card can end this hover after that one started.
+                                onHoverEnd={() => setHovered((h) => (h === p.id ? null : h))}
                                 drag
                                 dragSnapToOrigin
                                 dragElastic={0.35}
-                                onDragStart={() => setLastDragged(p.id)}
-                                onTap={() => router.push(`/photos#${p.id}`)}
+                                onPointerDown={(e) => {
+                                    const a = e.currentTarget.querySelector("a");
+                                    if (a) delete a.dataset.dragging;
+                                }}
+                                onDragStart={(e) => {
+                                    setLastDragged(p.id);
+                                    const a = (e.target as HTMLElement | null)?.closest("a");
+                                    // Tells the page transition (and the click below) that this wasn't a tap.
+                                    if (a) a.dataset.dragging = "1";
+                                }}
                                 transition={{ type: "spring", stiffness: 220, damping: 22, delay: fanned ? 0 : i * 0.05 }}
                             >
-                                <div className="rounded-[3px] bg-white p-[6%] pb-[18%] shadow-[0_12px_32px_-12px_rgba(14,28,51,0.4)]">
+                                <a
+                                    href={`/photos#${p.id}`}
+                                    draggable={false}
+                                    aria-label={`${p.title}, open in photos`}
+                                    onClick={(e) => {
+                                        if (e.currentTarget.dataset.dragging) {
+                                            e.preventDefault();
+                                            delete e.currentTarget.dataset.dragging;
+                                        }
+                                    }}
+                                    className="block rounded-[3px] bg-white p-[6%] pb-[18%] shadow-[0_12px_32px_-12px_rgba(14,28,51,0.4)]"
+                                >
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img src={p.src} alt={p.title} draggable={false} className="aspect-[4/5] w-full select-none object-cover" />
                                     <p className="mt-[7%] truncate text-center text-[11px] text-neutral-500">{p.title}</p>
-                                </div>
+                                </a>
                             </motion.div>
                         </div>
                     );

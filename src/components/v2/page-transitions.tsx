@@ -132,7 +132,7 @@ export function PageTransitions() {
         const onClick = (e: MouseEvent) => {
             if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
             const a = (e.target as HTMLElement | null)?.closest("a");
-            if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
+            if (!a || a.target === "_blank" || a.hasAttribute("download") || a.dataset.dragging) return;
             const url = new URL(a.href, location.href);
             if (url.origin !== location.origin) return;
             let kind = pick(location.pathname, url.pathname);
