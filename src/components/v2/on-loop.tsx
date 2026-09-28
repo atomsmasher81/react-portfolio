@@ -95,7 +95,7 @@ export function OnLoop({ song }: { song: Song }) {
                     <span className="font-semibold">{song.title}</span> <span className="text-[var(--muted)]">by {song.artist}</span>
                 </p>
 
-                <div className="mt-2 flex min-w-0 items-center justify-center gap-3 text-[12px] sm:justify-start text-[var(--muted)]">
+                <div className="mt-3 flex min-w-0 flex-wrap items-center justify-center gap-x-4 gap-y-3 text-[12px] text-[var(--muted)] sm:mt-2 sm:flex-nowrap sm:justify-start sm:gap-x-3">
                     <button
                         type="button"
                         onClick={toggle}
@@ -105,7 +105,7 @@ export function OnLoop({ song }: { song: Song }) {
                         {playing ? "Pause" : "Play"}
                     </button>
 
-                    <div className="flex w-[130px] min-w-0 shrink items-center gap-2">
+                    <div className="flex w-[150px] min-w-0 shrink items-center gap-2 sm:w-[130px]">
                         <div
                             onClick={seek}
                             className={`relative h-[3px] flex-1 rounded-full bg-[var(--faint)] ${duration ? "cursor-pointer" : ""}`}
@@ -115,8 +115,8 @@ export function OnLoop({ song }: { song: Song }) {
                         <span className="w-[30px] font-mono text-[11px] tabular-nums">{started ? fmt(time) : "3:50"}</span>
                     </div>
 
-                    {/* Where to hear it properly: quiet until you hover the row. */}
-                    <span className="ml-1 flex items-center gap-2.5 opacity-50 transition-opacity duration-300 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+                    {/* Where to hear it properly: its own quiet line on phones, icons that appear on hover on desktop. */}
+                    <span className="flex basis-full items-center justify-center gap-5 opacity-70 transition-opacity duration-300 sm:ml-1 sm:basis-auto sm:gap-2.5 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
                         {song.spotify && (
                             <a
                                 href={`https://open.spotify.com/track/${song.spotify}`}
@@ -124,9 +124,10 @@ export function OnLoop({ song }: { song: Song }) {
                                 rel="noopener noreferrer"
                                 aria-label="Open in Spotify"
                                 title="Spotify"
-                                className="transition-colors hover:text-[#1DB954]"
+                                className="inline-flex items-center gap-1.5 transition-colors hover:text-[#1DB954]"
                             >
                                 <SpotifyIcon className="h-3.5 w-3.5" />
+                                <span className="sm:hidden">Spotify</span>
                             </a>
                         )}
                         <a
@@ -135,9 +136,10 @@ export function OnLoop({ song }: { song: Song }) {
                             rel="noopener noreferrer"
                             aria-label="Open in YouTube Music"
                             title="YouTube Music"
-                            className="transition-colors hover:text-[#FF0033]"
+                            className="inline-flex items-center gap-1.5 transition-colors hover:text-[#FF0033]"
                         >
                             <YouTubeIcon className="h-3.5 w-3.5" />
+                            <span className="sm:hidden">YouTube Music</span>
                         </a>
                     </span>
                 </div>

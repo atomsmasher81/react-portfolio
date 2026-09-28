@@ -20,7 +20,7 @@ function Letter({ entry }: { entry: NowEntry }) {
                     ))}
                 </div>
                 {entry.reading && (
-                    <div className="mt-8 sm:mt-1">
+                    <div className="mt-8 flex justify-center sm:mt-1 sm:block">
                         <ReadingPhoto {...entry.reading} />
                     </div>
                 )}
