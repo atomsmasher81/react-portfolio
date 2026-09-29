@@ -8,6 +8,20 @@ import { useSwitchLens } from "@/components/v2/lens";
 import { profile } from "@/data/v2/profile";
 import type { SearchItem } from "@/components/v2/nav";
 
+// iPhones only raise the keyboard when an input is focused inside the tap
+// itself, and the palette's input doesn't exist yet at that moment. Focusing a
+// throwaway input in the tap raises the keyboard; focus then moves to the real
+// input when it mounts and the keyboard stays up.
+export function primeKeyboard() {
+    if (typeof document === "undefined" || !matchMedia("(pointer: coarse)").matches) return;
+    const el = document.createElement("input");
+    el.setAttribute("aria-hidden", "true");
+    el.style.cssText = "position:fixed;top:0;left:0;opacity:0;height:0;font-size:16px;pointer-events:none";
+    document.body.appendChild(el);
+    el.focus();
+    window.setTimeout(() => el.remove(), 1000);
+}
+
 const GROUP_ORDER: SearchItem["group"][] = ["Pages", "Actions", "Notes", "Blogs", "Projects", "Links"];
 
 function matches(item: SearchItem, query: string) {
@@ -129,7 +143,7 @@ export function CommandPalette({
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyDown={onKeyDown}
                                     placeholder="Jump to a page, note, project…"
-                                    className="h-14 flex-1 bg-transparent text-[15px] outline-none placeholder:text-[var(--muted)]"
+                                    className="h-14 min-w-0 flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--muted)] sm:text-[15px]"
                                     role="combobox"
                                     aria-expanded="true"
                                     aria-controls="v2-palette-list"
@@ -156,7 +170,9 @@ export function CommandPalette({
                                                 role="option"
                                                 aria-selected={i === active}
                                                 data-index={i}
-                                                onMouseMove={() => setActive(i)}
+                                                // Mouse only: on iPhones a touch fires a fake mousemove first, and a
+                                                // highlight change there eats the tap, so results needed two taps.
+                                                onPointerMove={(e) => e.pointerType === "mouse" && setActive(i)}
                                                 onClick={() => run(item)}
                                                 className="relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[15px]"
                                             >

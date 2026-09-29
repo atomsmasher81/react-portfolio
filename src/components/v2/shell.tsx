@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Search } from "lucide-react";
 import { LensToggle, useLens, useSwitchLens } from "@/components/v2/lens";
-import { CommandPalette } from "@/components/v2/command-palette";
+import { CommandPalette, primeKeyboard } from "@/components/v2/command-palette";
 import { isActive, lensNav, pageLens, type SearchItem } from "@/components/v2/nav";
 import { profile, type Lens } from "@/data/v2/profile";
 import { SocialLinks } from "@/components/v2/brand-icons";
@@ -58,7 +58,12 @@ export function Shell({
                 <Header onSearch={() => setPaletteOpen(true)} onSwitch={onSwitch} />
                 <main className="px-5 pb-36 sm:px-8 md:pb-24">{children}</main>
                 <Footer onSwitch={onSwitch} night={pathname === "/" && lens === "life"} />
-                <MobileDock onSearch={() => setPaletteOpen(true)} />
+                <MobileDock
+                    onSearch={() => {
+                        primeKeyboard();
+                        setPaletteOpen(true);
+                    }}
+                />
                 <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} items={searchIndex} />
                 <PageTransitions />
             </div>

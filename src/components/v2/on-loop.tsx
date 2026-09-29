@@ -11,14 +11,27 @@ type Song = NonNullable<NowEntry["listening"]>;
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 const RPM = 33.3;
 
-// The song stuck in my head, as a line in the text with a little turntable
-// beside it. Pressing play swings the arm onto the record and it spins up;
-// the audio comes from a YouTube player kept out of sight and driven over
-// postMessage, so the controls here stay in sync with it. It loops, of course.
+// The song stuck in my head, with a little turntable beside it. Pressing play
+// swings the arm onto the record and it spins up. The audio is the YouTube
+// video, kept out of sight and driven over postMessage so the controls here
+// follow the real player. It loops, of course.
+//
+// The player is loaded as the section comes into view so a tap can start it
+// straight away. Some phones (iPhones mostly) still refuse to start sound in
+// an embedded player unless the tap lands on the player itself; if nothing is
+// playing shortly after a tap, the video shows up for that one tap and then
+// tucks itself away again.
 export function OnLoop({ song }: { song: Song }) {
+    const root = useRef<HTMLDivElement>(null);
     const frame = useRef<HTMLIFrameElement>(null);
+    const ready = useRef(false);
+    const want = useRef(false);
+    const confirmed = useRef(false);
+    const watchdog = useRef<number>();
+    const [near, setNear] = useState(false);
     const [started, setStarted] = useState(false);
     const [playing, setPlaying] = useState(false);
+    const [needsTap, setNeedsTap] = useState(false);
     const [time, setTime] = useState(0);
     const [duration, setDuration] = useState(0);
 
@@ -26,9 +39,17 @@ export function OnLoop({ song }: { song: Song }) {
         frame.current?.contentWindow?.postMessage(JSON.stringify({ event: "command", func, args }), "*");
     }, []);
 
+    // Load the player a little before it scrolls into view.
     useEffect(() => {
-        if (!started) return;
-        let heard = false;
+        const el = root.current;
+        if (!el) return;
+        const io = new IntersectionObserver(([entry]) => entry.isIntersecting && setNear(true), { rootMargin: "300px" });
+        io.observe(el);
+        return () => io.disconnect();
+    }, []);
+
+    useEffect(() => {
+        if (!near) return;
         const onMessage = (e: MessageEvent) => {
             if (e.source !== frame.current?.contentWindow || typeof e.data !== "string") return;
             let data: { event?: string; info?: unknown };
@@ -37,17 +58,22 @@ export function OnLoop({ song }: { song: Song }) {
             } catch {
                 return;
             }
-            if (!heard) {
-                heard = true;
-                // Autoplay isn't always honoured; nudge the player once it's listening.
-                send("playVideo");
+            if (!ready.current) {
+                ready.current = true;
+                // Tapped before the player was ready: try now.
+                if (want.current) send("playVideo");
             }
             const state = data.event === "onStateChange" ? data.info : (data.info as { playerState?: number } | null)?.playerState;
             if (state === 0) {
                 send("seekTo", [0, true]);
                 send("playVideo");
-            } else if (state === 1 || state === 2) {
-                setPlaying(state === 1);
+            } else if (state === 1) {
+                confirmed.current = true;
+                window.clearTimeout(watchdog.current);
+                setPlaying(true);
+                setNeedsTap(false);
+            } else if (state === 2) {
+                setPlaying(false);
             }
             const info = data.info as { currentTime?: number; duration?: number } | null;
             if (info && typeof info.currentTime === "number") setTime(info.currentTime);
@@ -56,23 +82,37 @@ export function OnLoop({ song }: { song: Song }) {
         window.addEventListener("message", onMessage);
         // The player only starts reporting once it's asked to; keep asking until it answers.
         const hello = window.setInterval(() => {
-            if (heard) return window.clearInterval(hello);
+            if (ready.current) return window.clearInterval(hello);
             frame.current?.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: song.youtube, channel: "widget" }), "*");
         }, 250);
         return () => {
             window.removeEventListener("message", onMessage);
             window.clearInterval(hello);
         };
-    }, [started, song.youtube, send]);
+    }, [near, song.youtube, send]);
+
+    useEffect(() => () => window.clearTimeout(watchdog.current), []);
 
     const toggle = () => {
-        if (!started) {
-            setStarted(true);
-            setPlaying(true);
+        if (playing) {
+            want.current = false;
+            send("pauseVideo");
+            setPlaying(false);
             return;
         }
-        send(playing ? "pauseVideo" : "playVideo");
-        setPlaying(!playing);
+        want.current = true;
+        confirmed.current = false;
+        setStarted(true);
+        setPlaying(true);
+        setNear(true);
+        // Called inside the tap, which is what lets most browsers start the sound.
+        if (ready.current) send("playVideo");
+        window.clearTimeout(watchdog.current);
+        watchdog.current = window.setTimeout(() => {
+            if (confirmed.current) return;
+            setPlaying(false);
+            setNeedsTap(true);
+        }, 2500);
     };
 
     const seek = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -86,75 +126,86 @@ export function OnLoop({ song }: { song: Song }) {
     const progress = duration ? Math.min(1, time / duration) : 0;
 
     return (
-        <div className="group relative flex flex-col items-center gap-5 text-center sm:flex-row sm:gap-6 sm:text-left">
-            <Turntable cover={song.cover} playing={playing} progress={progress} onClick={toggle} label={`${playing ? "Pause" : "Play"} ${song.title} by ${song.artist}`} />
+        <div ref={root} className="relative flex flex-col items-center">
+            <div className="group flex flex-col items-center gap-5 text-center sm:flex-row sm:gap-6 sm:text-left">
+                <Turntable cover={song.cover} playing={playing} progress={progress} onClick={toggle} label={`${playing ? "Pause" : "Play"} ${song.title} by ${song.artist}`} />
 
-            <div className="min-w-0">
-                <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-[var(--muted)]">Stuck in my head</p>
-                <p className="mt-1 text-[1.2rem] leading-snug tracking-tight sm:text-[1.3rem]">
-                    <span className="font-semibold">{song.title}</span> <span className="text-[var(--muted)]">by {song.artist}</span>
-                </p>
+                <div className="min-w-0">
+                    <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-[var(--muted)]">Stuck in my head</p>
+                    <p className="mt-1 text-[1.2rem] leading-snug tracking-tight sm:text-[1.3rem]">
+                        <span className="font-semibold">{song.title}</span> <span className="text-[var(--muted)]">by {song.artist}</span>
+                    </p>
 
-                <div className="mt-3 flex min-w-0 flex-wrap items-center justify-center gap-x-4 gap-y-3 text-[12px] text-[var(--muted)] sm:mt-2 sm:flex-nowrap sm:justify-start sm:gap-x-3">
-                    <button
-                        type="button"
-                        onClick={toggle}
-                        className="inline-flex w-[54px] items-center gap-1.5 font-medium text-[var(--ink)] transition-colors hover:text-[var(--accent)]"
-                    >
-                        {playing ? <Pause className="h-3 w-3" fill="currentColor" /> : <Play className="h-3 w-3" fill="currentColor" />}
-                        {playing ? "Pause" : "Play"}
-                    </button>
-
-                    <div className="flex w-[150px] min-w-0 shrink items-center gap-2 sm:w-[130px]">
-                        <div
-                            onClick={seek}
-                            className={`relative h-[3px] flex-1 rounded-full bg-[var(--faint)] ${duration ? "cursor-pointer" : ""}`}
+                    <div className="mt-3 flex min-w-0 flex-wrap items-center justify-center gap-x-4 gap-y-3 text-[12px] text-[var(--muted)] sm:mt-2 sm:flex-nowrap sm:justify-start sm:gap-x-3">
+                        <button
+                            type="button"
+                            onClick={toggle}
+                            className="inline-flex w-[54px] items-center gap-1.5 font-medium text-[var(--ink)] transition-colors hover:text-[var(--accent)]"
                         >
-                            <div className="absolute inset-y-0 left-0 rounded-full bg-[var(--accent)]" style={{ width: `${progress * 100}%` }} />
-                        </div>
-                        <span className="w-[30px] font-mono text-[11px] tabular-nums">{started ? fmt(time) : "3:50"}</span>
-                    </div>
+                            {playing ? <Pause className="h-3 w-3" fill="currentColor" /> : <Play className="h-3 w-3" fill="currentColor" />}
+                            {playing ? "Pause" : "Play"}
+                        </button>
 
-                    {/* Where to hear it properly: its own quiet line on phones, icons that appear on hover on desktop. */}
-                    <span className="flex basis-full items-center justify-center gap-5 opacity-70 transition-opacity duration-300 sm:ml-1 sm:basis-auto sm:gap-2.5 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
-                        {song.spotify && (
+                        <div className="flex w-[150px] min-w-0 shrink items-center gap-2 sm:w-[130px]">
+                            <div
+                                onClick={seek}
+                                className={`relative h-[3px] flex-1 rounded-full bg-[var(--faint)] ${duration ? "cursor-pointer" : ""}`}
+                            >
+                                <div className="absolute inset-y-0 left-0 rounded-full bg-[var(--accent)]" style={{ width: `${progress * 100}%` }} />
+                            </div>
+                            <span className="w-[30px] font-mono text-[11px] tabular-nums">{started ? fmt(time) : "3:50"}</span>
+                        </div>
+
+                        {/* Where to hear it properly: its own quiet line on phones, icons that appear on hover on desktop. */}
+                        <span className="flex basis-full items-center justify-center gap-5 opacity-70 transition-opacity duration-300 sm:ml-1 sm:basis-auto sm:gap-2.5 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+                            {song.spotify && (
+                                <a
+                                    href={`https://open.spotify.com/track/${song.spotify}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="Open in Spotify"
+                                    title="Spotify"
+                                    className="inline-flex items-center gap-1.5 transition-colors hover:text-[#1DB954]"
+                                >
+                                    <SpotifyIcon className="h-3.5 w-3.5" />
+                                    <span className="sm:hidden">Spotify</span>
+                                </a>
+                            )}
                             <a
-                                href={`https://open.spotify.com/track/${song.spotify}`}
+                                href={`https://music.youtube.com/watch?v=${song.youtube}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                aria-label="Open in Spotify"
-                                title="Spotify"
-                                className="inline-flex items-center gap-1.5 transition-colors hover:text-[#1DB954]"
+                                aria-label="Open in YouTube Music"
+                                title="YouTube Music"
+                                className="inline-flex items-center gap-1.5 transition-colors hover:text-[#FF0033]"
                             >
-                                <SpotifyIcon className="h-3.5 w-3.5" />
-                                <span className="sm:hidden">Spotify</span>
+                                <YouTubeIcon className="h-3.5 w-3.5" />
+                                <span className="sm:hidden">YouTube Music</span>
                             </a>
-                        )}
-                        <a
-                            href={`https://music.youtube.com/watch?v=${song.youtube}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Open in YouTube Music"
-                            title="YouTube Music"
-                            className="inline-flex items-center gap-1.5 transition-colors hover:text-[#FF0033]"
-                        >
-                            <YouTubeIcon className="h-3.5 w-3.5" />
-                            <span className="sm:hidden">YouTube Music</span>
-                        </a>
-                    </span>
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            {started && (
-                <div aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-px overflow-hidden opacity-0">
+            {needsTap && <p className="mt-5 text-[13px] text-[var(--muted)]">Your phone wants one tap on the video itself. After that, it&apos;s all turntable.</p>}
+
+            {/* The same iframe either way, so it never reloads: out of sight normally, shown only for that one tap. */}
+            {near && (
+                <div
+                    aria-hidden={!needsTap}
+                    className={
+                        needsTap
+                            ? "relative mt-3 aspect-video w-[280px] max-w-full overflow-hidden rounded-xl bg-black shadow-[0_14px_30px_-14px_rgba(14,28,51,0.5)]"
+                            : "pointer-events-none absolute left-0 top-0 h-px w-px overflow-hidden opacity-0"
+                    }
+                >
                     <iframe
                         ref={frame}
-                        src={`https://www.youtube-nocookie.com/embed/${song.youtube}?autoplay=1&enablejsapi=1&playsinline=1&controls=0`}
+                        src={`https://www.youtube-nocookie.com/embed/${song.youtube}?enablejsapi=1&playsinline=1&controls=1&rel=0`}
                         title={`${song.artist} - ${song.title}`}
                         allow="autoplay; encrypted-media"
-                        tabIndex={-1}
-                        width={200}
-                        height={200}
+                        tabIndex={needsTap ? 0 : -1}
+                        className={needsTap ? "absolute inset-0 h-full w-full" : "absolute left-0 top-0 h-[200px] w-[200px]"}
                     />
                 </div>
             )}
