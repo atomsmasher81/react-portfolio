@@ -69,6 +69,35 @@ export function CommandPalette({
         }
     }, [open]);
 
+    // Pin the page behind the palette. iPhones ignore overflow:hidden on the
+    // body for touch scrolling, so the body is fixed in place (and put back
+    // where it was on close) instead.
+    useEffect(() => {
+        if (!open) return;
+        const y = window.scrollY;
+        const scrollbar = window.innerWidth - document.documentElement.clientWidth; // keep desktop layout from shifting
+        const b = document.body.style;
+        const prev = { position: b.position, top: b.top, left: b.left, right: b.right, overflow: b.overflow, paddingRight: b.paddingRight };
+        Object.assign(b, { position: "fixed", top: `-${y}px`, left: "0", right: "0", overflow: "hidden", paddingRight: `${scrollbar}px` });
+        return () => {
+            Object.assign(b, prev);
+            window.scrollTo(0, y);
+        };
+    }, [open]);
+
+    // With the keyboard up, the visible part of the screen is much shorter than
+    // the page's viewport; size the list to what's actually visible so it never
+    // runs under the keyboard.
+    const [visible, setVisible] = useState<number | null>(null);
+    useEffect(() => {
+        const vv = window.visualViewport;
+        if (!open || !vv) return;
+        const update = () => setVisible(vv.height < window.innerHeight * 0.85 ? vv.height : null);
+        update();
+        vv.addEventListener("resize", update);
+        return () => vv.removeEventListener("resize", update);
+    }, [open]);
+
     const results = useMemo(() => {
         const filtered = query ? items.filter((i) => matches(i, query)) : items.filter((i) => i.group !== "Projects");
         return GROUP_ORDER.flatMap((g) => filtered.filter((i) => i.group === g));
@@ -118,13 +147,13 @@ export function CommandPalette({
             <AnimatePresence>
                 {open && (
                     <motion.div
-                        className="fixed inset-0 z-[60] flex items-start justify-center px-4 pt-[12vh]"
+                        className={`fixed inset-0 z-[60] flex items-start justify-center px-4 ${visible ? "pt-3" : "pt-[12vh]"}`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.15 }}
                     >
-                        <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={() => onOpenChange(false)} />
+                        <div className="absolute inset-0 touch-none bg-black/30 backdrop-blur-[2px]" onClick={() => onOpenChange(false)} />
                         <motion.div
                             role="dialog"
                             aria-modal="true"
@@ -151,7 +180,14 @@ export function CommandPalette({
                                 />
                                 <kbd className="v2-mono rounded border border-[var(--faint)] px-1.5 py-0.5 text-[11px] text-[var(--muted)]">esc</kbd>
                             </div>
-                            <div ref={listRef} id="v2-palette-list" role="listbox" className="max-h-[50vh] overflow-y-auto p-2">
+                            <div
+                                ref={listRef}
+                                id="v2-palette-list"
+                                role="listbox"
+                                className="max-h-[50vh] overflow-y-auto overscroll-contain p-2"
+                                // keyboard up: whatever is visible, minus the gap above and the search field
+                                style={visible ? { maxHeight: Math.max(140, visible - 12 - 57 - 16) } : undefined}
+                            >
                                 {results.length === 0 && (
                                     <p className="px-3 py-8 text-center text-sm text-[var(--muted)]">Nothing for “{query}”.</p>
                                 )}
