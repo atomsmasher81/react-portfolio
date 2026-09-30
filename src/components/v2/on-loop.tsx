@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Pause, Play } from "lucide-react";
 import { SpotifyIcon, YouTubeIcon } from "@/components/v2/brand-icons";
 import type { NowEntry } from "@/data/v2/now";
+import { track } from "@/lib/analytics";
 
 type Song = NonNullable<NowEntry["listening"]>;
 
@@ -94,6 +95,7 @@ export function OnLoop({ song }: { song: Song }) {
     useEffect(() => () => window.clearTimeout(watchdog.current), []);
 
     const toggle = () => {
+        track(playing ? "song_pause" : "song_play", { label: `${song.title} · ${song.artist}` });
         if (playing) {
             want.current = false;
             send("pauseVideo");
@@ -121,6 +123,7 @@ export function OnLoop({ song }: { song: Song }) {
         const to = ((e.clientX - r.left) / r.width) * duration;
         send("seekTo", [to, true]);
         setTime(to);
+        track("song_seek", { label: `${song.title} · ${song.artist}` });
     };
 
     const progress = duration ? Math.min(1, time / duration) : 0;

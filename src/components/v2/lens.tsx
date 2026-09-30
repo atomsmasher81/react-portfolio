@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { pageLens } from "@/components/v2/nav";
 import type { Lens } from "@/data/v2/profile";
+import { tag, track } from "@/lib/analytics";
 
 const STORAGE_KEY = "kg-lens";
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
@@ -45,6 +46,10 @@ export function LensProvider({ children }: { children: React.ReactNode }) {
         } catch {}
     }, []);
 
+    useEffect(() => {
+        if (ready) tag("lens", lens);
+    }, [lens, ready]);
+
     return <LensContext.Provider value={{ lens, setLens, ready }}>{children}</LensContext.Provider>;
 }
 
@@ -61,6 +66,7 @@ export function useSwitchLens() {
 
     return useCallback(
         (next: Lens, origin?: HTMLElement | null, then?: () => void) => {
+            track("lens_switch", { to: next });
             const doc = document as ViewTransitionDocument;
             const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
             if (!doc.startViewTransition || reduce || !origin) {

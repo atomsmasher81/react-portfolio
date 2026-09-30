@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "./v2.css";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
+import Analytics from "@/components/Analytics";
 import { LensProvider } from "@/components/v2/lens";
 import { Shell } from "@/components/v2/shell";
 import { lensNav, type SearchItem } from "@/components/v2/nav";
@@ -13,8 +13,6 @@ import { profile } from "@/data/v2/profile";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
-
-const GA_MEASUREMENT_ID = "G-ZPHPHMKFVR";
 
 const title = "Kartik Gautam · Senior full-stack engineer";
 const description =
@@ -72,7 +70,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     return (
         <html lang="en">
             <body>
-                <GoogleAnalytics GA_MEASUREMENT_ID={GA_MEASUREMENT_ID} />
+                <Analytics />
                 <LensProvider>
                     <Shell searchIndex={searchIndex} fontClassName={`${sans.variable} ${mono.variable}`}>
                         {children}

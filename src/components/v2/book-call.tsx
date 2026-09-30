@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, CalendarDays, X } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 // "Book a call" opens the cal.com scheduler in a sheet on top of the page, so
 // booking doesn't mean leaving the site. `variant` picks a quiet pill (hero)
@@ -18,7 +19,10 @@ export function BookCall({ url, variant = "quiet", label = "Book a call" }: { ur
     return (
         <>
             <button
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                    track("book_call_open", { label, variant }, { key: true });
+                    setOpen(true);
+                }}
                 className={`group inline-flex items-center gap-2 rounded-full transition-all duration-300 active:scale-95 ${styles}`}
             >
                 <CalendarDays className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-12" strokeWidth={1.75} />
@@ -34,6 +38,12 @@ export function BookCall({ url, variant = "quiet", label = "Book a call" }: { ur
 // or the other, never the awkward width in between that leaves empty space.
 function CalendarSheet({ url, onClose }: { url: string; onClose: () => void }) {
     const [loaded, setLoaded] = useState(false);
+
+    // How long the scheduler stayed open: a few seconds is a glance, minutes is picking a slot.
+    useEffect(() => {
+        const opened = Date.now();
+        return () => track("book_call_close", { seconds_open: Math.round((Date.now() - opened) / 1000) });
+    }, []);
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();

@@ -7,6 +7,7 @@ import { ArrowUpRight, CornerDownLeft, Search } from "lucide-react";
 import { useSwitchLens } from "@/components/v2/lens";
 import { profile } from "@/data/v2/profile";
 import type { SearchItem } from "@/components/v2/nav";
+import { track } from "@/lib/analytics";
 
 // iPhones only raise the keyboard when an input is focused inside the tap
 // itself, and the palette's input doesn't exist yet at that moment. Focusing a
@@ -109,12 +110,25 @@ export function CommandPalette({
         listRef.current?.querySelector(`[data-index="${active}"]`)?.scrollIntoView({ block: "nearest" });
     }, [active]);
 
+    // What people look for, once they stop typing.
+    useEffect(() => {
+        if (!open || query.trim().length < 2) return;
+        const t = setTimeout(() => track("search", { search_term: query.trim(), results: results.length }), 900);
+        return () => clearTimeout(t);
+    }, [open, query, results.length]);
+
+    useEffect(() => {
+        if (open) track("search_open");
+    }, [open]);
+
     const run = (item: SearchItem) => {
+        track("search_select", { label: item.label, group: item.group, search_term: query.trim() || undefined });
         if (item.action === "lens-work" || item.action === "lens-life") {
             switchLens(item.action === "lens-work" ? "work" : "life");
             if (!["/", "/"].includes(window.location.pathname)) router.push("/");
         } else if (item.action === "copy-email") {
             navigator.clipboard?.writeText(profile.email).catch(() => {});
+            track("email_copy", { source: "search" }, { key: true });
             setToast("Email copied");
             setTimeout(() => setToast(null), 1600);
         } else if (item.href && item.external) {

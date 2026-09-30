@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, Film, Rows3, X } from "lucide-react";
 import { thumb, type Photo } from "@/data/v2/photos";
+import { track } from "@/lib/analytics";
 
 type View = "essay" | "sheet";
 
@@ -27,6 +28,12 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
         },
         [photos],
     );
+
+    // Every photo looked at up close, whether opened directly or swiped to.
+    const openId = open ? photos[open.index]?.id : undefined;
+    useEffect(() => {
+        if (openId) track("photo_view", { photo_id: openId });
+    }, [openId]);
 
     // Deep links: /photos#<id> opens that frame.
     useEffect(() => {
@@ -55,7 +62,10 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
                     ] as const).map(({ id, icon: Icon, label }) => (
                         <button
                             key={id}
-                            onClick={() => setView(id)}
+                            onClick={() => {
+                                if (view !== id) track("photo_layout", { layout: id });
+                                setView(id);
+                            }}
                             aria-label={label}
                             aria-pressed={view === id}
                             title={label}

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
 import { ArrowUpRight, X } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 export interface CardProject {
     title: string;
@@ -53,6 +54,7 @@ export function ProjectCard({ project, id }: { project: CardProject; id: string 
                 onMouseLeave={onLeave}
                 onClick={() => {
                     onLeave();
+                    track("project_open", { label: project.title });
                     setOpen(true);
                 }}
                 style={{ rotateX: rx, rotateY: ry, transformPerspective: 900 }}

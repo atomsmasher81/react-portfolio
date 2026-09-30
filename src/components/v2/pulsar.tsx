@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Gauge, Volume2, VolumeX } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 // A pulsar, modelled rather than faked: a spinning neutron star whose magnetic
 // axis is tilted from its spin axis, so its two radio beams sweep a cone. When a
@@ -49,6 +50,7 @@ export function Pulsar() {
     soundRef.current = sound;
 
     const toggleSound = () => {
+        track("pulsar_sound", { to: sound ? "off" : "on" });
         if (!audioRef.current) {
             const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
             audioRef.current = new Ctx();
@@ -273,7 +275,10 @@ export function Pulsar() {
             <canvas ref={canvasRef} aria-label="Animated pulsar sweeping its radio beams" role="img" className="h-[440px] w-full sm:h-[500px]" />
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
                 <button
-                    onClick={() => setReal((r) => !r)}
+                    onClick={() => {
+                        track("pulsar_speed", { to: real ? "slowed" : "real" });
+                        setReal((r) => !r);
+                    }}
                     aria-pressed={real}
                     className={`inline-flex h-9 items-center gap-2 rounded-full px-3.5 transition-colors ${
                         real ? "bg-[var(--accent)] text-[#05060f]" : "text-[var(--muted)] ring-1 ring-[var(--faint)] hover:text-[var(--ink)]"

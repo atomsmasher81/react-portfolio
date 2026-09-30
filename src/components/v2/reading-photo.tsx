@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 // The current book as a small print pinned beside the text. It settles in
 // with a slight tilt; hovering straightens and lifts it, and tapping opens
@@ -39,7 +40,10 @@ export function ReadingPhoto({ image, title, author, caption }: { image: string;
             >
                 <button
                     type="button"
-                    onClick={() => setOpen(true)}
+                    onClick={() => {
+                        track("reading_photo_open", { label: alt });
+                        setOpen(true);
+                    }}
                     aria-label={`View ${alt} larger`}
                     className="block w-full cursor-zoom-in rounded-[3px] bg-white p-2 pb-7 text-left shadow-[0_14px_36px_-14px_rgba(14,28,51,0.45)]"
                 >

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useInView } from "framer-motion";
 import { Check, Copy, Mail } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -99,6 +100,7 @@ export function CopyEmail({ email, className }: { email: string; className?: str
     return (
         <button
             onClick={() => {
+                track("email_copy", { source: "chip" }, { key: true });
                 navigator.clipboard?.writeText(email).then(() => setCopied(true), () => (window.location.href = `mailto:${email}`));
             }}
             title="Copy email"

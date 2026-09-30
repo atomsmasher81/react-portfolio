@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import { track } from "@/lib/analytics";
 
 // The 404 page. My wizard cat stays exactly as drawn, staring into his crystal
 // ball; the magic happens around him. Tap the ball and he summons every page of
@@ -141,6 +142,10 @@ function RainingPages() {
     const [summoned, setSummoned] = useState(false);
     const [line, setLine] = useState("Even my magic cat couldn't find this page. Maybe he can summon it?");
 
+    useEffect(() => {
+        track("page_not_found");
+    }, []);
+
     // Warm the images so the first pages don't fall blank.
     useEffect(() => {
         SHOTS.forEach((s) => {
@@ -192,6 +197,7 @@ function RainingPages() {
     }, []);
 
     const summon = () => {
+        track("lost_cat_summon");
         const vw = window.innerWidth;
         const deck = pick(SHOTS, SHOTS.length);
         const base = performance.now();
@@ -235,6 +241,7 @@ function RainingPages() {
         // Where it was, relative to the cat, so it can fly to its spot beside him.
         setCaught({ id, shot: f.shot, boxW: box.width, from: { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height, rz: f.rz } });
         setLine(`${f.shot.quip} Tap it to go there, or catch another.`);
+        track("lost_cat_catch", { label: f.shot.href });
     };
 
     return (

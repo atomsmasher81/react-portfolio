@@ -9,6 +9,7 @@ import { BookCall } from "@/components/v2/book-call";
 import { CopyEmail, Reveal, SectionTitle, StaggerText } from "@/components/v2/motion";
 import { ProjectCard, type CardProject } from "@/components/v2/project-card";
 import type { Role } from "@/data/v2/work";
+import { track } from "@/lib/analytics";
 
 export interface WorkHomeProps {
     intro: { headline: string; body: string; now: { lead: string; rest: string } };
@@ -291,7 +292,10 @@ function Testimonial({ t }: { t: WorkHomeProps["testimonials"][number] }) {
                     />
                 </motion.div>
                 <button
-                    onClick={() => setOpen(!open)}
+                    onClick={() => {
+                        if (!open) track("review_expand", { label: t.name });
+                        setOpen(!open);
+                    }}
                     aria-expanded={open}
                     aria-controls={id}
                     className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-[var(--accent)]"
