@@ -14,6 +14,10 @@ export const SITE_DESCRIPTION =
 
 export const absolute = (path: string) => (path === "/" ? SITE_URL : `${SITE_URL}${path}`);
 
+// Content dates are plain days ("2024-11-08"); structured data wants a full
+// timestamp with a zone, so pin them to midnight in India.
+export const isoDate = (day: string) => (day.includes("T") ? day : `${day}T00:00:00+05:30`);
+
 // Title, description, canonical, and Open Graph/Twitter tags that match the
 // page. Open Graph doesn't merge with the root layout's, so each page carries
 // its own full set; the share image comes from the nearest opengraph-image.
@@ -45,7 +49,9 @@ export function pageMeta({
             description,
             siteName: SITE_NAME,
             locale: "en_US",
-            ...(type === "article" ? { publishedTime, modifiedTime, authors: [SITE_URL] } : {}),
+            ...(type === "article"
+                ? { publishedTime: publishedTime && isoDate(publishedTime), modifiedTime: modifiedTime && isoDate(modifiedTime), authors: [SITE_URL] }
+                : {}),
         },
         twitter: { card: "summary_large_image", title: fullTitle, description, creator: "@kartik_gautam_" },
     };
@@ -63,7 +69,7 @@ export const person = {
     url: SITE_URL,
     image: `${SITE_URL}/img/kartik-512.jpg`,
     email: `mailto:${profile.email}`,
-    jobTitle: current?.positions[0].title ?? TAGLINE,
+    jobTitle: TAGLINE,
     description: SITE_DESCRIPTION,
     worksFor: current ? { "@type": "Organization", name: current.company, url: current.href } : undefined,
     alumniOf: { "@type": "CollegeOrUniversity", name: "AKTU" },
@@ -136,8 +142,8 @@ export function article({
         headline,
         description,
         image: `${absolute(path)}/opengraph-image`,
-        datePublished,
-        dateModified: dateModified ?? datePublished,
+        datePublished: isoDate(datePublished),
+        dateModified: isoDate(dateModified ?? datePublished),
         author: { "@id": PERSON_ID, name: profile.name, url: SITE_URL },
         publisher: { "@id": PERSON_ID },
         isPartOf: { "@id": WEBSITE_ID },

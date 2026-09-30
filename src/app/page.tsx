@@ -11,7 +11,7 @@ import { notes } from "@/data/v2/notes";
 import { photos, thumb } from "@/data/v2/photos";
 import { journey } from "@/data/v2/journey";
 import { JsonLd } from "@/components/JsonLd";
-import { PERSON_ID, SITE_DESCRIPTION, SITE_URL, WEBSITE_ID, pageMeta } from "@/lib/seo";
+import { PERSON_ID, SITE_DESCRIPTION, SITE_URL, WEBSITE_ID, isoDate, pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({ description: SITE_DESCRIPTION, path: "/", type: "profile" });
 
@@ -73,7 +73,7 @@ export default function V2Home() {
         name: "Kartik Gautam · Senior full-stack engineer",
         mainEntity: { "@id": PERSON_ID },
         isPartOf: { "@id": WEBSITE_ID },
-        dateModified: [now.updated, ...notes.map((n) => n.date), ...blogs.map((b) => b.date)].sort().at(-1),
+        dateModified: isoDate([now.updated, ...notes.map((n) => n.date), ...blogs.map((b) => b.date)].sort().at(-1)!),
     };
 
     return (
