@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { NO_TRACK_KEY, track } from "@/lib/analytics";
+import { track } from "@/lib/analytics";
 
 const GA_ID = "G-ZPHPHMKFVR";
 const CLARITY_ID = "yq56y4eo8e";
@@ -14,34 +14,19 @@ const DEPTHS = [25, 50, 75, 100];
 // outbound clicks and 90% scrolls; this adds finer scroll depth and names the
 // links people leave through.
 //
-// Visiting any page with ?notrack keeps this browser out of both for good
-// (?notrack=0 undoes it), so my own visits don't muddy the numbers.
+// ?kg_internal=1 marks this browser as my own traffic for a year (=0 undoes
+// it): GA hits carry traffic_type=internal, which the property's "Internal
+// Traffic" data filter drops, and Clarity sessions get an internal=true tag.
 export default function Analytics() {
-    const [enabled, setEnabled] = useState(false);
+    useScrollDepth();
+    useLinkClicks();
 
-    useEffect(() => {
-        if (process.env.NODE_ENV !== "production") {
-            setEnabled(true);
-            return;
-        }
-        const flag = new URLSearchParams(window.location.search).get("notrack");
-        try {
-            if (flag === "0") localStorage.removeItem(NO_TRACK_KEY);
-            else if (flag !== null) localStorage.setItem(NO_TRACK_KEY, "1");
-            setEnabled(localStorage.getItem(NO_TRACK_KEY) !== "1");
-        } catch {
-            setEnabled(flag === null);
-        }
-    }, []);
-
-    useScrollDepth(enabled);
-    useLinkClicks(enabled);
-
-    if (!enabled || process.env.NODE_ENV !== "production") return null;
+    if (process.env.NODE_ENV !== "production") return null;
 
     return (
         <>
             <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+            {/* Runs before any event is sent, so the flag is set before GA's first hit. */}
             <Script
                 id="google-analytics"
                 strategy="afterInteractive"
@@ -50,7 +35,11 @@ export default function Analytics() {
                         window.dataLayer = window.dataLayer || [];
                         function gtag(){dataLayer.push(arguments);}
                         gtag('js', new Date());
-                        gtag('config', '${GA_ID}');
+                        var kgFlag = new URLSearchParams(location.search).get('kg_internal');
+                        var kgScope = '; path=/; samesite=lax' + (location.protocol === 'https:' ? '; secure' : '');
+                        if (kgFlag === '1') document.cookie = 'kg_internal=1; max-age=31536000' + kgScope;
+                        if (kgFlag === '0') document.cookie = 'kg_internal=; max-age=0' + kgScope;
+                        gtag('config', '${GA_ID}', /(?:^|; )kg_internal=1/.test(document.cookie) ? { traffic_type: 'internal' } : {});
                     `,
                 }}
             />
@@ -64,6 +53,7 @@ export default function Analytics() {
                             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
                             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
                         })(window, document, "clarity", "script", "${CLARITY_ID}");
+                        if (/(?:^|; )kg_internal=1/.test(document.cookie)) clarity("set", "internal", "true");
                     `,
                 }}
             />
@@ -73,11 +63,10 @@ export default function Analytics() {
 
 // How far down each page people get: 25, 50, 75 and 100%, once per page view.
 // Pages that barely scroll are skipped, they'd read 100% on arrival.
-function useScrollDepth(enabled: boolean) {
+function useScrollDepth() {
     const pathname = usePathname();
 
     useEffect(() => {
-        if (!enabled) return;
         const seen = new Set<number>();
         let frame = 0;
         const check = () => {
@@ -101,13 +90,12 @@ function useScrollDepth(enabled: boolean) {
             window.removeEventListener("scroll", onScroll);
             cancelAnimationFrame(frame);
         };
-    }, [enabled, pathname]);
+    }, [pathname]);
 }
 
 // Every way out of the site, named: which social, which project, the email.
-function useLinkClicks(enabled: boolean) {
+function useLinkClicks() {
     useEffect(() => {
-        if (!enabled) return;
         const onClick = (e: MouseEvent) => {
             const a = (e.target as HTMLElement | null)?.closest?.("a");
             if (!a?.href) return;
@@ -120,5 +108,5 @@ function useLinkClicks(enabled: boolean) {
         };
         document.addEventListener("click", onClick, true);
         return () => document.removeEventListener("click", onClick, true);
-    }, [enabled]);
+    }, []);
 }

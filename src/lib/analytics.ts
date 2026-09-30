@@ -17,8 +17,6 @@ declare global {
     }
 }
 
-export const NO_TRACK_KEY = "kg-notrack";
-
 const currentLens = () => document.querySelector("[data-lens]")?.getAttribute("data-lens") ?? undefined;
 
 // `key` marks a moment that matters (booking a call, reaching out): Clarity then
