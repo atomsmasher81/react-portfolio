@@ -2,8 +2,9 @@ import { Prose } from "@/components/v2/motion";
 import { OnLoop } from "@/components/v2/on-loop";
 import { ReadingPhoto } from "@/components/v2/reading-photo";
 import { now, type NowEntry } from "@/data/v2/now";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata = { title: "Now", description: "What Kartik is reading, learning and making these days." };
+export const metadata = pageMeta({ title: "Now", description: "What Kartik is reading, learning and making these days.", path: "/now" });
 
 // Re-render hourly so "x days ago" doesn't freeze at build time.
 export const revalidate = 3600;

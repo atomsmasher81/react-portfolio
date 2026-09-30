@@ -4,6 +4,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ReadingProgress } from "@/components/v2/reading-progress";
 import { notes } from "@/data/v2/notes";
+import { JsonLd } from "@/components/JsonLd";
+import { article, breadcrumbs, pageMeta } from "@/lib/seo";
 
 export function generateStaticParams() {
     return notes.map((n) => ({ slug: n.slug }));
@@ -11,7 +13,8 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
     const note = notes.find((n) => n.slug === params.slug);
-    return note ? { title: note.title, description: note.excerpt } : { title: "Note" };
+    if (!note) return { title: "Note" };
+    return pageMeta({ title: note.title, description: note.excerpt, path: `/notes/${note.slug}`, type: "article", publishedTime: note.date });
 }
 
 export default function NotePage({ params }: { params: { slug: string } }) {
@@ -20,15 +23,40 @@ export default function NotePage({ params }: { params: { slug: string } }) {
     const note = notes[index];
     const others = notes.filter((n) => n.slug !== note.slug).slice(0, 2);
 
+    const path = `/notes/${note.slug}`;
+
     return (
         <article className="mx-auto max-w-2xl">
+            <JsonLd
+                nodes={[
+                    article({
+                        type: "Article",
+                        path,
+                        headline: note.title,
+                        description: note.excerpt,
+                        datePublished: note.date,
+                        wordCount: note.body.split(/\s+/).length,
+                    }),
+                    breadcrumbs([
+                        { name: "Notes", path: "/notes" },
+                        { name: note.title, path },
+                    ]),
+                ]}
+            />
             <ReadingProgress />
             <Link href="/notes" className="mt-6 inline-block text-sm text-[var(--muted)] hover:text-[var(--ink)]">
                 ← Notes
             </Link>
             <header className="pb-8 pt-8">
                 <p className="text-sm text-[var(--muted)]">
-                    {new Date(note.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                    By{" "}
+                    <Link href="/?lens=life" rel="author" className="v2-link text-[var(--ink)]">
+                        Kartik Gautam
+                    </Link>{" "}
+                    ·{" "}
+                    <time dateTime={note.date}>
+                        {new Date(note.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                    </time>
                 </p>
                 <h1 className="v2-display mt-3 text-4xl sm:text-5xl">{note.title}</h1>
             </header>

@@ -1,8 +1,9 @@
 import { ProjectCard } from "@/components/v2/project-card";
 import { Reveal, SectionTitle } from "@/components/v2/motion";
 import { projects } from "@/data/projects";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata = { title: "Projects", description: "Everything Kartik Gautam has built or helped build since 2019." };
+export const metadata = pageMeta({ title: "Projects", description: "Everything Kartik Gautam has built or helped build since 2019.", path: "/projects" });
 
 export default function WorkPage() {
     const featured = projects.filter((p) => p.highlight);

@@ -10,6 +10,10 @@ import { now } from "@/data/v2/now";
 import { notes } from "@/data/v2/notes";
 import { photos, thumb } from "@/data/v2/photos";
 import { journey } from "@/data/v2/journey";
+import { JsonLd } from "@/components/JsonLd";
+import { PERSON_ID, SITE_DESCRIPTION, SITE_URL, WEBSITE_ID, pageMeta } from "@/lib/seo";
+
+export const metadata = pageMeta({ description: SITE_DESCRIPTION, path: "/", type: "profile" });
 
 // The strongest line from each testimonial, verbatim. The full quote opens on click.
 const pullQuotes: Record<string, string> = {
@@ -60,22 +64,21 @@ export default function V2Home() {
         />
     );
 
-    // Structured data so search engines know who this site is about.
-    const person = {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        name: profile.name,
-        url: "https://kartikgautam.com",
-        image: "https://kartikgautam.com/img/kartik.png",
-        jobTitle: "Senior full-stack engineer",
-        worksFor: { "@type": "Organization", name: "RapidClaims", url: "https://www.rapidclaims.ai/" },
-        alumniOf: { "@type": "CollegeOrUniversity", name: "AKTU" },
-        sameAs: profile.socials.map((s) => s.href),
+    // The home page is Kartik's profile: Google shows ProfilePage results for
+    // people, and it ties the Person (defined in the layout) to this URL.
+    const profilePage = {
+        "@type": "ProfilePage",
+        "@id": `${SITE_URL}/#profile`,
+        url: SITE_URL,
+        name: "Kartik Gautam · Senior full-stack engineer",
+        mainEntity: { "@id": PERSON_ID },
+        isPartOf: { "@id": WEBSITE_ID },
+        dateModified: [now.updated, ...notes.map((n) => n.date), ...blogs.map((b) => b.date)].sort().at(-1),
     };
 
     return (
         <>
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(person) }} />
+            <JsonLd nodes={[profilePage]} />
             <HomeSwitch work={work} life={life} />
         </>
     );

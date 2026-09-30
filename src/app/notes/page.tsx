@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Reveal } from "@/components/v2/motion";
 import { notes } from "@/data/v2/notes";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata = { title: "Notes", description: "Short reflections, written to think rather than to publish." };
+export const metadata = pageMeta({ title: "Notes", description: "Short reflections, written to think rather than to publish.", path: "/notes" });
 
 export default function NotesPage() {
     const byYear = notes.reduce<Record<string, typeof notes>>((acc, n) => {

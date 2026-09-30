@@ -2,8 +2,9 @@ import { ReadingProgress } from "@/components/v2/reading-progress";
 import { JourneyStory } from "@/components/v2/journey-story";
 import { ReadThisFar } from "@/components/v2/read-this-far";
 import { journey } from "@/data/v2/journey";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata = { title: "The journey", description: "The longer version, from Muzaffarnagar to now." };
+export const metadata = pageMeta({ title: "The journey", description: "The longer version, from Muzaffarnagar to now.", path: "/journey" });
 
 export default function JourneyPage() {
     return (

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { blogs } from "@/data/blogs";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata = { title: "Blogs", description: "Longer posts on building and scaling software." };
+export const metadata = pageMeta({ title: "Blogs", description: "Longer posts on building and scaling software.", path: "/blogs" });
 
 export default function BlogsPage() {
     const posts = [...blogs].sort((a, b) => b.date.localeCompare(a.date));

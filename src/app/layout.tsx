@@ -10,40 +10,28 @@ import { blogs } from "@/data/blogs";
 import { projects } from "@/data/projects";
 import { notes } from "@/data/v2/notes";
 import { profile } from "@/data/v2/profile";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, TAGLINE, person, website } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
-const title = "Kartik Gautam · Senior full-stack engineer";
-const description =
-    "Senior full-stack engineer who builds, ships and scales products across fintech, hiring, healthcare, AI and e-signatures. Also: photos, notes and the night sky.";
-
 export const metadata: Metadata = {
-    title: { default: title, template: "%s · Kartik Gautam" },
-    description,
+    metadataBase: new URL(SITE_URL),
+    title: { default: `${SITE_NAME} · ${TAGLINE}`, template: `%s · ${SITE_NAME}` },
+    description: SITE_DESCRIPTION,
+    applicationName: SITE_NAME,
     keywords: ["Kartik Gautam", "Full Stack Developer", "Software Engineer", "React", "Next.js", "Python", "Node.js", "Tech Lead", "RapidClaims"],
-    authors: [{ name: "Kartik Gautam" }],
-    creator: "Kartik Gautam",
-    publisher: "Kartik Gautam",
-    robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
-    openGraph: {
-        type: "website",
-        locale: "en_US",
-        url: "https://kartikgautam.com",
-        title,
-        description,
-        siteName: "Kartik Gautam",
-        images: [{ url: "https://kartikgautam.com/img/kartik.png", width: 2700, height: 2700, alt: "Kartik Gautam" }],
-    },
-    twitter: {
-        card: "summary_large_image",
-        title,
-        description,
-        creator: "@kartik_gautam_",
-        images: ["https://kartikgautam.com/img/kartik.png"],
-    },
+    authors: [{ name: SITE_NAME, url: SITE_URL }],
+    creator: SITE_NAME,
+    publisher: SITE_NAME,
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+    // Share cards come from app/opengraph-image.tsx (and the per-post ones).
+    openGraph: { type: "website", locale: "en_US", url: SITE_URL, siteName: SITE_NAME, title: `${SITE_NAME} · ${TAGLINE}`, description: SITE_DESCRIPTION },
+    twitter: { card: "summary_large_image", creator: "@kartik_gautam_", title: `${SITE_NAME} · ${TAGLINE}`, description: SITE_DESCRIPTION },
+    alternates: { types: { "application/rss+xml": [{ url: "/feed.xml", title: "Kartik Gautam: blogs and notes" }] } },
     icons: { icon: "/favicon.ico", apple: "/apple-touch-icon.png" },
-    metadataBase: new URL("https://kartikgautam.com"),
+    manifest: "/manifest.json",
 };
 
 // Built on the server so the palette doesn't ship full blog bodies to the client.
@@ -70,6 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     return (
         <html lang="en">
             <body>
+                <JsonLd nodes={[website, person]} />
                 <Analytics />
                 <LensProvider>
                     <Shell searchIndex={searchIndex} fontClassName={`${sans.variable} ${mono.variable}`}>
