@@ -69,7 +69,7 @@ export const person = {
     url: SITE_URL,
     image: `${SITE_URL}/img/kartik-512.jpg`,
     email: `mailto:${profile.email}`,
-    jobTitle: TAGLINE,
+    jobTitle: current?.positions[0].title ?? TAGLINE,
     description: SITE_DESCRIPTION,
     worksFor: current ? { "@type": "Organization", name: current.company, url: current.href } : undefined,
     alumniOf: { "@type": "CollegeOrUniversity", name: "AKTU" },
