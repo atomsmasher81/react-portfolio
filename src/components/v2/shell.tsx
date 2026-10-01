@@ -168,6 +168,10 @@ function MobileDock({ onSearch }: { onSearch: () => void }) {
     const { scrollY } = useScroll();
     const [hidden, setHidden] = useState(false);
     const last = useRef(0);
+    // The highlight moves on tap, not when the next page has loaded, so it
+    // glides straight across even while a page transition is still running.
+    const [tapped, setTapped] = useState<string | null>(null);
+    useEffect(() => setTapped(null), [pathname]);
 
     useMotionValueEvent(scrollY, "change", (y) => {
         const diff = y - last.current;
@@ -178,6 +182,7 @@ function MobileDock({ onSearch }: { onSearch: () => void }) {
     return (
         <motion.nav
             aria-label="Main"
+            data-dock
             className="fixed inset-x-0 bottom-4 z-40 flex justify-center md:hidden"
             animate={{ y: hidden ? 110 : 0 }}
             transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
@@ -185,11 +190,11 @@ function MobileDock({ onSearch }: { onSearch: () => void }) {
             <motion.div
                 layout
                 transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
-                className="flex items-center gap-0.5 rounded-full border border-[var(--faint)] bg-[color-mix(in_srgb,var(--card)_85%,transparent)] p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl"
+                className="flex items-center gap-0.5 rounded-full border border-[var(--faint)] bg-[color-mix(in_srgb,var(--card)_85%,transparent)] p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl transition-[background-color,border-color] duration-500"
             >
                 <AnimatePresence mode="popLayout" initial={false}>
                     {lensNav[lens].filter((item) => item.dock !== false).map((item) => {
-                        const active = isActive(pathname, item.href);
+                        const active = tapped ? tapped === item.href : isActive(pathname, item.href);
                         const Icon = item.icon;
                         return (
                             <motion.div
@@ -203,6 +208,7 @@ function MobileDock({ onSearch }: { onSearch: () => void }) {
                                 <Link
                                     href={item.href}
                                     aria-label={item.label}
+                                    onClick={() => !isActive(pathname, item.href) && setTapped(item.href)}
                                     className={`relative flex h-11 items-center gap-2 rounded-full px-3.5 transition-colors ${
                                         active ? "text-[var(--bg)]" : "text-[var(--muted)] active:scale-95"
                                     }`}

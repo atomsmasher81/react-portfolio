@@ -45,6 +45,14 @@ function hexagon(cx: number, cy: number, r: number, turn: number) {
     }).join(", ");
 }
 
+// While a transition runs, the phone dock is lifted above the overlay (see
+// v2.css) so it isn't frozen in the copy: the page does its effect behind it
+// while the dock's highlight slides straight to the new button.
+const dockAbove = (on: boolean) => {
+    if (on) document.documentElement.dataset.vt = "";
+    else delete document.documentElement.dataset.vt;
+};
+
 // A still copy of the page as it looks right now, pinned to the viewport.
 function snapshot(): HTMLElement | null {
     const page = document.querySelector<HTMLElement>(".v2");
@@ -54,6 +62,7 @@ function snapshot(): HTMLElement | null {
     Object.assign(frame.style, { position: "fixed", inset: "0", zIndex: "90", overflow: "hidden", pointerEvents: "none" });
 
     const copy = page.cloneNode(true) as HTMLElement;
+    copy.querySelectorAll("[data-dock]").forEach((n) => n.remove());
     // IDs are left as-is: SVG gradients (the moon) reference them, and the copy only lives ~1s.
     Object.assign(copy.style, { position: "absolute", left: "0", top: `${-window.scrollY}px`, width: `${page.offsetWidth}px` });
     // The sticky header would otherwise sit at the top of the copied document, off screen.
@@ -71,7 +80,9 @@ function snapshot(): HTMLElement | null {
     });
 
     frame.appendChild(copy);
-    document.body.appendChild(frame);
+    // Inside .v2, not <body>: .v2 is its own stacking context (isolation), so only
+    // an overlay in there can sit *below* the live phone dock.
+    page.appendChild(frame);
     return frame;
 }
 
@@ -111,7 +122,10 @@ function reveal(frame: HTMLElement, kind: Kind, x: number, y: number) {
             s.clipPath = `polygon(${hexagon(x, y, hexReach * (1 - k), (Math.PI / 3) * (1 - k))})`;
         }
         if (t < 1) requestAnimationFrame(step);
-        else frame.remove();
+        else {
+            frame.remove();
+            dockAbove(false);
+        }
     };
     requestAnimationFrame(step);
 }
@@ -144,6 +158,7 @@ export function PageTransitions() {
             const x = rect.left + rect.width / 2;
             const y = rect.top + rect.height / 2;
             const frame = snapshot();
+            if (frame) dockAbove(true);
             if (!frame) {
                 router.push(url.pathname + url.search + url.hash);
                 return;

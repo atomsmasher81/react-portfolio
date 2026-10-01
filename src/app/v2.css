@@ -197,3 +197,5 @@
   mask: radial-gradient(circle, transparent 0 34%, #000 35%);
 }
 
+/* Page transitions: the phone dock stays live above the overlay (z 90). */
+html[data-vt] [data-dock] { z-index: 95; }

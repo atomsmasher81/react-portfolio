@@ -49,6 +49,7 @@ export function CommandPalette({
     const [active, setActive] = useState(0);
     const [toast, setToast] = useState<string | null>(null);
     const listRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     // ⌘K / Ctrl+K anywhere, or "/" when not typing.
     useEffect(() => {
@@ -83,6 +84,37 @@ export function CommandPalette({
         return () => {
             Object.assign(b, prev);
             window.scrollTo(0, y);
+        };
+    }, [open]);
+
+    // On iPhones a drag can still slide the whole page around while the
+    // keyboard is up, even with the body pinned. Cancel every touch drag that
+    // isn't scrolling the results, and the ones that would run past either end
+    // of the list. Dragging the results also puts the keyboard away, like
+    // Spotlight, which gives the list the whole screen.
+    useEffect(() => {
+        if (!open) return;
+        let startY = 0;
+        const onStart = (e: TouchEvent) => {
+            startY = e.touches[0]?.clientY ?? 0;
+        };
+        const onMove = (e: TouchEvent) => {
+            const list = listRef.current;
+            if (!list || !list.contains(e.target as Node)) {
+                e.preventDefault();
+                return;
+            }
+            const dy = (e.touches[0]?.clientY ?? 0) - startY;
+            const atTop = list.scrollTop <= 0;
+            const atBottom = Math.ceil(list.scrollTop + list.clientHeight) >= list.scrollHeight;
+            if ((dy > 0 && atTop) || (dy < 0 && atBottom)) e.preventDefault();
+            if (Math.abs(dy) > 8 && document.activeElement === inputRef.current) inputRef.current?.blur();
+        };
+        document.addEventListener("touchstart", onStart, { passive: true });
+        document.addEventListener("touchmove", onMove, { passive: false });
+        return () => {
+            document.removeEventListener("touchstart", onStart);
+            document.removeEventListener("touchmove", onMove);
         };
     }, [open]);
 
@@ -181,6 +213,7 @@ export function CommandPalette({
                             <div className="flex items-center gap-3 border-b border-[var(--faint)] px-4">
                                 <Search className="h-4 w-4 text-[var(--muted)]" />
                                 <input
+                                    ref={inputRef}
                                     autoFocus
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
