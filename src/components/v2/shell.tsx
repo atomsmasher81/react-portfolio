@@ -8,6 +8,7 @@ import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useScroll }
 import { Search } from "lucide-react";
 import { LensToggle, useLens, useSwitchLens } from "@/components/v2/lens";
 import { CommandPalette, primeKeyboard } from "@/components/v2/command-palette";
+import { ConsoleHello } from "@/components/v2/console-hello";
 import { isActive, lensNav, pageLens, type SearchItem } from "@/components/v2/nav";
 import { profile, type Lens } from "@/data/v2/profile";
 import { SocialLinks } from "@/components/v2/brand-icons";
@@ -28,7 +29,7 @@ export function Shell({
     const { lens, setLens, ready } = useLens();
     const switchLens = useSwitchLens();
     const [paletteOpen, setPaletteOpen] = useState(false);
-    const theme = pathname.startsWith("/photos") ? "dark" : pathname.startsWith("/sky") ? "space" : "light";
+    const theme = pathname.startsWith("/photos") ? "dark" : pathname.startsWith("/sky") ? "space" : pathname.startsWith("/magic-theatre") ? "theatre" : "light";
 
     // Landing on a page that belongs to one side puts the site on that side.
     // Waits for `ready` so the saved lens can't overwrite it on first load.
@@ -65,6 +66,7 @@ export function Shell({
                     }}
                 />
                 <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} items={searchIndex} />
+                <ConsoleHello />
                 <PageTransitions />
             </div>
         </MotionConfig>

@@ -1,6 +1,7 @@
 import { ReadingProgress } from "@/components/v2/reading-progress";
 import { JourneyStory } from "@/components/v2/journey-story";
 import { ReadThisFar } from "@/components/v2/read-this-far";
+import { TheatreSign } from "@/components/v2/theatre-sign";
 import { journey } from "@/data/v2/journey";
 import { pageMeta } from "@/lib/seo";
 
@@ -18,6 +19,7 @@ export default function JourneyPage() {
             <div className="mt-20">
                 <ReadThisFar />
             </div>
+            <TheatreSign />
         </div>
     );
 }

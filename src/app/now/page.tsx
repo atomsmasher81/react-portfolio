@@ -1,5 +1,6 @@
 import { Prose } from "@/components/v2/motion";
 import { OnLoop } from "@/components/v2/on-loop";
+import { TheatreSign } from "@/components/v2/theatre-sign";
 import { ReadingPhoto } from "@/components/v2/reading-photo";
 import { now, type NowEntry } from "@/data/v2/now";
 import { pageMeta } from "@/lib/seo";
@@ -55,6 +56,7 @@ export default function NowPage() {
             </header>
 
             <Letter entry={now} />
+            <TheatreSign />
         </div>
     );
 }

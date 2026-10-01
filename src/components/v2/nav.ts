@@ -30,6 +30,7 @@ export const lensNav: Record<Lens, NavItem[]> = {
 
 // Pages that belong to one side switch the site to that side when you land on them.
 export function pageLens(pathname: string): Lens | null {
+    if (isActive(pathname, "/magic-theatre")) return "life"; // hidden, reached from Sky
     for (const lens of ["work", "life"] as const) {
         if (lensNav[lens].some((n) => n.href !== "/" && isActive(pathname, n.href))) return lens;
     }

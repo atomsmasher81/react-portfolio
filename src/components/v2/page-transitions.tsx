@@ -16,11 +16,14 @@ import { usePathname, useRouter } from "next/navigation";
 // has rendered does a growing hole open in the overlay to reveal it. The old
 // page stays on screen until the new one is ready, so there's never a blank frame.
 
-type Kind = "shutter-open" | "shutter-close" | "nightfall" | "nightrise" | "night-from" | "dawn";
+type Kind = "shutter-open" | "shutter-close" | "nightfall" | "nightrise" | "night-from" | "dawn" | "theatre";
 
 const inside = (path: string, section: string) => path === section || path.startsWith(section + "/");
 
 function pick(from: string, to: string): Kind | null {
+    // The hidden theatre: the lights fail, then a doorway opens out of the dark.
+    if (inside(to, "/magic-theatre")) return "theatre";
+    if (inside(from, "/magic-theatre")) return inside(to, "/sky") ? null : "dawn";
     if (inside(to, "/sky") && !inside(from, "/sky")) return "nightfall";
     if (inside(to, "/photos") && !inside(from, "/photos")) return "shutter-open";
     if (inside(from, "/sky") && !inside(to, "/sky")) return "dawn";
@@ -35,7 +38,34 @@ const DURATION: Record<Kind, number> = {
     nightrise: 1100,
     "night-from": 1200,
     dawn: 1100,
+    theatre: 2100,
 };
+
+// The theatre entrance darkens the old page with a black layer (not a filter,
+// which would dim the glow too) and draws a warm rim round the doorway.
+function theatreLayers(frame: HTMLElement) {
+    let dim = frame.querySelector<HTMLElement>("[data-dim]");
+    let rim = frame.querySelector<SVGPathElement>("[data-rim]");
+    if (!dim || !rim) {
+        dim = document.createElement("div");
+        dim.dataset.dim = "";
+        Object.assign(dim.style, { position: "absolute", inset: "0", background: "#000", opacity: "0" });
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        Object.assign(svg.style, { position: "absolute", inset: "0", width: "100%", height: "100%", overflow: "visible" });
+        rim = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        rim.dataset.rim = "";
+        rim.setAttribute("fill", "none");
+        rim.setAttribute("stroke", "#ffab72");
+        rim.setAttribute("stroke-width", "10");
+        Object.assign(rim.style, { filter: "blur(7px)", opacity: "0" });
+        svg.appendChild(rim);
+        frame.append(dim, svg);
+    }
+    return { dim, rim };
+}
+
+// How the lights die before the theatre opens: bright, gone, back, gone…
+const STUTTER = [1, 0.25, 0.95, 0.12, 0.75, 0.06, 0.5, 0.04, 0.2, 0.035];
 
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const reachFrom = (x: number, y: number) => Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
@@ -112,6 +142,25 @@ function reveal(frame: HTMLElement, kind: Kind, x: number, y: number) {
             const edge = down ? -0.3 * h + k * 1.3 * h : h - k * 1.3 * h;
             const [a, b] = down ? ["transparent", "#000"] : ["#000", "transparent"];
             s.maskImage = s.webkitMaskImage = `linear-gradient(to bottom, ${a} ${edge}px, ${b} ${edge + 0.3 * h}px)`;
+        } else if (kind === "theatre") {
+            // First the lights fail: the old page stutters like a dying bulb and
+            // goes dark. Then an arched doorway opens out of the dark from the
+            // sign, warm light spilling round its edge.
+            const { dim, rim } = theatreLayers(frame);
+            if (t < 0.3) {
+                dim.style.opacity = String(1 - STUTTER[Math.floor((t / 0.3) * STUTTER.length)]);
+            } else {
+                const p = easeInOut((t - 0.3) / 0.7);
+                dim.style.opacity = "0.965";
+                const d = Math.hypot(w, h) * 2.4 * p; // doorway width
+                const l = x - d / 2;
+                const r = x + d / 2;
+                const spring = y - 0.6 * d; // where the arch starts
+                const door = `M${l.toFixed(1)} ${(y + 0.6 * d).toFixed(1)} L${l.toFixed(1)} ${spring.toFixed(1)} A${(d / 2).toFixed(1)} ${(d / 2).toFixed(1)} 0 0 1 ${r.toFixed(1)} ${spring.toFixed(1)} L${r.toFixed(1)} ${(y + 0.6 * d).toFixed(1)} Z`;
+                s.clipPath = `path(evenodd, "M0 0 H${w} V${h} H0 Z ${door}")`;
+                rim.setAttribute("d", door);
+                rim.style.opacity = String(Math.min(1, p * 6) * (1 - p * 0.6));
+            }
         } else if (kind === "shutter-open") {
             // Everything except a growing, turning hexagon: the screen and the hexagon as two
             // separate sub-paths, so even-odd filling cuts a clean hole with no seam.
