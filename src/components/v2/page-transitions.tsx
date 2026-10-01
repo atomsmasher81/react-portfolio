@@ -8,14 +8,15 @@ import { usePathname, useRouter } from "next/navigation";
 //  - into Photos, a hexagonal aperture opens from the link you clicked;
 //    out of it, the aperture closes toward the link you clicked.
 //  - into Sky, night falls from the top; out of it, dawn rises from the bottom.
-//    A link marked data-vt-origin ("Come look up") spreads the night out from itself.
+//    A link marked data-vt-origin ("Come look up") spreads the night out from itself,
+//    and from the phone dock the night rises from the bottom, where the thumb is.
 //
 // How: on click, the current page is copied into a still overlay (canvases
 // included), the real navigation happens underneath, and only once the new page
 // has rendered does a growing hole open in the overlay to reveal it. The old
 // page stays on screen until the new one is ready, so there's never a blank frame.
 
-type Kind = "shutter-open" | "shutter-close" | "nightfall" | "night-from" | "dawn";
+type Kind = "shutter-open" | "shutter-close" | "nightfall" | "nightrise" | "night-from" | "dawn";
 
 const inside = (path: string, section: string) => path === section || path.startsWith(section + "/");
 
@@ -31,6 +32,7 @@ const DURATION: Record<Kind, number> = {
     "shutter-open": 850,
     "shutter-close": 850,
     nightfall: 1100,
+    nightrise: 1100,
     "night-from": 1200,
     dawn: 1100,
 };
@@ -102,10 +104,11 @@ function reveal(frame: HTMLElement, kind: Kind, x: number, y: number) {
         if (kind === "night-from") {
             const r = radial * k;
             s.maskImage = s.webkitMaskImage = `radial-gradient(circle at ${x}px ${y}px, transparent ${r - 220}px, #000 ${r}px)`;
-        } else if (kind === "nightfall" || kind === "dawn") {
-            // A soft edge 30% of the screen tall sweeping down (nightfall) or up (dawn).
-            const edge = kind === "nightfall" ? -0.3 * h + k * 1.3 * h : 1.3 * h - k * 1.3 * h;
-            const [a, b] = kind === "nightfall" ? ["transparent", "#000"] : ["#000", "transparent"];
+        } else if (kind === "nightfall" || kind === "nightrise" || kind === "dawn") {
+            // A soft edge 30% of the screen tall sweeping down (nightfall) or up (nightrise, dawn).
+            const down = kind === "nightfall";
+            const edge = down ? -0.3 * h + k * 1.3 * h : 1.3 * h - k * 1.3 * h;
+            const [a, b] = down ? ["transparent", "#000"] : ["#000", "transparent"];
             s.maskImage = s.webkitMaskImage = `linear-gradient(to bottom, ${a} ${edge}px, ${b} ${edge + 0.3 * h}px)`;
         } else if (kind === "shutter-open") {
             // Everything except a growing, turning hexagon: the screen and the hexagon as two
@@ -152,6 +155,7 @@ export function PageTransitions() {
             let kind = pick(location.pathname, url.pathname);
             if (!kind || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
             if (kind === "nightfall" && a.hasAttribute("data-vt-origin")) kind = "night-from";
+            else if (kind === "nightfall" && a.closest("[data-dock]")) kind = "nightrise";
 
             e.preventDefault(); // Next's <Link> skips its own navigation when this is set
             const rect = a.getBoundingClientRect();
