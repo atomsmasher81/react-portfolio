@@ -107,7 +107,9 @@ function reveal(frame: HTMLElement, kind: Kind, x: number, y: number) {
         } else if (kind === "nightfall" || kind === "nightrise" || kind === "dawn") {
             // A soft edge 30% of the screen tall sweeping down (nightfall) or up (nightrise, dawn).
             const down = kind === "nightfall";
-            const edge = down ? -0.3 * h + k * 1.3 * h : 1.3 * h - k * 1.3 * h;
+            // Either way the edge travels 1.3 screens, starting just off one end and
+            // finishing just off the other, so nothing of the old page is left to pop.
+            const edge = down ? -0.3 * h + k * 1.3 * h : h - k * 1.3 * h;
             const [a, b] = down ? ["transparent", "#000"] : ["#000", "transparent"];
             s.maskImage = s.webkitMaskImage = `linear-gradient(to bottom, ${a} ${edge}px, ${b} ${edge + 0.3 * h}px)`;
         } else if (kind === "shutter-open") {
