@@ -2,6 +2,7 @@
 const nextConfig = {
   // Lets a dev server run beside a production build without sharing .next
   distDir: process.env.NEXT_DIST_DIR || '.next',
+  poweredByHeader: false,
   // Old URLs from the previous site and the /v2 preview keep working.
   async redirects() {
     return [

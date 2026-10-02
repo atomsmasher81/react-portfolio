@@ -34,6 +34,10 @@ export const metadata: Metadata = {
     manifest: "/manifest.json",
 };
 
+// The server always draws the work side (or the page's own side). Only a visitor
+// headed for the life side needs to wait for it; mirrors LensProvider (lens.tsx).
+const HOLD_FOR_LENS = `try{var l=new URLSearchParams(location.search).get("lens");if(l==="life"||(!l&&localStorage.getItem("kg-lens")==="life"))document.documentElement.setAttribute("data-hold","")}catch(e){}`;
+
 // Built on the server so the palette doesn't ship full blog bodies to the client.
 const searchIndex: SearchItem[] = [
     ...[...lensNav.work, ...lensNav.life.slice(1)].map((n) => ({
@@ -56,8 +60,14 @@ const searchIndex: SearchItem[] = [
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body>
+                {/* Before first paint: if the visitor is coming back to the life side, hold the page until it's applied (v2.css). */}
+                <script dangerouslySetInnerHTML={{ __html: HOLD_FOR_LENS }} />
+                {/* Without JavaScript, show what would have animated in. */}
+                <noscript>
+                    <style dangerouslySetInnerHTML={{ __html: `.v2 [style*="opacity:0"]{opacity:1!important;transform:none!important;filter:none!important}` }} />
+                </noscript>
                 <JsonLd nodes={[website, person]} />
                 <Analytics />
                 <LensProvider>

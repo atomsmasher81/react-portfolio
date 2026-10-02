@@ -12,12 +12,21 @@ export function middleware(request: NextRequest) {
   // (only after the visitor agrees), and it's reachable from any page without a reload.
   response.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()')
 
-  // Add caching headers for static assets
-  if (request.nextUrl.pathname.match(/\.(js|css|svg|png|jpg|jpeg|gif|ico)$/)) {
-    response.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
+  const { pathname } = request.nextUrl
+  if (/(^|\/)(opengraph|twitter)-image(\.\w+)?$|^\/sitemap\.xml$/.test(pathname)) {
+    // Share images and the sitemap: Next sets their Cache-Control itself (the
+    // share images' URLs carry a content hash). A second header would conflict.
+  } else if (/\.(js|css|svg|png|jpe?g|gif|ico|webp|avif|ttf|otf|woff2?)$/.test(pathname)) {
+    // Files from /public keep their name when they change, so they can't be
+    // immutable: fresh for a day, then served while a fresh copy is fetched.
+    response.headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800')
   } else {
-    // Default caching for other routes
-    response.headers.set('Cache-Control', 'public, max-age=3600, must-revalidate')
+    // Pages and the RSC payloads behind client-side navigation. Browsers check
+    // back every time (a cheap 304 when nothing changed), so nobody sees an old
+    // page after a deploy; a CDN may keep them for 5 minutes. No
+    // stale-while-revalidate here: Chrome applies it to the RSC fetches too,
+    // and would keep serving a stale payload for as long as it allows.
+    response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300, must-revalidate')
   }
 
   return response

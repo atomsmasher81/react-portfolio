@@ -20,9 +20,10 @@ const LensContext = createContext<{ lens: Lens; setLens: (l: Lens) => void; read
 // The lens is the "who is this page for" switch: work (professional) or life (personal).
 // `?lens=work` in the URL wins, so a shareable recruiter link always lands on the work side.
 export function LensProvider({ children }: { children: React.ReactNode }) {
-    const [lens, setLensState] = useState<Lens>("work");
-    const [ready, setReady] = useState(false);
     const pathname = usePathname();
+    // A page that belongs to one side is drawn on that side from the server on.
+    const [lens, setLensState] = useState<Lens>(() => pageLens(pathname) ?? "work");
+    const [ready, setReady] = useState(false);
 
     // Priority on first load: the page's own side, then ?lens=, then the saved choice.
     useIsoLayoutEffect(() => {

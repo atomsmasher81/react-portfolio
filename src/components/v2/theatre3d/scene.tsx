@@ -16,7 +16,8 @@ import { ROOM_ENTRY, isPortrait, readingPose, theatreFov, viewAt } from "@/compo
 import { Chamber, type ChamberShot } from "@/components/v2/theatre3d/chamber";
 import { ROOM } from "@/components/v2/theatre3d/chamber-geometry";
 import { compileByParts, drawAll, introduceSome, picturesOf, programsReady, uploadSome } from "@/components/v2/theatre3d/gpu";
-import { prepareCorridor } from "@/components/v2/theatre3d/prepare";
+import { prepareCorridor, prepareDoor, prepareEntrance } from "@/components/v2/theatre3d/prepare";
+import { lampsLit } from "@/components/v2/theatre3d/readiness";
 import { prepareChamberTextures } from "@/components/v2/theatre3d/chamber-textures";
 import { suspendUntil } from "@/components/v2/theatre3d/textures";
 import type { Room } from "@/data/v2/theatre";
@@ -114,6 +115,8 @@ export interface TheatreSceneProps {
     introduce?: boolean;
     /** Built but not running (drawn only when something changes): waiting, out of sight, to be walked into. */
     paused?: boolean;
+    /** What isn't seen from the entrance (the far doors, the mirror) is built after the rest, once you can walk in. */
+    later?: boolean;
 }
 
 /* ---------------------------------------------------- the rooms behind */
@@ -183,6 +186,9 @@ export function TheatreScene(props: TheatreSceneProps) {
 
 /* ------------------------------------------------------------ the place */
 
+/** From the entrance only the first door can be seen, and the second soon after you set off. */
+export const NEAR_DOORS = 2;
+
 function World({
     doors,
     focus,
@@ -201,14 +207,57 @@ function World({
     visit,
     room,
     onVisit,
+    later: deferred = false,
 }: TheatreSceneProps & { mirrorLive: React.MutableRefObject<boolean> }) {
     // Everything it paints and shapes from code is done first, a slice at a time,
-    // so building it never holds the page up (prepare.ts).
-    suspendUntil(`corridor ${doors.length} ${(words ?? []).join("|")}`, () => prepareCorridor(doors.length, words ?? []));
+    // so building it never holds the page up (prepare.ts). With `later`, only what's
+    // seen from the entrance (the corridor, the marquee and box office, the first
+    // doors) before it's first drawn; the rest once you can walk in (Later), each
+    // far door as soon as it's painted, nearest first, then the mirror.
+    const [later] = useState(deferred);
+    const near = later ? Math.min(doors.length, NEAR_DOORS) : doors.length;
+    const all = () => prepareCorridor(doors.length, words ?? []);
+    suspendUntil(later ? `entrance ${near}` : `corridor ${doors.length} ${(words ?? []).join("|")}`, later ? () => prepareEntrance(near) : all);
+    const [rest, setRest] = useState(!later);
+    const parts = useRef(new Map<string, Promise<unknown>>());
     const place = useRef<THREE.Group>(null);
-    const power = usePower(onReady, introduce, place);
+    const power = usePower(
+        () => {
+            // The rest, asked for in the order it's wanted (each far door, nearest first, then
+            // the mirror), and before the rooms' shared surfaces, which usePower asks for next.
+            if (later) {
+                for (let i = near; i < Math.min(doors.length, DOOR_S.length); i++) parts.current.set(`far door ${i}`, prepareDoor(i));
+                parts.current.set("mirror", all());
+                setRest(true);
+            }
+            onReady();
+        },
+        introduce,
+        place,
+    );
     const active = focus ?? doors.findIndex((d) => d.state === "hover");
     const lastDoor = Math.min(doors.length, DOOR_S.length) - 1;
+    const slot = (d: SceneDoor, i: number) => (
+        <DoorSlot
+            key={d.id}
+            index={i}
+            door={d}
+            last={i === lastDoor}
+            onOver={onOver}
+            onOut={onOut}
+            onKnock={onKnock}
+            room={room && room.door === i ? room : null}
+            quality={quality}
+            visit={visit}
+            onVisit={onVisit}
+        />
+    );
+    const far = doors.slice(near, DOOR_S.length).map((d, i) => slot(d, near + i));
+    const mirror = (
+        <group position={onArc(MIRROR_S - 0.001, CORRIDOR.radius)} rotation-y={yawFacingBack(MIRROR_S)}>
+            <SteppenwolfMirror onLook={onMirror} resolution={quality === "high" ? 768 : 384} active={mirrorLive} words={words} stream={stream} />
+        </group>
+    );
 
     // The corridor stays where it is while you're in a room (the camera just stops seeing it).
     return (
@@ -220,27 +269,95 @@ function World({
                 <Marquee power={power} onPlaybill={onPlaybill} />
             </group>
             {onPlaybillHover && <PlaybillHover onHover={onPlaybillHover} />}
-            {doors.slice(0, DOOR_S.length).map((d, i) => (
-                <DoorSlot
-                    key={d.id}
-                    index={i}
-                    door={d}
-                    last={i === lastDoor}
-                    onOver={onOver}
-                    onOut={onOut}
-                    onKnock={onKnock}
-                    room={room && room.door === i ? room : null}
-                    quality={quality}
-                    visit={visit}
-                    onVisit={onVisit}
-                />
-            ))}
-            <group position={onArc(MIRROR_S - 0.001, CORRIDOR.radius)} rotation-y={yawFacingBack(MIRROR_S)}>
-                <SteppenwolfMirror onLook={onMirror} resolution={quality === "high" ? 768 : 384} active={mirrorLive} words={words} stream={stream} />
-            </group>
+            {doors.slice(0, Math.min(near, DOOR_S.length)).map(slot)}
+            {rest &&
+                (later ? (
+                    <>
+                        {far.map((door, k) => (
+                            <Suspense key={door.key} fallback={null}>
+                                <Later name={`far door ${near + k}`} prepare={() => parts.current.get(`far door ${near + k}`) ?? prepareDoor(near + k)}>
+                                    {door}
+                                </Later>
+                            </Suspense>
+                        ))}
+                        <Suspense fallback={null}>
+                            <Later name={`mirror ${(words ?? []).join("|")}`} prepare={() => parts.current.get("mirror") ?? all()}>
+                                {mirror}
+                            </Later>
+                        </Suspense>
+                    </>
+                ) : (
+                    <>
+                        {far}
+                        {mirror}
+                    </>
+                ))}
             <Spill index={active >= 0 ? active : null} opening={focus !== null} />
         </group>
     );
+}
+
+/**
+ * Something that can't be seen from the entrance (a far door, the mirror),
+ * built once you can walk in: painted a slice at a time like the rest
+ * (`prepare`), then got onto the GPU out of sight the same way (see usePower:
+ * compiled a few things a frame, as each camera sees it, then its pictures
+ * uploaded a few a frame, then drawn once, unseen), and only then shown, so it
+ * never holds up a frame.
+ */
+function Later({ name, prepare, children }: { name: string; prepare: () => Promise<unknown>; children: React.ReactNode }) {
+    suspendUntil(name, prepare);
+    const group = useRef<THREE.Group>(null);
+    const prep = useMemo(
+        () => ({
+            phase: "start" as "start" | "compiling" | "uploading" | "done",
+            cameras: [] as THREE.Camera[],
+            compiling: null as (() => boolean) | null,
+            pictures: [] as THREE.Texture[],
+            target: null as THREE.WebGLRenderTarget | null,
+        }),
+        [],
+    );
+    useEffect(() => () => prep.target?.dispose(), [prep]);
+    useLayoutEffect(() => {
+        if (group.current && prep.phase !== "done") group.current.visible = false;
+    }, [prep]);
+    useFrame(({ gl, scene, camera, invalidate }) => {
+        const g = group.current;
+        if (!g || prep.phase === "done") return;
+        if (prep.phase !== "compiling") invalidate();
+        if (prep.phase === "start") {
+            prep.target ??= new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType });
+            if (!prep.cameras.length && !prep.compiling) prep.cameras = seenBy(camera);
+            const prev = gl.getRenderTarget();
+            gl.setRenderTarget(prep.target);
+            // lit by the scene's lights, though out of sight itself
+            prep.compiling ??= compileByParts(gl, g, prep.cameras[0], 4, scene);
+            if (prep.compiling()) {
+                prep.compiling = null;
+                prep.cameras.shift();
+            }
+            gl.setRenderTarget(prev);
+            if (!prep.cameras.length) {
+                prep.phase = "compiling";
+                programsReady(gl, 8000).then(() => {
+                    prep.pictures = picturesOf(g);
+                    prep.phase = "uploading";
+                    invalidate();
+                });
+            }
+        } else if (prep.phase === "uploading" && uploadSome(gl, prep.pictures, 4).length === 0 && introduceSome(gl, 4)) {
+            const prev = gl.getRenderTarget();
+            gl.setRenderTarget(prep.target);
+            g.visible = true;
+            drawAll(gl, scene, camera, g);
+            gl.setRenderTarget(prev);
+            prep.target?.dispose();
+            prep.target = null;
+            prep.phase = "done"; // and seen from this frame on
+        }
+    });
+    return <group ref={group}>{children}</group>;
 }
 
 /**
@@ -618,6 +735,7 @@ function usePower(onReady: () => void, introduce: boolean, place: React.RefObjec
             cameras: [] as THREE.Camera[],
             compiling: null as (() => boolean) | null,
             pictures: [] as THREE.Texture[],
+            uploads: 0,
             target: null as THREE.WebGLRenderTarget | null,
             round: 0,
             made: -1,
@@ -627,6 +745,9 @@ function usePower(onReady: () => void, introduce: boolean, place: React.RefObjec
         [],
     );
     useEffect(() => () => prep.target?.dispose(), [prep]);
+    // ms of it a frame: arriving, the page is covered meanwhile and nothing else moves, so
+    // more; out of sight on another page (the keyhole's), a little, so that page stays smooth
+    const slice = introduce ? 12 : 4;
     // Hidden from the start, before anything draws it (the floor's reflection draws
     // the scene too, earlier in the frame than this), until it's ready.
     useLayoutEffect(() => {
@@ -648,10 +769,11 @@ function usePower(onReady: () => void, introduce: boolean, place: React.RefObjec
                 const prev = gl.getRenderTarget();
                 g.visible = true;
                 gl.setRenderTarget(prep.target);
-                prep.compiling ??= compileByParts(gl, scene, prep.cameras[0], 4);
+                prep.compiling ??= compileByParts(gl, scene, prep.cameras[0], slice);
                 if (prep.compiling()) {
                     prep.compiling = null;
                     prep.cameras.shift();
+                    lampsLit(0.5 - prep.cameras.length / 6); // (how far the waiting card's rule has got: readiness.ts)
                 }
                 gl.setRenderTarget(prev);
                 g.visible = false;
@@ -660,12 +782,16 @@ function usePower(onReady: () => void, introduce: boolean, place: React.RefObjec
                     prep.phase = "compiling";
                     programsReady(gl, 8000).then(() => {
                         prep.pictures = picturesOf(scene);
+                        prep.uploads = prep.pictures.length;
                         prep.phase = "uploading";
+                        lampsLit(0.6);
                         invalidate();
                     });
                 }
             } else if (prep.phase === "uploading") {
-                if (uploadSome(gl, prep.pictures, 4).length === 0 && introduceSome(gl, 4)) {
+                const left = uploadSome(gl, prep.pictures, slice).length;
+                lampsLit(0.6 + 0.35 * (1 - left / Math.max(1, prep.uploads)));
+                if (left === 0 && introduceSome(gl, slice)) {
                     // once, unseen and in full
                     const prev = gl.getRenderTarget();
                     g.visible = true;

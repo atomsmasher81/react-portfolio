@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { sliceDone, slicesQueued } from "@/components/v2/theatre3d/readiness";
 
 // Everything in the theatre is textured from code: no image downloads, and
 // every surface (wood, iron, brass, plaster) comes out of the same few
@@ -20,16 +21,24 @@ export function rng(seed: number) {
 /** Smooth 2D value noise in [0, 1], tiling every `period` units. */
 export function valueNoise(seed: number, period = 256) {
     const r = rng(seed);
-    const grid = new Float32Array(period * period).map(() => r());
-    const at = (x: number, y: number) => grid[(((y % period) + period) % period) * period + (((x % period) + period) % period)];
+    const grid = new Float32Array(period * period);
+    for (let i = 0; i < grid.length; i++) grid[i] = r();
+    const wrap = (i: number) => ((i % period) + period) % period;
     const fade = (t: number) => t * t * (3 - 2 * t);
+    // (the hottest code in all the painting: each corner looked up once, wrapped once)
     return (x: number, y: number) => {
         const xi = Math.floor(x);
         const yi = Math.floor(y);
         const xf = fade(x - xi);
         const yf = fade(y - yi);
-        const a = at(xi, yi) + (at(xi + 1, yi) - at(xi, yi)) * xf;
-        const b = at(xi, yi + 1) + (at(xi + 1, yi + 1) - at(xi, yi + 1)) * xf;
+        const x0 = wrap(xi);
+        const x1 = x0 + 1 === period ? 0 : x0 + 1;
+        const y0 = wrap(yi) * period;
+        const y1 = y0 + period === grid.length ? 0 : y0 + period;
+        const g00 = grid[y0 + x0];
+        const g01 = grid[y1 + x0];
+        const a = g00 + (grid[y0 + x1] - g00) * xf;
+        const b = g01 + (grid[y1 + x1] - g01) * xf;
         return a + (b - a) * yf;
     };
 }
@@ -122,9 +131,10 @@ const TURN = 6; // ms per urgent turn
 
 function run(queue: (() => boolean)[], budget: number) {
     const end = performance.now() + budget;
-    do {
+    while (queue.length) {
         if (queue[0]()) queue.shift();
-    } while (queue.length && performance.now() < end);
+        if (performance.now() >= end) break;
+    }
 }
 
 function idlePump(deadline?: IdleDeadline) {
@@ -134,10 +144,42 @@ function idlePump(deadline?: IdleDeadline) {
 }
 
 function armIdle() {
+    armHurry();
     if (idleArmed) return;
     idleArmed = true;
     if (typeof requestIdleCallback === "function") requestIdleCallback(idlePump, { timeout: 100 });
     else setTimeout(idlePump, 0);
+}
+
+// Hurried: someone's at the door waiting for it (the theatre is the page, and
+// isn't ready yet), so the idle work also goes on in short turns back to back,
+// not only when the page has nothing else to do.
+let hurrying = false;
+let hurryArmed = false;
+let hurryChannel: MessageChannel | null = null;
+const HURRY = 8; // ms per hurried turn (short: the page stays quick to answer a tap)
+
+function hurryPump() {
+    hurryArmed = false;
+    if (!hurrying) return;
+    run(idleQueue, HURRY);
+    armHurry();
+}
+
+function armHurry() {
+    if (hurryArmed || !hurrying || !idleQueue.length) return;
+    hurryArmed = true;
+    if (!hurryChannel) {
+        hurryChannel = new MessageChannel();
+        hurryChannel.port1.onmessage = hurryPump;
+    }
+    hurryChannel.port2.postMessage(0);
+}
+
+/** Someone is (true) or isn't (false) waiting for the idle work to be done. */
+export function hurry(on: boolean) {
+    hurrying = on;
+    armHurry();
 }
 
 let channel: MessageChannel | null = null;
@@ -159,10 +201,15 @@ function armUrgent() {
 
 /** Step `step` (true when it's finished) a slice at a time: when the page is idle, or in short turns if `urgent`. */
 export function sliced(step: () => boolean, urgent = false) {
+    // (the theatre's waiting card counts these: readiness.ts)
+    if (!urgent) slicesQueued();
     return new Promise<void>((resolve) => {
         (urgent ? urgentQueue : idleQueue).push(() => {
             const done = step();
-            if (done) resolve();
+            if (done) {
+                if (!urgent) sliceDone();
+                resolve();
+            }
             return done;
         });
         if (urgent) armUrgent();

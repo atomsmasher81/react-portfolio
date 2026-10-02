@@ -17,7 +17,7 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { id: string } }) {
     const post = blogs.find((b) => b.id === params.id);
     if (!post) return { title: "Blogs" };
-    return pageMeta({ title: post.title, description: post.description, path: `/blogs/${post.id}`, type: "article", publishedTime: post.date });
+    return pageMeta({ title: post.title, description: post.description, path: `/blogs/${post.id}`, type: "article", publishedTime: post.date, ownImage: true });
 }
 
 export default function PostPage({ params }: { params: { id: string } }) {

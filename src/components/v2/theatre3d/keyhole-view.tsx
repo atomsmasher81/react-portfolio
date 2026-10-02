@@ -31,8 +31,9 @@ import { compileQuietly } from "@/components/v2/theatre3d/gpu";
 // the hole is built, every shader compiled (in parallel, off the page's main
 // thread where the browser can) and a frame drawn out of sight, so the first
 // frame anyone sees is as quick as every other. Until then it draws nothing
-// (the sign shows its silhouette meanwhile). And once the hole fills the screen, the
-// view through it takes on the theatre's own look (VIEW_FRAG), so the theatre
+// (the sign shows it being made meanwhile, as far as `onProgress` says it has
+// got, and then it takes over from that drawing: `takeover`). And once the hole
+// fills the screen, the view through it takes on the theatre's own look (VIEW_FRAG), so the theatre
 // itself can fade in over it without anything changing (theatre-host.tsx).
 
 /** Where the keyhole's canvas sits around its 120 × 200 box on the page (css px): room for its shadow and its light. */
@@ -79,7 +80,14 @@ interface Live {
     prepared: boolean; // and so the view through the hole can be drawn
     preparing: boolean; // (or it's being drawn out of sight, getting ready)
     hold: boolean; // not just now (see the prop)
+    step: (n: number) => void; // a step of getting ready is done (see onProgress)
+    takeover: boolean; // see the prop
+    shown: () => void; // it's all there (see onShown)
 }
+
+// The steps of getting ready, in order: the canvas, the iron painted, the corridor
+// through the hole, its marquee, its doors, every shader compiled, a frame drawn.
+const STEPS = 7;
 
 export function KeyholeView({
     startedAt,
@@ -89,6 +97,9 @@ export function KeyholeView({
     appearAt = null,
     onReady,
     hold = false,
+    onProgress,
+    takeover = false,
+    onShown,
 }: {
     startedAt: number | null;
     entry?: Entry;
@@ -104,14 +115,33 @@ export function KeyholeView({
      * that can't be done a slice at a time (compiling, the frames drawn out of sight).
      */
     hold?: boolean;
+    /** How far it has got with getting ready, 0..1, as each step is done. */
+    onProgress?: (done: number) => void;
+    /**
+     * It takes over from a drawing of itself in the same place (the sign's, of it being
+     * made): rather than rising out of the shadow, it fades in where it is, already lit.
+     */
+    takeover?: boolean;
+    /** It has shown itself completely (it's opaque): whatever was standing in for it can go. */
+    onShown?: () => void;
 }) {
     const box = useRef<HTMLSpanElement>(null);
     const root = useRef<RootState | null>(null);
     const [visible, setVisible] = useState(false);
     const [ready, setReady] = useState(false);
+    // (making its canvas is one of the steps that can't be split: not while something's showing itself)
+    const [made, setMade] = useState(!hold);
+    useEffect(() => {
+        if (!hold) setMade(true);
+    }, [hold]);
     const full = startedAt !== null;
     const done = useRef(onReady);
     done.current = onReady;
+    const progress = useRef(onProgress);
+    progress.current = onProgress;
+    const shown = useRef(onShown);
+    shown.current = onShown;
+    const steps = useRef(0);
     const live = useRef<Live>({
         startedAt,
         tl: TIMELINES.dive,
@@ -125,16 +155,24 @@ export function KeyholeView({
         size: new THREE.Vector2(KEYHOLE_BOX.width, KEYHOLE_BOX.height),
         ready: () => {
             live.current.prepared = true;
+            live.current.step(STEPS);
             setReady(true);
             done.current?.();
         },
         prepared: false,
         preparing: false,
         hold,
+        step: (n) => {
+            if (n <= steps.current) return;
+            steps.current = n;
+            progress.current?.(n / STEPS);
+        },
+        takeover,
+        shown: () => shown.current?.(),
     });
 
     useLayoutEffect(() => {
-        Object.assign(live.current, { startedAt, anchor, appearAt, hold, box: box.current, tl: reduced ? TIMELINE_REDUCED : TIMELINES[entry] });
+        Object.assign(live.current, { startedAt, anchor, appearAt, hold, takeover, box: box.current, tl: reduced ? TIMELINE_REDUCED : TIMELINES[entry] });
     });
 
     // Going through, the canvas takes the whole screen so the camera can lean
@@ -157,9 +195,10 @@ export function KeyholeView({
 
     // However getting ready goes (a font or the plaques that never come), it's never left unseen.
     useEffect(() => {
+        if (!made) return;
         const t = window.setTimeout(() => live.current.ready(), 15_000);
         return () => window.clearTimeout(t);
-    }, []);
+    }, [made]);
 
     return (
         <span
@@ -168,22 +207,25 @@ export function KeyholeView({
             className={`pointer-events-none z-[85] block ${full ? "fixed inset-0" : "absolute"}`}
             style={full ? undefined : { left: KEYHOLE_BOX.left, top: KEYHOLE_BOX.top, width: KEYHOLE_BOX.width, height: KEYHOLE_BOX.height, opacity: 0 }}
         >
-            <Canvas
-                // nothing is drawn until it's all ready (it draws its frames out of sight itself)
-                frameloop={full || (visible && ready) ? "always" : "never"}
-                dpr={full ? [1, 1.5] : [1, 2]}
-                camera={{ manual: true, fov: FOV, near: 0.015, far: 30, position: [0, BOWL_Y, FACE + REST], rotation: [0, 0, 0] }}
-                onCreated={(state) => {
-                    root.current = state;
-                }}
-                gl={{ alpha: true, antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
-            >
-                <Suspense fallback={null}>
-                    <group position={[0, LIFT, 0]}>
-                        <Keyhole live={live} />
-                    </group>
-                </Suspense>
-            </Canvas>
+            {made && (
+                <Canvas
+                    // nothing is drawn until it's all ready (it draws its frames out of sight itself)
+                    frameloop={full || (visible && ready) ? "always" : "never"}
+                    dpr={full ? [1, 1.5] : [1, 2]}
+                    camera={{ manual: true, fov: FOV, near: 0.015, far: 30, position: [0, BOWL_Y, FACE + REST], rotation: [0, 0, 0] }}
+                    onCreated={(state) => {
+                        root.current = state;
+                        live.current.step(1);
+                    }}
+                    gl={{ alpha: true, antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
+                >
+                    <Suspense fallback={null}>
+                        <group position={[0, LIFT, 0]}>
+                            <Keyhole live={live} />
+                        </group>
+                    </Suspense>
+                </Canvas>
+            )}
         </span>
     );
 }
@@ -348,10 +390,12 @@ function Keyhole({ live }: { live: MutableRefObject<Live> }) {
     const sun = useRef<THREE.DirectionalLight>(null);
     const stage = useRef<THREE.Group>(null);
     const born = useRef<number | null>(null);
+    const shownYet = useRef(false);
     const shadow = useMemo(() => ({ uShow: { value: 0 } }), []);
     // the view through the hole is a good deal more to build: in its own turn, when the page is idle
     const [glimpse, setGlimpse] = useState(false);
     useEffect(() => idle(() => setGlimpse(true), 600), []);
+    useEffect(() => live.current.step(2), [live]); // (its iron is painted: it waits for that)
 
     useFrame((state) => {
         const L = live.current;
@@ -362,19 +406,27 @@ function Keyhole({ live }: { live: MutableRefObject<Live> }) {
         // Showing itself: out of the dark and a little back from the wall, the light
         // finds it and it settles into place; its shadow comes with it. (If it's
         // still getting ready when it's due, it starts from its first frame on screen;
-        // the frames drawn out of sight while getting ready don't count.)
+        // the frames drawn out of sight while getting ready don't count.) Taking over
+        // from the drawing of it, it's already in place and lit: it fades in over the
+        // drawing, and its shadow comes after, as it becomes real.
         const now = performance.now();
         if (state.frameloop !== "never") born.current ??= now;
         const start = L.appearAt === null ? null : Math.max(L.appearAt, born.current ?? Infinity);
         const r = L.startedAt !== null ? 1 : start === null ? 0 : Math.min(1, Math.max(0, (now - start) / 2200));
         L.reveal = r;
-        const out = 1 - Math.pow(1 - Math.min(1, r * 1.25), 3); // ease out
-        if (L.box && L.startedAt === null) L.box.style.opacity = String(Math.min(1, r * 2.2));
+        const over = L.takeover && L.startedAt === null;
+        const out = over ? 1 : 1 - Math.pow(1 - Math.min(1, r * 1.25), 3); // ease out
+        const opacity = over ? THREE.MathUtils.smoothstep(r, 0, 0.4) : Math.min(1, r * 2.2);
+        if (L.box && L.startedAt === null) L.box.style.opacity = String(opacity);
+        if (opacity >= 1 && start !== null && !shownYet.current) {
+            shownYet.current = true;
+            L.shown();
+        }
         if (stage.current) {
             stage.current.position.set(0, (1 - out) * 0.06, -(1 - out) * 0.7);
             stage.current.rotation.z = (1 - out) * 0.06;
         }
-        shadow.uShow.value = THREE.MathUtils.smoothstep(r, 0.25, 0.9);
+        shadow.uShow.value = THREE.MathUtils.smoothstep(r, over ? 0.2 : 0.25, 0.9);
         // a lamp somewhere behind the door, never quite steady; when the light turns
         // dark it stops lighting the iron
         const t = state.clock.elapsedTime;
@@ -383,7 +435,8 @@ function Keyhole({ live }: { live: MutableRefObject<Live> }) {
         if (front.current) front.current.intensity = glow * 2.4 * flame;
         if (behind.current) behind.current.intensity = (0.25 + glow * 5) * flame;
         // and the room's daylight goes as the page darkens
-        if (sun.current) sun.current.intensity = 1.15 * (1 - 0.75 * m.page) * (0.08 + 0.92 * THREE.MathUtils.smoothstep(r, 0.1, 0.75));
+        const lit = over ? 0.75 + 0.25 * THREE.MathUtils.smoothstep(r, 0.05, 0.6) : 0.08 + 0.92 * THREE.MathUtils.smoothstep(r, 0.1, 0.75);
+        if (sun.current) sun.current.intensity = 1.15 * (1 - 0.75 * m.page) * lit;
     });
 
     return (
@@ -480,6 +533,7 @@ function View({ live }: { live: MutableRefObject<Live> }) {
                 gl.setRenderTarget(null);
                 await Promise.all([through, compileQuietly(gl, scene, camera)]);
                 if (!alive) return;
+                live.current.step(STEPS - 1);
                 // Draw everything, even what's out of view from here (it comes into view
                 // on the way through, and some materials only settle what they are when
                 // first drawn), so there's nothing left to compile or upload later.
@@ -549,8 +603,8 @@ function View({ live }: { live: MutableRefObject<Live> }) {
         // its film does: see VIEW_FRAG), so the theatre comes in over a view just like it
         uniforms.uTheatre.value = THREE.MathUtils.smoothstep(L.near, 0.5, 0.98);
         uniforms.uScreen.value.set(w * dpr, h * dpr);
-        // the ember far in catches last, unsteadily
-        const kindle = THREE.MathUtils.smoothstep(L.reveal, 0.6, 1);
+        // the ember far in catches last, unsteadily (taking over from the drawing of it, it's already alight there)
+        const kindle = L.takeover ? 1 : THREE.MathUtils.smoothstep(L.reveal, 0.6, 1);
         uniforms.uEmber.value = kindle * (kindle < 1 ? 0.6 + 0.4 * Math.abs(Math.sin(clock.elapsedTime * 23) * Math.sin(clock.elapsedTime * 7.3)) : 1);
         uniforms.uTime.value = clock.elapsedTime;
         // the corridor first, into the texture (once it's ready to be drawn; until then
@@ -593,6 +647,8 @@ function Glimpse({ eye, live, onBuilt }: { eye: THREE.PerspectiveCamera; live: M
     useEffect(() => {
         if (parts >= 3 && (plates || late)) onBuilt(true);
     }, [parts, plates, late, onBuilt]);
+    // (each part is done once it's here: it waits for its painting and shaping, below)
+    useEffect(() => live.current.step(2 + parts), [parts, live]);
     const v = useMemo(() => ({ pos: new THREE.Vector3(), look: new THREE.Vector3(), startPos: new THREE.Vector3(), startLook: new THREE.Vector3() }), []);
     // each part painted and shaped beforehand, a slice at a time (prepare.ts): it waits here till then
     suspendUntil("corridor shell", prepareCorridorShell);

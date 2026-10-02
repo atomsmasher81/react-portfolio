@@ -2,6 +2,7 @@
 
 import { Fragment, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useInView, useScroll, useSpring } from "framer-motion";
 import { ArrowUpRight, ChevronDown, ChevronUp } from "lucide-react";
 import { SocialLinks } from "@/components/v2/brand-icons";
@@ -50,12 +51,8 @@ function Hero({ intro, roles, email, bookingUrl, socials }: WorkHomeProps) {
             <h1 className="v2-display text-[2.25rem] sm:text-[3rem]">
                 <StaggerText parts={[intro.headline]} />
             </h1>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.55, duration: 0.8 }}
-                className="mt-6 space-y-4 text-[17px] leading-relaxed text-[var(--muted)]"
-            >
+            {/* Like the headline, CSS entrances (v2.css): they play from the first paint, not after hydration. */}
+            <div className="v2-fade-in mt-6 space-y-4 text-[17px] leading-relaxed text-[var(--muted)]" style={{ animationDelay: "0.55s" }}>
                 <p>{intro.body}</p>
                 {current && (
                     <p>
@@ -66,20 +63,15 @@ function Hero({ intro, roles, email, bookingUrl, socials }: WorkHomeProps) {
                         {intro.now.rest}
                     </p>
                 )}
-            </motion.div>
+            </div>
 
             {/* One quiet toolbar: same height, colour and hover for every item. */}
-            <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
-                className="-ml-3 mt-7 flex flex-wrap items-center gap-x-1 gap-y-2 text-[15px]"
-            >
+            <div className="v2-rise-in -ml-3 mt-7 flex flex-wrap items-center gap-x-1 gap-y-2 text-[15px]" style={{ animationDelay: "0.7s" }}>
                 <CopyEmail email={email} />
                 <BookCall url={bookingUrl} />
                 <span aria-hidden className="mx-1.5 h-4 w-px bg-[var(--faint)]" />
                 <SocialLinks links={socials} />
-            </motion.div>
+            </div>
         </section>
     );
 }
@@ -267,8 +259,7 @@ function Testimonial({ t }: { t: WorkHomeProps["testimonials"][number] }) {
                 <span className="text-[var(--accent)]">”</span>
             </blockquote>
             <figcaption className="mt-4 flex items-center gap-3 text-sm">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={t.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
+                <Image src={t.avatar} alt="" width={32} height={32} sizes="32px" className="h-8 w-8 rounded-full object-cover" />
                 <span>
                     <span className="block font-medium">{t.name}</span>
                     <span className="block text-[var(--muted)]">{t.role}</span>

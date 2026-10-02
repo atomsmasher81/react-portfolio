@@ -1,9 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TheatreScene, newVisit, type Quality, type SceneDoor, type SceneRoom, type Visit, type VisitEvent, type VisitStage } from "@/components/v2/theatre3d/scene";
+import { NEAR_DOORS, TheatreScene, newVisit, type Quality, type SceneDoor, type SceneRoom, type Visit, type VisitEvent, type VisitStage } from "@/components/v2/theatre3d/scene";
 import { disposeChamberCache, prepareChamber } from "@/components/v2/theatre3d/chamber";
+import { prepareEntrance } from "@/components/v2/theatre3d/prepare";
+import { theatreMounted, theatreReady } from "@/components/v2/theatre3d/readiness";
+import { hurry } from "@/components/v2/theatre3d/textures";
 import { CAMERA, DOOR_S } from "@/components/v2/theatre3d/layout";
 import { fetchRoom, useOpened, usePlates } from "@/components/v2/theatre-data";
 import { Neon } from "@/components/v2/theatre-sign";
@@ -129,7 +132,6 @@ export function Theatre3D({
     const roomRef = useRef(room);
     roomRef.current = room;
     const [ready, setReady] = useState(false);
-    const [slow, setSlow] = useState(false);
     const [env, setEnv] = useState<{ quality: Quality; reduced: boolean; touch: boolean } | null>(null);
     const progress = useRef(0);
     const page = useRef<HTMLDivElement>(null);
@@ -140,9 +142,21 @@ export function Theatre3D({
             reduced: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
             touch: window.matchMedia("(pointer: coarse)").matches,
         });
-        const t = window.setTimeout(() => setSlow(true), 1200);
-        return () => window.clearTimeout(t);
     }, []);
+
+    // From now on the start card is drawn here, waiting until it's ready (until now the page
+    // drew it: readiness.ts). Painting what's seen from the entrance starts at once, without
+    // waiting for the doors' plaques to arrive.
+    useLayoutEffect(() => {
+        theatreMounted(true);
+        return () => theatreMounted(false);
+    }, []);
+    useEffect(() => void prepareEntrance(NEAR_DOORS), []);
+    // and while you're at the door, waiting, it's painted without waiting for the page to be idle
+    useEffect(() => {
+        hurry(active && !ready);
+        return () => hurry(false);
+    }, [active, ready]);
 
     // Scrolling is walking. The overlays read --p, so scrolling never re-renders React
     // (except to say which door you're at, when that changes).
@@ -573,9 +587,11 @@ export function Theatre3D({
                         words={words}
                         onReady={() => {
                             setReady(true);
+                            theatreReady();
                             onReady?.();
                         }}
                         introduce={!entered}
+                        later={!entered}
                         paused={paused}
                         visit={visit}
                         room={room}
@@ -584,13 +600,13 @@ export function Theatre3D({
                 )}
             </div>
 
-            {/* Dark until the first frame is drawn; if that takes a while, the sign keeps you company. */}
+            {/* Dark until the first frame is drawn, and the sign keeps you company (carrying on from the page's: magic-theatre-page.tsx). */}
             <div
                 aria-hidden
                 className={`pointer-events-none fixed inset-0 z-[5] grid place-items-center bg-[#050303] ${entered ? "" : "transition-opacity duration-1000"}`}
                 style={{ opacity: ready ? 0 : 1 }}
             >
-                {slow && !ready && !entered && <Neon text={theatre.sign.toUpperCase()} dead={10} className={`${fellSC.className} text-[20px] tracking-[0.4em] opacity-70`} />}
+                {!ready && !entered && <Neon text={theatre.sign.toUpperCase()} dead={10} className={`${fellSC.className} text-[20px] tracking-[0.4em] opacity-70`} />}
             </div>
 
             {/* The room in words, for screen readers (it's carved in the 3D). */}
@@ -612,7 +628,8 @@ export function Theatre3D({
                         onAbout={() => setAbout(true)}
                         fold={spot === "entrance"}
                     />
-                    <ActionBar {...bar} hidden={!ready || bar.hidden} />
+                    {/* at the entrance it's there from the start, waiting (Walk in not yet lit) until it's ready */}
+                    <ActionBar {...bar} waiting={!ready} hidden={(!ready && moment.kind !== "start") || bar.hidden} />
                     <MirrorAsk
                         open={asking && spot === "mirror" && stage === "walk"}
                         touch={!!env?.touch}

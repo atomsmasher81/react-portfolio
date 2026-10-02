@@ -4,6 +4,7 @@
 //
 // Every event carries the side of the site the visitor is on (work or life).
 // In development nothing is sent; events are logged to the console instead.
+// Both scripts load late (components/Analytics.tsx); until then, calls queue.
 
 type Params = Record<string, string | number | boolean | undefined>;
 

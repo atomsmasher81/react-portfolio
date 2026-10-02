@@ -14,7 +14,7 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { slug: string } }) {
     const note = notes.find((n) => n.slug === params.slug);
     if (!note) return { title: "Note" };
-    return pageMeta({ title: note.title, description: note.excerpt, path: `/notes/${note.slug}`, type: "article", publishedTime: note.date });
+    return pageMeta({ title: note.title, description: note.excerpt, path: `/notes/${note.slug}`, type: "article", publishedTime: note.date, ownImage: true });
 }
 
 export default function NotePage({ params }: { params: { slug: string } }) {

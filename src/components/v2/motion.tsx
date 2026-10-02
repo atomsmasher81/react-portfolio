@@ -35,6 +35,8 @@ export function SectionTitle({ children, aside, id }: { children: React.ReactNod
 
 // Words settle in one after another, un-blurring as they go. Children may mix
 // plain strings and inline elements (e.g. an avatar); each gets its own beat.
+// A CSS animation (.v2-word-in in v2.css), so a headline plays from the first
+// paint rather than waiting for the page's JavaScript.
 export function StaggerText({ parts, className, delay = 0 }: { parts: React.ReactNode[]; className?: string; delay?: number }) {
     const pieces = parts.flatMap((part, i) =>
         typeof part === "string"
@@ -51,15 +53,9 @@ export function StaggerText({ parts, className, delay = 0 }: { parts: React.Reac
                 p.space ? (
                     p.node
                 ) : (
-                    <motion.span
-                        key={p.key}
-                        className="inline-block"
-                        initial={{ opacity: 0, y: "0.35em", filter: "blur(8px)" }}
-                        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                        transition={{ duration: 0.8, delay: delay + beat++ * 0.045, ease: EASE }}
-                    >
+                    <span key={p.key} className="v2-word-in inline-block" style={{ animationDelay: `${Math.round((delay + beat++ * 0.045) * 1000)}ms` }}>
                         {p.node}
-                    </motion.span>
+                    </span>
                 ),
             )}
         </span>

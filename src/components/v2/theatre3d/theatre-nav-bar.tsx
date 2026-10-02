@@ -3,6 +3,7 @@
 import { useEffect, useRef, type MutableRefObject, type ReactNode } from "react";
 import { AnimatePresence, motion, useIsomorphicLayoutEffect, useReducedMotion } from "framer-motion";
 import { LitButton, PlainButton, PlainIcon, Playbill, focusRing, ink, plainClass, useTheatreDialogOpen } from "@/components/v2/theatre3d/theatre-nav-ui";
+import { READY_LINE, useReadiness } from "@/components/v2/theatre3d/readiness";
 
 // The one thing to do next, at the foot of the screen, on a playbill card:
 // a caption (where you are) and one big lit button, sometimes a second, plain
@@ -17,6 +18,11 @@ import { LitButton, PlainButton, PlainIcon, Playbill, focusRing, ink, plainClass
 // The card's height (plus a gap) is published as the CSS variable
 // --theatre-bar on <html>, so the rail (and the page, framing a shrine) can
 // keep clear of it.
+//
+// While the theatre is still getting ready, the start card is already there,
+// waiting: Walk in not yet lit, and in place of the second action a line
+// saying what's being done, over a thin rule that fills as it's done
+// (readiness.ts). When it's ready the same card lights up where it is.
 
 export interface BarAction {
     label: string;
@@ -53,9 +59,13 @@ export interface ActionBarProps {
     align?: "center" | "end";
     /** Changing this swaps the card with a fade; by default it's derived from the caption and the buttons' labels. */
     contextKey?: string;
+    /** The theatre isn't ready yet (compact card only): the main button waits, and a line says what's being got ready. */
+    waiting?: boolean;
 }
 
-export function ActionBar({ caption, primary, secondary, link, hint, hidden = false, compact = false, align = "center", contextKey }: ActionBarProps) {
+let bars = 0; // mounted, for a moment two (see MagicTheatrePage)
+
+export function ActionBar({ caption, primary, secondary, link, hint, hidden = false, compact = false, align = "center", contextKey, waiting = false }: ActionBarProps) {
     const reduced = useReducedMotion();
     const holder = useRef<HTMLDivElement>(null);
     const keepFocus = useRef(false);
@@ -79,9 +89,11 @@ export function ActionBar({ caption, primary, secondary, link, hint, hidden = fa
         set();
         const ro = new ResizeObserver(set);
         ro.observe(el);
+        bars++;
         return () => {
             ro.disconnect();
-            root.style.removeProperty("--theatre-bar");
+            // (the page's waiting card hands over to the theatre's own: the last one out clears it)
+            if (--bars === 0) root.style.removeProperty("--theatre-bar");
         };
     }, []);
 
@@ -105,7 +117,7 @@ export function ActionBar({ caption, primary, secondary, link, hint, hidden = fa
                             exit={{ opacity: 0, y: reduced ? 0 : 6, transition: { duration: reduced ? 0.1 : 0.18, ease: "easeIn" } }}
                         >
                             {compact ? (
-                                <Row primary={primary} secondary={secondary} hint={hint} focus={keepFocus} />
+                                <Row primary={primary} secondary={secondary} hint={hint} focus={keepFocus} waiting={waiting} />
                             ) : (
                                 <Card caption={caption} primary={primary} secondary={secondary} link={link} hint={hint} focus={keepFocus} />
                             )}
@@ -118,7 +130,7 @@ export function ActionBar({ caption, primary, secondary, link, hint, hidden = fa
 }
 
 // The compact card: one row, kept low, so the view above it stays clear.
-function Row({ primary, secondary, hint, focus }: Pick<ActionBarProps, "primary" | "secondary" | "hint"> & { focus: MutableRefObject<boolean> }) {
+function Row({ primary, secondary, hint, focus, waiting }: Pick<ActionBarProps, "primary" | "secondary" | "hint" | "waiting"> & { focus: MutableRefObject<boolean> }) {
     const main = useRef<HTMLButtonElement>(null);
     useEffect(() => {
         const lost = !document.activeElement || document.activeElement === document.body;
@@ -133,11 +145,13 @@ function Row({ primary, secondary, hint, focus }: Pick<ActionBarProps, "primary"
                 (a tablet, a phone on its side, a small laptop) a narrow stack, so it stays right of the playbill */}
             <div className="flex items-center gap-2 md:max-[1099px]:flex-col md:max-[1099px]:items-stretch md:max-[1099px]:gap-1">
                 {primary && (
-                    <LitButton ref={main} icon={primary.icon} onClick={primary.onClick} aria-label={primary.ariaLabel} className="shrink-0">
+                    <LitButton ref={main} icon={primary.icon} onClick={primary.onClick} aria-label={primary.ariaLabel} disabled={waiting} className="shrink-0">
                         {primary.label}
                     </LitButton>
                 )}
-                {secondary && (
+                {waiting ? (
+                    <Waiting />
+                ) : secondary && (
                     <button
                         type="button"
                         onClick={secondary.onClick}
@@ -149,8 +163,32 @@ function Row({ primary, secondary, hint, focus }: Pick<ActionBarProps, "primary"
                 )}
             </div>
             {/* the line on how to walk: only where there's room for it beside the place (on a phone the row stays one low row) */}
-            {hint && <p className={`${ink.hint} mt-2 hidden px-1 min-[1100px]:block`}>{hint}</p>}
+            {hint && !waiting && <p className={`${ink.hint} mt-2 hidden px-1 min-[1100px]:block`}>{hint}</p>}
+            {waiting && <Fuse />}
         </Playbill>
+    );
+}
+
+// What the theatre is doing while you wait (its real steps), where "What is this place?" will be.
+function Waiting() {
+    const { step } = useReadiness();
+    return (
+        <p role="status" className={`${ink.hint} flex min-h-[44px] flex-1 items-center justify-center px-3 text-center md:min-w-[210px] md:flex-none`}>
+            {READY_LINE[step === "ready" ? "lamps" : step]}
+        </p>
+    );
+}
+
+// A thin rule along the foot of the card that fills as it gets ready, like a fuse burning toward the lamps.
+function Fuse() {
+    const { progress } = useReadiness();
+    return (
+        <span aria-hidden className="pointer-events-none absolute inset-x-[9px] bottom-[6px] h-px overflow-hidden bg-[#8f7142]/30">
+            <span
+                className="block h-full origin-left bg-[#ffb36b] shadow-[0_0_6px_rgba(255,150,80,0.9)] transition-transform duration-700 ease-out motion-reduce:transition-none"
+                style={{ transform: `scaleX(${progress})` }}
+            />
+        </span>
     );
 }
 

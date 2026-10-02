@@ -67,10 +67,25 @@
 }
 .v2-twinkle { animation: v2-twinkle 2.6s ease-in-out infinite; }
 
-/* Hold the page until the saved lens is applied, so there's no flash of the other side. */
-.v2:not([data-ready]) main,
-.v2:not([data-ready]) header nav,
-.v2:not([data-ready]) nav[aria-label="Main"] { opacity: 0; }
+/* Entrances that play from the first paint instead of waiting for the page's
+   JavaScript (StaggerText, the home hero). Each animates from its first frame
+   to the element's own style; the element sets its own animation-delay. */
+@keyframes v2-word-in { from { opacity: 0; transform: translateY(0.35em); filter: blur(8px); } }
+@keyframes v2-fade-in { from { opacity: 0; } }
+@keyframes v2-rise-in { from { opacity: 0; transform: translateY(8px); } }
+.v2-word-in { animation: v2-word-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.v2-fade-in { animation: v2-fade-in 0.8s ease-out backwards; }
+.v2-rise-in { animation: v2-rise-in 0.6s ease-out backwards; }
+@media (prefers-reduced-motion: reduce) {
+  .v2-word-in, .v2-fade-in, .v2-rise-in { animation: none; }
+}
+
+/* Hold the page until the saved lens is applied, so there's no flash of the other side.
+   Only when there's a saved (or linked) life side to wait for: data-hold is set before
+   first paint by the script in app/layout.tsx. Everyone else sees the page at once. */
+html[data-hold] .v2:not([data-ready]) main,
+html[data-hold] .v2:not([data-ready]) header nav,
+html[data-hold] .v2:not([data-ready]) nav[aria-label="Main"] { opacity: 0; }
 .v2 main { transition: opacity 0.25s ease; }
 
 .v2 ::selection {

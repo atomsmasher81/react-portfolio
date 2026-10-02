@@ -18,6 +18,11 @@ export const absolute = (path: string) => (path === "/" ? SITE_URL : `${SITE_URL
 // timestamp with a zone, so pin them to midnight in India.
 export const isoDate = (day: string) => (day.includes("T") ? day : `${day}T00:00:00+05:30`);
 
+// The site's share card (app/opengraph-image.tsx). Setting openGraph on a page
+// drops the one it would inherit, so pageMeta names it again, except on pages
+// with an opengraph-image file of their own (ownImage), which this would override.
+const SHARE_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: "Kartik Gautam, senior full-stack engineer" };
+
 // Title, description, canonical, and Open Graph/Twitter tags that match the
 // page. Open Graph doesn't merge with the root layout's, so each page carries
 // its own full set; the share image comes from the nearest opengraph-image.
@@ -28,6 +33,7 @@ export function pageMeta({
     type = "website",
     publishedTime,
     modifiedTime,
+    ownImage = false,
 }: {
     title?: string;
     description: string;
@@ -35,7 +41,10 @@ export function pageMeta({
     type?: "website" | "article" | "profile";
     publishedTime?: string;
     modifiedTime?: string;
+    /** The page has its own opengraph-image file. */
+    ownImage?: boolean;
 }): Metadata {
+    const images = ownImage ? {} : { images: [SHARE_IMAGE] };
     const fullTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} · ${TAGLINE}`;
     return {
         ...(title ? { title } : {}),
@@ -49,11 +58,12 @@ export function pageMeta({
             description,
             siteName: SITE_NAME,
             locale: "en_US",
+            ...images,
             ...(type === "article"
                 ? { publishedTime: publishedTime && isoDate(publishedTime), modifiedTime: modifiedTime && isoDate(modifiedTime), authors: [SITE_URL] }
                 : {}),
         },
-        twitter: { card: "summary_large_image", title: fullTitle, description, creator: "@kartik_gautam_" },
+        twitter: { card: "summary_large_image", title: fullTitle, description, creator: "@kartik_gautam_", ...images },
     };
 }
 

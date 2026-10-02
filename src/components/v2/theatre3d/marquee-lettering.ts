@@ -69,6 +69,9 @@ export function goldLeaf(win: { w: number; h: number }) {
 
 /** Paint all the booth's writing a slice at a time, lettering and all: then it's there at once. */
 export async function prepareLettering(win: { w: number; h: number }, card: { w: number; h: number }) {
+    // the type is fetched meanwhile, so the lettering doesn't wait for it when its turn comes
+    loadFont(SC);
+    loadFont(ITALIC);
     for (const k of [goldKept(win), cardKept(card), playbillKept()]) {
         await k.built.prepare();
         await k.lettered;

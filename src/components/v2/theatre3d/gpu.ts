@@ -26,9 +26,10 @@ type Flags = Partial<Record<(typeof DRAWN)[number], boolean>>;
  * gl.compile, a few things at a time: making dozens of programs at once takes
  * a while on a slow device. Returns a step to call (a frame at a time) until it
  * says it's done. The lights and fog still come from the whole scene: the rest
- * is simply passed over for the moment (marked as not drawn).
+ * is simply passed over for the moment (marked as not drawn). `lit`: the scene
+ * `scene` will be drawn in, if it's only a part of it (its lights are used).
  */
-export function compileByParts(gl: THREE.WebGLRenderer, scene: THREE.Object3D, camera: THREE.Camera, ms = 4) {
+export function compileByParts(gl: THREE.WebGLRenderer, scene: THREE.Object3D, camera: THREE.Camera, ms = 4, lit?: THREE.Scene) {
     const all: (THREE.Object3D & Flags)[] = [];
     scene.traverse((o) => {
         if (DRAWN.some((k) => (o as Flags)[k])) all.push(o);
@@ -49,7 +50,7 @@ export function compileByParts(gl: THREE.WebGLRenderer, scene: THREE.Object3D, c
                     }
             }
             try {
-                gl.compile(scene, camera);
+                gl.compile(scene, camera, lit);
             } finally {
                 for (const [o, k] of off) o[k] = true;
             }
@@ -124,14 +125,29 @@ export function uploadSome(gl: THREE.WebGLRenderer, pictures: THREE.Texture[], m
     return pictures;
 }
 
-/** Draw everything once, even what's out of view (some materials only settle what they are when first drawn). */
-export function drawAll(gl: THREE.WebGLRenderer, scene: THREE.Object3D, camera: THREE.Camera) {
+/** Draw everything once, even what's out of view (some materials only settle what they are when first drawn). `part`: only what's in it. */
+export function drawAll(gl: THREE.WebGLRenderer, scene: THREE.Object3D, camera: THREE.Camera, part?: THREE.Object3D) {
     const culled: THREE.Object3D[] = [];
-    scene.traverse((o) => {
+    const off: [THREE.Object3D & Flags, (typeof DRAWN)[number]][] = [];
+    const mine = new Set<THREE.Object3D>();
+    part?.traverse((o) => mine.add(o));
+    scene.traverse((o: THREE.Object3D & Flags) => {
+        if (part && !mine.has(o)) {
+            for (const k of DRAWN)
+                if (o[k]) {
+                    o[k] = false;
+                    off.push([o, k]);
+                }
+            return;
+        }
         if (!o.frustumCulled) return;
         o.frustumCulled = false;
         culled.push(o);
     });
-    gl.render(scene, camera);
-    for (const o of culled) o.frustumCulled = true;
+    try {
+        gl.render(scene, camera);
+    } finally {
+        for (const o of culled) o.frustumCulled = true;
+        for (const [o, k] of off) o[k] = true;
+    }
 }
