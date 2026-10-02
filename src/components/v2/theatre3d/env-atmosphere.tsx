@@ -4,7 +4,7 @@ import { memo, useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { CORRIDOR, INNER, OUTER, metres, onArc } from "@/components/v2/theatre3d/layout";
-import { rng } from "@/components/v2/theatre3d/textures";
+import { rng, srgbLikeFiber8 } from "@/components/v2/theatre3d/textures";
 import { envTextures } from "@/components/v2/theatre3d/env-textures";
 import { Mesher, ringFrame, sheet } from "@/components/v2/theatre3d/env-geometry";
 import type { LampState } from "@/components/v2/theatre3d/env-lamps";
@@ -190,7 +190,7 @@ export const GroundFog = memo(function GroundFog({ layers }: { layers: number })
         <group>
             {maps.map((map, i) => (
                 <mesh key={i} geometry={geometry} position-y={LAYERS[i].y} renderOrder={3 + i}>
-                    <meshLambertMaterial color={FOG_TINT} alphaMap={map} transparent opacity={LAYERS[i].opacity} depthWrite={false} />
+                    <meshLambertMaterial color={FOG_TINT} alphaMap={srgbLikeFiber8(map)} transparent opacity={LAYERS[i].opacity} depthWrite={false} />
                 </mesh>
             ))}
         </group>

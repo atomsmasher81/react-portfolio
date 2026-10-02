@@ -9,7 +9,7 @@ import { Environment } from "@/components/v2/theatre3d/environment";
 import { Marquee } from "@/components/v2/theatre3d/marquee";
 import { Silhouette } from "@/components/v2/theatre3d/mirror-figure";
 import { CAMERA, CORRIDOR, DOOR_S, INNER, MARQUEE_S, MARQUEE_Y, OUTER, PALETTE, onArc, yawFacingBack, yawFromOuterWall } from "@/components/v2/theatre3d/layout";
-import { canvasTextureWork, fbm, heightCanvasWork, normalFromHeightWork, once, paintPixelsWork, suspendUntil, type Work } from "@/components/v2/theatre3d/textures";
+import { canvasTextureWork, fbm, heightCanvasWork, normalFromHeightWork, once, paintPixelsWork, srgbLikeFiber8, suspendUntil, type Work } from "@/components/v2/theatre3d/textures";
 import { prepareCorridorShell, prepareDoors, prepareMarquee } from "@/components/v2/theatre3d/prepare";
 import { usePlates } from "@/components/v2/theatre-data";
 import { AT_REST, TIMELINES, TIMELINE_REDUCED, moment, type Entry, type KeyholeMoment, type Timeline } from "@/components/v2/theatre3d/keyhole-timeline";
@@ -61,6 +61,15 @@ function idle(f: () => void, timeout: number) {
     }
     const id = window.setTimeout(f, Math.min(timeout, 1000)); // (no idle callbacks, as in Safari)
     return () => window.clearTimeout(id);
+}
+
+/**
+ * `args` for a <shaderMaterial> made with these uniforms as its own. React Three Fiber
+ * 9.6+ copies a `uniforms` prop into the material's own uniforms instead, so the values
+ * set on ours every frame would never reach it.
+ */
+function useShaderArgs(uniforms: Record<string, THREE.IUniform>) {
+    return useMemo(() => [{ uniforms }] as [THREE.ShaderMaterialParameters], [uniforms]);
 }
 
 // What the canvas's parts share, read every frame (so changes never wait for React).
@@ -144,7 +153,7 @@ export function KeyholeView({
         const r = box.current?.getBoundingClientRect();
         const state = root.current?.get();
         if (!full || !r || !state) return;
-        state.setSize(r.width, r.height, true, r.top, r.left);
+        state.setSize(r.width, r.height, r.top, r.left);
         state.advance(performance.now());
     }, [full]);
 
@@ -349,6 +358,7 @@ function Keyhole({ live }: { live: MutableRefObject<Live> }) {
     const stage = useRef<THREE.Group>(null);
     const born = useRef<number | null>(null);
     const shadow = useMemo(() => ({ uShow: { value: 0 } }), []);
+    const shadowArgs = useShaderArgs(shadow);
     // the view through the hole is a good deal more to build: in its own turn, when the page is idle
     const [glimpse, setGlimpse] = useState(false);
     useEffect(() => idle(() => setGlimpse(true), 600), []);
@@ -396,11 +406,11 @@ function Keyhole({ live }: { live: MutableRefObject<Live> }) {
             {/* a soft shadow where the plate meets the page */}
             <mesh position={[0, 0, -0.12]}>
                 <planeGeometry args={[1.9, 2.8]} />
-                <shaderMaterial uniforms={shadow} transparent depthWrite={false} vertexShader={QUAD_VERT} fragmentShader={SHADOW_FRAG} />
+                <shaderMaterial args={shadowArgs} transparent depthWrite={false} vertexShader={QUAD_VERT} fragmentShader={SHADOW_FRAG} />
             </mesh>
 
             <mesh geometry={geometry} position={[0, 0, -0.07]}>
-                <meshStandardMaterial {...iron} metalness={0.15} roughness={1} normalScale={normalScale} />
+                <meshStandardMaterial {...srgbLikeFiber8(iron)} metalness={0.15} roughness={1} normalScale={normalScale} />
             </mesh>
             {RIVETS.map(([x, y]) => (
                 <mesh key={`${x}-${y}`} position={[x, y, 0.02]} scale={[1, 1, 0.5]}>
@@ -522,6 +532,7 @@ function View({ live }: { live: MutableRefObject<Live> }) {
         }),
         [fbo],
     );
+    const shaderArgs = useShaderArgs(uniforms);
 
     useFrame(({ gl, scene, camera, clock }) => {
         const L = live.current;
@@ -567,7 +578,7 @@ function View({ live }: { live: MutableRefObject<Live> }) {
             {createPortal(<Glimpse eye={eye} live={live} onBuilt={setBuilt} />, world, { camera: eye })}
             <mesh position={[0, -0.03, -0.09]}>
                 <planeGeometry args={[0.6, 1.2]} />
-                <shaderMaterial uniforms={uniforms} vertexShader={QUAD_VERT} fragmentShader={VIEW_FRAG} toneMapped />
+                <shaderMaterial args={shaderArgs} vertexShader={QUAD_VERT} fragmentShader={VIEW_FRAG} toneMapped />
             </mesh>
         </>
     );
@@ -661,6 +672,7 @@ function Passerby({ live }: { live: MutableRefObject<Live> }) {
 // light turns dark, a thin gold ring is what's left, like an eclipse.
 function Rim({ live }: { live: MutableRefObject<Live> }) {
     const uniforms = useMemo(() => ({ uLight: { value: 0 }, uColor: { value: new THREE.Color("#ffb46e") } }), []);
+    const shaderArgs = useShaderArgs(uniforms);
     const mesh = useRef<THREE.Mesh>(null);
     useFrame(() => {
         const { light, eclipse } = live.current.m;
@@ -670,7 +682,7 @@ function Rim({ live }: { live: MutableRefObject<Live> }) {
     return (
         <mesh ref={mesh} position={[0, -0.02, 0.045]}>
             <planeGeometry args={[1.2, 1.5]} />
-            <shaderMaterial uniforms={uniforms} transparent depthWrite={false} blending={THREE.AdditiveBlending} vertexShader={QUAD_VERT} fragmentShader={RIM_FRAG} />
+            <shaderMaterial args={shaderArgs} transparent depthWrite={false} blending={THREE.AdditiveBlending} vertexShader={QUAD_VERT} fragmentShader={RIM_FRAG} />
         </mesh>
     );
 }
@@ -684,6 +696,7 @@ function Rim({ live }: { live: MutableRefObject<Live> }) {
 function Beam({ live }: { live: MutableRefObject<Live> }) {
     const geometry = useMemo(() => new THREE.PlaneGeometry(4.8, 6.5).translate(1.2, -2.25, FACE), []);
     const uniforms = useMemo(() => ({ uCam: { value: new THREE.Vector3() }, uTime: { value: 0 }, uLight: { value: 0 }, uFront: { value: 0 } }), []);
+    const shaderArgs = useShaderArgs(uniforms);
     const mesh = useRef<THREE.Mesh>(null);
     useFrame(({ camera, clock }) => {
         const { light, front } = live.current.m;
@@ -696,7 +709,7 @@ function Beam({ live }: { live: MutableRefObject<Live> }) {
     return (
         <mesh ref={mesh} geometry={geometry} renderOrder={10} visible={false}>
             <shaderMaterial
-                uniforms={uniforms}
+                args={shaderArgs}
                 vertexShader={BEAM_VERT}
                 fragmentShader={BEAM_FRAG}
                 transparent

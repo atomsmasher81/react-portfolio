@@ -3,7 +3,7 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { flicker, rng } from "@/components/v2/theatre3d/textures";
+import { flicker, rng, srgbLikeFiber8 } from "@/components/v2/theatre3d/textures";
 import { chamberTextures } from "@/components/v2/theatre3d/chamber-textures";
 import { ROOM, type CandleSpec, flameAt } from "@/components/v2/theatre3d/chamber-geometry";
 
@@ -232,7 +232,7 @@ export function Flames({ candles, flame, lightOf }: { candles: CandleSpec[]; fla
         <group>
             <instancedMesh ref={flames} args={[geometry, material, n]} frustumCulled={false} renderOrder={9} />
             <instancedMesh ref={halos} args={[getQuad(), undefined, n]} frustumCulled={false} renderOrder={10}>
-                <meshBasicMaterial alphaMap={chamberTextures.glow()} transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+                <meshBasicMaterial alphaMap={srgbLikeFiber8(chamberTextures.glow())} transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
             </instancedMesh>
         </group>
     );
