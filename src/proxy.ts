@@ -13,12 +13,12 @@ export function proxy(request: NextRequest) {
   response.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()')
 
   const { pathname } = request.nextUrl
-  if (/(^|\/)(opengraph|twitter)-image(\.\w+)?$|^\/sitemap\.xml$/.test(pathname)) {
-    // Share images and the sitemap: Next sets their Cache-Control itself (the
-    // share images' URLs carry a content hash). A second header would conflict.
-  } else if (/\.(js|css|svg|png|jpe?g|gif|ico|webp|avif|ttf|otf|woff2?)$/.test(pathname)) {
-    // Files from /public keep their name when they change, so they can't be
-    // immutable: fresh for a day, then served while a fresh copy is fetched.
+  if (pathname === '/sitemap.xml') {
+    // Next sets the sitemap's Cache-Control itself.
+  } else if (/(^|\/)(opengraph|twitter)-image(\.\w+)?$|\.(js|css|svg|png|jpe?g|gif|ico|webp|avif|ttf|otf|woff2?)$/.test(pathname)) {
+    // Share cards (Next 16 leaves them at max-age=0) and files from /public, which
+    // keep their name when they change, so they can't be immutable: fresh for a
+    // day, then served while a fresh copy is fetched.
     response.headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800')
   } else {
     // Pages and the RSC payloads behind client-side navigation. Browsers check
