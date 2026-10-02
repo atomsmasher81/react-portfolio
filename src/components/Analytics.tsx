@@ -7,7 +7,6 @@ import { track } from "@/lib/analytics";
 
 const GA_ID = "G-ZPHPHMKFVR";
 const CLARITY_ID = "yq56y4eo8e";
-const CF_BEACON_TOKEN = "9a7bad6d105245f6a8f5d5b68d4436a6";
 const DEPTHS = [25, 50, 75, 100];
 
 // Runs with the HTML, before any of the page's JavaScript: GA's and Clarity's
@@ -28,22 +27,12 @@ const QUEUES = `
     if (kgInternal) clarity("set", "internal", "true");
 `;
 
-// Cloudflare Web Analytics. Cloudflare can inject this beacon itself, early in
-// the page; while it does, this copy stands aside so visits aren't counted twice.
-const CF_BEACON = `
-    if (!document.querySelector('script[src*="cloudflareinsights.com/beacon"]')) {
-        var s = document.createElement("script");
-        s.defer = true;
-        s.src = "https://static.cloudflareinsights.com/beacon.min.js";
-        s.setAttribute("data-cf-beacon", '{"token": "${CF_BEACON_TOKEN}"}');
-        document.body.appendChild(s);
-    }
-`;
-
-// Google Analytics, Microsoft Clarity and Cloudflare Web Analytics, production
-// only. GA's own enhanced measurement already counts page views (including
-// client-side navigation), outbound clicks and 90% scrolls; this adds finer
-// scroll depth and names the links people leave through.
+// Google Analytics and Microsoft Clarity, production only. (Cloudflare Web
+// Analytics isn't here: Cloudflare injects its beacon at the edge, and leaves
+// it out for visitors in the EU, as set in the dashboard.) GA's own enhanced
+// measurement already counts page views (including client-side navigation),
+// outbound clicks and 90% scrolls; this adds finer scroll depth and names the
+// links people leave through.
 //
 // ?kg_internal=1 marks this browser as my own traffic for a year (=0 undoes
 // it): GA hits carry traffic_type=internal, which the property's "Internal
@@ -62,7 +51,6 @@ export default function Analytics() {
                 <>
                     <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
                     <Script strategy="afterInteractive" src={`https://www.clarity.ms/tag/${CLARITY_ID}`} />
-                    <Script id="cf-beacon" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: CF_BEACON }} />
                 </>
             )}
         </>
