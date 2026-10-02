@@ -16,7 +16,8 @@ const TYPES: Record<string, string> = {
     ".avif": "image/avif",
 };
 
-export async function GET(_: Request, { params }: { params: { name: string } }) {
+export async function GET(_: Request, props: { params: Promise<{ name: string }> }) {
+    const params = await props.params;
     const name = params.name;
     const type = TYPES[path.extname(name).toLowerCase()];
     if (!/^[\w.-]+$/.test(name) || name.startsWith(".") || !type) return new Response("Not found", { status: 404 });

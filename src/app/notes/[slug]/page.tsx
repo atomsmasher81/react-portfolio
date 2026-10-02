@@ -11,13 +11,15 @@ export function generateStaticParams() {
     return notes.map((n) => ({ slug: n.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+    const params = await props.params;
     const note = notes.find((n) => n.slug === params.slug);
     if (!note) return { title: "Note" };
     return pageMeta({ title: note.title, description: note.excerpt, path: `/notes/${note.slug}`, type: "article", publishedTime: note.date });
 }
 
-export default function NotePage({ params }: { params: { slug: string } }) {
+export default async function NotePage(props: { params: Promise<{ slug: string }> }) {
+    const params = await props.params;
     const index = notes.findIndex((n) => n.slug === params.slug);
     if (index < 0) notFound();
     const note = notes[index];
