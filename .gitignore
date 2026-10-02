@@ -38,3 +38,8 @@ next-env.d.ts
 
 # caption text pasted by hand, merged into src/data/v2/photos.ts
 /captions-inbox/
+
+# the Magic Theatre's real rooms: kept on the server and locally, never in git
+/private/theatre.json
+/private/theatre-assets/
+/private/theatre.drafts.json

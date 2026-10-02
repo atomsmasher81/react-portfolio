@@ -245,6 +245,23 @@ html[data-vt] [data-dock] { z-index: 95; }
   65% { opacity: 0.55; color: #5a3326; text-shadow: none; }
 }
 
+/* A tube not yet lit, and an old tube striking: dark, a flash, dark again, a
+   weak stutter, then it holds. The dead letter strikes and gives up. */
+.v2-neon-off { color: #3d241c; text-shadow: none; }
+@keyframes v2-neon-strike {
+  0% { color: #3d241c; text-shadow: none; opacity: 1; }
+  18% { color: #ffb08f; text-shadow: 0 0 6px rgba(255, 140, 90, 1), 0 0 18px rgba(255, 80, 40, 0.7); opacity: 1; }
+  26% { color: #3d241c; text-shadow: none; opacity: 1; }
+  48% { color: #ff8f66; text-shadow: 0 0 4px rgba(255, 120, 80, 0.9), 0 0 14px rgba(255, 70, 40, 0.55); opacity: 0.5; }
+  56% { color: #3d241c; text-shadow: none; opacity: 1; }
+  70%, 100% { color: #ff8f66; text-shadow: 0 0 4px rgba(255, 120, 80, 0.9), 0 0 14px rgba(255, 70, 40, 0.55), 0 0 32px rgba(200, 30, 20, 0.35); opacity: 1; }
+}
+@keyframes v2-neon-strike-dead {
+  0% { color: #3d241c; text-shadow: none; }
+  30% { color: #ff8f66; text-shadow: 0 0 10px rgba(255, 90, 50, 0.8); }
+  38%, 100% { color: #5a3326; text-shadow: none; }
+}
+
 /* The single lamp over the corridor, which sometimes stutters. */
 .v2-lamp { animation: v2-lamp 13s infinite steps(1, end); }
 @keyframes v2-lamp {
@@ -275,6 +292,20 @@ html[data-vt] [data-dock] { z-index: 95; }
   60% { transform: translate(-2%, -1%); }
   80% { transform: translate(3%, 2%); }
   100% { transform: translate(0, 0); }
+}
+
+/* Arriving in the theatre, the site's own header and dock come back slowly,
+   after the place itself. */
+.v2[data-theme="theatre"] > header,
+.v2[data-theme="theatre"] [data-dock] { animation: v2-theatre-in 1.6s ease 0.4s both; }
+@keyframes v2-theatre-in {
+  from { opacity: 0; }
+}
+
+/* The "walk in" hint: a drop of light running down a thread. */
+@keyframes v2-drip {
+  0% { transform: translateY(-100%); }
+  60%, 100% { transform: translateY(200%); }
 }
 
 /* Dust in the lamp light. */

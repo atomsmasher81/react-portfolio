@@ -14,6 +14,7 @@ import { profile, type Lens } from "@/data/v2/profile";
 import { SocialLinks } from "@/components/v2/brand-icons";
 import { PageTransitions } from "@/components/v2/page-transitions";
 import { NIGHT, NIGHT_VARS } from "@/components/v2/sky";
+import { TheatreHost, TheatreStage } from "@/components/v2/theatre-host";
 
 export function Shell({
     children,
@@ -55,20 +56,26 @@ export function Shell({
 
     return (
         <MotionConfig reducedMotion="user">
-            <div className={`v2 ${fontClassName}`} data-lens={lens} data-theme={theme} data-ready={ready ? "" : undefined}>
-                <Header onSearch={() => setPaletteOpen(true)} onSwitch={onSwitch} />
-                <main className="px-5 pb-36 sm:px-8 md:pb-24">{children}</main>
-                <Footer onSwitch={onSwitch} night={pathname === "/" && lens === "life"} />
-                <MobileDock
-                    onSearch={() => {
-                        primeKeyboard();
-                        setPaletteOpen(true);
-                    }}
-                />
-                <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} items={searchIndex} />
-                <ConsoleHello />
-                <PageTransitions />
-            </div>
+            <TheatreHost>
+                <div className={`v2 ${fontClassName}`} data-lens={lens} data-theme={theme} data-ready={ready ? "" : undefined}>
+                    <Header onSearch={() => setPaletteOpen(true)} onSwitch={onSwitch} />
+                    <main className="px-5 pb-36 sm:px-8 md:pb-24">
+                        {children}
+                        {/* the 3D theatre, which outlives the page it's on (see theatre-host.tsx) */}
+                        <TheatreStage />
+                    </main>
+                    {!pathname.startsWith("/magic-theatre") && <Footer onSwitch={onSwitch} night={pathname === "/" && lens === "life"} />}
+                    <MobileDock
+                        onSearch={() => {
+                            primeKeyboard();
+                            setPaletteOpen(true);
+                        }}
+                    />
+                    <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} items={searchIndex} />
+                    <ConsoleHello />
+                    <PageTransitions />
+                </div>
+            </TheatreHost>
         </MotionConfig>
     );
 }

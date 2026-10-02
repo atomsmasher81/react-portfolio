@@ -46,7 +46,10 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()'
+            // The camera only for this site's own pages: the Magic Theatre's mirror asks
+            // for it (only after the visitor agrees), and it can be reached from any page
+            // without a reload, so every page has to allow it. Nothing embedded can use it.
+            value: 'camera=(self), microphone=(), geolocation=()'
           }
         ]
       }

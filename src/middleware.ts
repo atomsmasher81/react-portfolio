@@ -8,7 +8,9 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('Referrer-Policy', 'origin-when-cross-origin')
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  // The camera for this site's own pages only: the Magic Theatre's mirror asks for it
+  // (only after the visitor agrees), and it's reachable from any page without a reload.
+  response.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()')
 
   // Add caching headers for static assets
   if (request.nextUrl.pathname.match(/\.(js|css|svg|png|jpg|jpeg|gif|ico)$/)) {

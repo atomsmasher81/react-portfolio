@@ -1,0 +1,118 @@
+{
+    "_readme": "Copy this file to private/theatre.json (git ignores it) and make it yours. The doors here are the Magic Theatre's own, from Hesse's Steppenwolf (Basil Creighton's 1929 translation): each plate is the inscription the novel gives that door, and each room tells what happens behind it. Each door has an id, the plaque text, and a room. Room kinds: text {body: [paragraphs]}, moon {body}, photo {src, caption, date, body?}, quote {body, quote, by}, letter {body, email, subject}. Any room can also have images: [{src, caption?, date?}], shown as prints left on the shrine beside the words. Photos can be public paths (/images/...) or private files put in private/theatre-assets/ and referenced as /api/theatre/asset/<file-name>. The optional mirror entry is what opens when someone touches the mirror at the end of the corridor. Optional \"words\": what the mirror at the end writes in its own breath when someone lingers in front of it, one at a time (short: a few words each). Without them it writes nothing. Any room can also have \"objects\": things left by the shrine, from the scenes in the novel: whip (the taming), chess (the chess player's pieces), rifle (the hunt in automobiles), coin (one quarter in the slot), knife (how one kills for love), wireless (Mozart's radio).",
+    "doors": [
+        {
+            "id": "taming",
+            "plate": "Marvellous Taming of the Steppenwolf",
+            "room": {
+                "kind": "text",
+                "body": [
+                    "Behind this door is a show. An animal-tamer puts a wolf through tricks with his whip until it obeys him like a trained dog.",
+                    "Then the roles are reversed. The tamer bows, lays his whip at the wolf's feet, and goes down on all fours; now the wolf gives the orders and the man obeys.",
+                    "The Treatise on the Steppenwolf says Harry lived like this every day. When the man in him thought or felt something fine, the wolf bared its teeth and laughed at him with bitter scorn. When the wolf had its way, the man lay in ambush and called it brute and beast."
+                ],
+                "objects": [
+                    "whip"
+                ]
+            }
+        },
+        {
+            "id": "personality",
+            "plate": "Guidance in the Building up of the Personality. Success Guaranteed.",
+            "room": {
+                "kind": "text",
+                "body": [
+                    "In the theatre's great mirror Harry's reflection falls apart into many Harrys at once: children, young men, old men, appearing and vanishing together.",
+                    "Behind this door a chess player sits with those pieces. He sets them out on the board as one life, sweeps them away, and builds another game from the same figures, one game after another, each figure a bit of Harry.",
+                    "When he has shown him how it is done, he gives Harry the pieces to take with him."
+                ],
+                "objects": [
+                    "chess"
+                ]
+            }
+        },
+        {
+            "id": "hunt",
+            "plate": "Jolly Hunting. Great Hunt in Automobiles.",
+            "room": {
+                "kind": "text",
+                "body": [
+                    "Behind this door a war has broken out between men and machines. Harry meets Gustav, a friend from his schooldays, now a professor of theology, and the two of them take up a post high above a road and shoot at the motor-cars that pass.",
+                    "They stop the car of Loering, the attorney-general. A young typist, Dora, comes through a crash and joins them at their post.",
+                    "When a quiet man comes by below, Harry finds he could not shoot him. Helping Dora down, he kisses her knee; she laughs, the planks give way, and they fall into nothing."
+                ],
+                "objects": [
+                    "rifle"
+                ]
+            }
+        },
+        {
+            "id": "girls",
+            "plate": "All Girls Are Yours. One Quarter in the Slot.",
+            "room": {
+                "kind": "text",
+                "body": [
+                    "In the great mirror one of the young Harrys breaks away from the rest and runs in through this door.",
+                    "Behind it Harry is young again, on a hillside in spring, and meets Rosa Kreisler, whom he loved as a boy and never dared to speak to. This time he speaks, and she loves him too.",
+                    "Then, one after another, every girl he ever loved or wanted and let go comes back to him, and none of them is missed this time."
+                ],
+                "objects": [
+                    "coin"
+                ]
+            }
+        },
+        {
+            "id": "love",
+            "plate": "How One Kills for Love",
+            "room": {
+                "kind": "quote",
+                "body": [
+                    "Behind this door Harry finds Hermine and Pablo asleep together. He takes the knife from his pocket and stabs her. Pablo covers her and goes.",
+                    "The Immortals put Harry on trial for misusing the magic theatre and mistaking its pictures for reality. The sentence is read out:"
+                ],
+                "quote": "We condemn Haller to eternal life.",
+                "by": "The court of the Magic Theatre",
+                "objects": [
+                    "knife"
+                ]
+            }
+        },
+        {
+            "id": "laughter",
+            "plate": "Laughing Tears. Cabinet of Humour.",
+            "room": {
+                "kind": "quote",
+                "body": [
+                    "Before the theatre, Pablo tells Harry that true humour begins when a man stops taking himself seriously.",
+                    "At the end Mozart switches on a wireless, and Handel comes through it, mangled by the machine. The music is still in it, he says, as it is in life; Harry has got to learn to laugh. That will be required of him.",
+                    "Pablo shrinks Hermine to the size of a toy figure and puts her in his pocket. Harry resolves to begin the game again."
+                ],
+                "quote": "One day I would learn how to laugh.",
+                "by": "Harry Haller",
+                "objects": [
+                    "wireless"
+                ]
+            }
+        }
+    ],
+    "mirror": {
+        "id": "mirror",
+        "plate": "The mirror",
+        "room": {
+            "kind": "quote",
+            "body": [
+                "In the theatre there is a mirror, and the man who looks into it doesn't see one face. He sees hundreds of them, every one of them him."
+            ],
+            "quote": "Eternity is a mere moment, just long enough for a joke.",
+            "by": "Hermann Hesse, Steppenwolf"
+        }
+    },
+    "words": [
+        "the boy",
+        "the scholar",
+        "the lover",
+        "the wolf",
+        "all of them",
+        "and none"
+    ]
+}

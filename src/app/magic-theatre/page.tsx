@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { MagicTheatre } from "@/components/v2/magic-theatre";
+import { MagicTheatrePage } from "@/components/v2/magic-theatre-page";
 
 // Hidden on purpose: no sitemap entry, no search result, not indexed.
 export const metadata: Metadata = {
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function Theatre() {
-    return <MagicTheatre />;
+    return <MagicTheatrePage />;
 }

@@ -270,7 +270,7 @@ function Turntable({ cover, playing, progress, onClick, label }: { cover: string
                 <span ref={platter} className="v2-platter absolute inset-0 rounded-full">
                     <svg viewBox="0 0 92 92" className="absolute inset-0 h-full w-full">
                         {DOTS.map((a, i) => (
-                            <circle key={i} cx={46 + Math.cos(a) * 44.6} cy={46 + Math.sin(a) * 44.6} r="0.55" fill="rgba(14,28,51,0.45)" />
+                            <circle key={i} cx={(46 + Math.cos(a) * 44.6).toFixed(2)} cy={(46 + Math.sin(a) * 44.6).toFixed(2)} r="0.55" fill="rgba(14,28,51,0.45)" />
                         ))}
                     </svg>
                     <span className="v2-vinyl absolute inset-[4px] rounded-full">

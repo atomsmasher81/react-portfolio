@@ -1,62 +1,39 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
-import { MoonDisc, useMoon } from "@/components/v2/moon";
 import { Neon } from "@/components/v2/theatre-sign";
 import { fell, fellSC } from "@/components/v2/theatre-fonts";
-import { theatre, type Door } from "@/data/v2/theatre";
+import { RoomView } from "@/components/v2/theatre-room";
+import { fetchRoom, useOpened, usePlates } from "@/components/v2/theatre-data";
+import { theatre, type DoorPlate, type Room } from "@/data/v2/theatre";
 
 // After Steppenwolf: a hidden theatre, reached only by its sign at night. A
 // dim corridor under one stuttering lamp, and behind each old door a small
 // room. Content lives in data/v2/theatre.ts.
 
-const STORE = "kg-theatre";
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 const NEON = "#ff8f66";
 
-function useOpened() {
-    const [opened, setOpened] = useState<string[]>([]);
-    useEffect(() => {
-        try {
-            setOpened(JSON.parse(localStorage.getItem(STORE) ?? "[]"));
-        } catch {}
-    }, []);
-    const mark = (id: string) =>
-        setOpened((xs) => {
-            if (xs.includes(id)) return xs;
-            const next = [...xs, id];
-            try {
-                localStorage.setItem(STORE, JSON.stringify(next));
-            } catch {}
-            return next;
-        });
-    return [opened, mark] as const;
-}
-
 export function MagicTheatre() {
     const router = useRouter();
+    const { plates } = usePlates();
+    const doors = plates ?? [];
     const [opened, mark] = useOpened();
-    const [open, setOpen] = useState<Door | null>(null);
+    const [open, setOpen] = useState<{ door: DoorPlate; room: Room | null; missing?: boolean } | null>(null);
     const [swinging, setSwinging] = useState<string | null>(null);
-    const all = opened.length >= theatre.doors.length;
+    const all = doors.length > 0 && doors.every((d) => opened.includes(d.id));
 
-    useEffect(() => {
-        if (!open) return;
-        const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
-        window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
-    }, [open]);
-
-    const enter = (door: Door) => {
+    const enter = (door: DoorPlate) => {
         if (swinging) return;
         setSwinging(door.id);
         mark(door.id);
+        const room = fetchRoom(door.id);
         window.setTimeout(() => {
-            setOpen(door);
+            setOpen({ door, room: null });
             setSwinging(null);
+            room.then((d) => setOpen((o) => (o && o.door.id === door.id ? { door, room: d?.room ?? null, missing: !d } : o)));
         }, 900);
     };
 
@@ -74,7 +51,7 @@ export function MagicTheatre() {
                 </p>
 
                 <div className="mt-16 grid grid-cols-2 gap-x-5 gap-y-14 sm:grid-cols-3 sm:gap-x-10">
-                    {theatre.doors.map((door, i) => (
+                    {doors.map((door, i) => (
                         <DoorView key={door.id} door={door} n={i} visited={opened.includes(door.id)} swinging={swinging === door.id} onEnter={() => enter(door)} />
                     ))}
                 </div>
@@ -88,7 +65,9 @@ export function MagicTheatre() {
                 </button>
             </div>
 
-            <AnimatePresence>{open && <RoomView key={open.id} door={open} onClose={() => setOpen(null)} />}</AnimatePresence>
+            <AnimatePresence>
+                {open && <RoomView key={open.door.id} plate={open.door.plate} room={open.room} missing={open.missing} onClose={() => setOpen(null)} />}
+            </AnimatePresence>
         </div>
     );
 }
@@ -206,7 +185,7 @@ function Marquee() {
     );
 }
 
-function Ticket() {
+export function Ticket() {
     const [madmen, price] = theatre.admission.split(". ");
     return (
         <div className="relative mx-auto mt-14 w-[290px] -rotate-[3deg] sm:w-[360px]">
@@ -277,7 +256,7 @@ const CHIPS = {
 };
 const KEYHOLE = "M89.25 145.2 m-2.2 0 a2.2 2.2 0 1 0 4.4 0 a2.2 2.2 0 1 0 -4.4 0 M88.2 146.4 L87.4 153.4 L91.1 153.4 L90.3 146.4 Z";
 
-function DoorView({ door, n, visited, swinging, onEnter }: { door: Door; n: number; visited: boolean; swinging: boolean; onEnter: () => void }) {
+function DoorView({ door, n, visited, swinging, onEnter }: { door: DoorPlate; n: number; visited: boolean; swinging: boolean; onEnter: () => void }) {
     const [hover, setHover] = useState(false);
     const v = VARIANTS[n % VARIANTS.length];
     const angle = swinging ? -112 : hover ? -15 : visited ? -7 : 0;
@@ -495,117 +474,4 @@ function Plaque({ n, text, tilt, lit }: { n: number; text: string; tilt: number;
             </div>
         </div>
     );
-}
-
-/* ---------------------------------------------------------- the rooms */
-
-function RoomView({ door, onClose }: { door: Door; onClose: () => void }) {
-    return (
-        <motion.div
-            className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto p-5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-        >
-            <div className="absolute inset-0 bg-[#040202]/85 backdrop-blur-[3px]" onClick={onClose} />
-            <motion.div
-                role="dialog"
-                aria-modal="true"
-                aria-label={door.plate}
-                className="relative my-auto w-full max-w-lg overflow-hidden rounded-[6px] bg-[#150e0b] p-7 text-left shadow-[0_0_120px_-20px_rgba(255,110,60,0.35),inset_0_0_60px_rgba(0,0,0,0.8)] sm:p-10"
-                initial={{ scale: 0.94, y: 18, filter: "brightness(2) blur(4px)" }}
-                animate={{ scale: 1, y: 0, filter: "brightness(1) blur(0px)" }}
-                exit={{ scale: 0.97, y: 10, opacity: 0 }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            >
-                <span className="v2-grain pointer-events-none absolute -inset-[50%] opacity-[0.06] mix-blend-overlay" />
-                {/* a candle somewhere below */}
-                <span
-                    className="v2-lamp pointer-events-none absolute inset-x-0 bottom-0 h-1/2"
-                    style={{ background: "radial-gradient(ellipse 60% 70% at 50% 110%, rgba(255,140,70,0.16), transparent 70%)", animationDuration: "7s" }}
-                />
-                <button
-                    type="button"
-                    onClick={onClose}
-                    aria-label="Back to the corridor"
-                    className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full text-[#eadccb]/50 transition-colors hover:bg-white/5 hover:text-[#eadccb]"
-                >
-                    <X className="h-4 w-4" />
-                </button>
-                <p className={`${fellSC.className} relative text-[14px] tracking-[0.22em]`} style={{ color: NEON, textShadow: "0 0 12px rgba(255,90,50,0.5)" }}>
-                    {door.plate}
-                </p>
-                <div className="relative mt-6 space-y-4 font-serif text-[17px] leading-relaxed text-[#eadccb]/85">
-                    <Room room={door.room} />
-                </div>
-            </motion.div>
-        </motion.div>
-    );
-}
-
-function Paragraphs({ body }: { body: string[] }) {
-    return (
-        <>
-            {body.map((p) => (
-                <p key={p}>{p}</p>
-            ))}
-        </>
-    );
-}
-
-function Room({ room }: { room: Door["room"] }) {
-    const phase = useMoon();
-    switch (room.kind) {
-        case "text":
-            return <Paragraphs body={room.body} />;
-        case "moon":
-            return (
-                <>
-                    <div className="flex items-center gap-5 pb-2">
-                        <MoonDisc phase={phase} size={84} />
-                        {phase && (
-                            <p className="text-sm text-[#eadccb]/55">
-                                Tonight it&apos;s a {phase.name.toLowerCase()},
-                                <br />
-                                {Math.round(phase.illumination * 100)}% lit.
-                            </p>
-                        )}
-                    </div>
-                    <Paragraphs body={room.body} />
-                </>
-            );
-        case "photo":
-            return (
-                <figure>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={room.src} alt="" className="w-full rounded-[3px] [filter:sepia(0.25)_contrast(1.05)]" />
-                    <figcaption className={`${fell.className} mt-4 whitespace-pre-line italic text-[#eadccb]/80`}>{room.caption}</figcaption>
-                    <p className="mt-2 text-xs text-[#eadccb]/40">{new Date(room.date).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</p>
-                </figure>
-            );
-        case "quote":
-            return (
-                <>
-                    <Paragraphs body={room.body} />
-                    <blockquote className={`${fell.className} border-l-2 pl-4 text-[20px] italic`} style={{ borderColor: NEON }}>
-                        {room.quote}
-                        <span className="mt-2 block font-sans text-xs not-italic text-[#eadccb]/45">{room.by}</span>
-                    </blockquote>
-                </>
-            );
-        case "letter":
-            return (
-                <>
-                    <Paragraphs body={room.body} />
-                    <a
-                        href={`mailto:${room.email}?subject=${encodeURIComponent(room.subject)}`}
-                        className={`${fellSC.className} mt-3 inline-flex items-center gap-2 rounded-[3px] border border-[#ff8f66]/50 px-5 py-2.5 text-[15px] tracking-[0.2em] transition-colors hover:bg-[#ff8f66]/10`}
-                        style={{ color: NEON }}
-                    >
-                        Write to me
-                    </a>
-                </>
-            );
-    }
 }

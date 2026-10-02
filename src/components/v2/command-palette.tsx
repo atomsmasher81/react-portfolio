@@ -54,7 +54,7 @@ export function CommandPalette({
     // ⌘K / Ctrl+K anywhere, or "/" when not typing.
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
-            const typing = (e.target as HTMLElement)?.closest("input, textarea, [contenteditable]");
+            const typing = e.target instanceof Element && e.target.closest("input, textarea, [contenteditable]");
             if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || (e.key === "/" && !typing)) {
                 e.preventDefault();
                 onOpenChange(!open);
