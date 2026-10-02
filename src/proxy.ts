@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next()
 
   // Add security headers
@@ -23,7 +23,7 @@ export function middleware(request: NextRequest) {
   return response
 }
 
-// Configure which routes to run middleware on
+// Configure which routes to run the proxy (formerly middleware) on
 export const config = {
   matcher: [
     /*
