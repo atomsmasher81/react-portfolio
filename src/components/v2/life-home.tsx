@@ -67,7 +67,7 @@ function along(palette: number[][], t: number) {
     return lerp(palette[i], palette[i + 1], x - i);
 }
 
-function useLifeSky(rootRef: React.RefObject<HTMLDivElement>) {
+function useLifeSky(rootRef: React.RefObject<HTMLDivElement | null>) {
     const [background, setBackground] = useState<string>();
 
     useEffect(() => {
