@@ -330,7 +330,7 @@ export function MirrorAskView({
 
 // When what the mirror says changes, the new card's main button takes focus (once it's
 // there: the old card fades out first), unless focus has gone somewhere else meanwhile.
-function FocusOnArrival({ box, main }: { box: RefObject<HTMLDivElement>; main: RefObject<HTMLButtonElement> }) {
+function FocusOnArrival({ box, main }: { box: RefObject<HTMLDivElement | null>; main: RefObject<HTMLButtonElement | null> }) {
     useEffect(() => {
         const a = document.activeElement;
         if (!a || a === document.body || box.current?.contains(a)) (main.current ?? box.current?.querySelector<HTMLElement>("button"))?.focus({ preventScroll: true });

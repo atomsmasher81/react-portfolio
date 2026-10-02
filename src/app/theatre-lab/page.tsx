@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
-import dynamic from "next/dynamic";
+import { TheatreLab } from "@/app/theatre-lab/benches";
 
 // Dev-only workbench for the 3D Magic Theatre's parts. Not built for production.
-const TheatreLab = dynamic(() => import("@/components/v2/theatre3d/lab").then((m) => m.TheatreLab), { ssr: false });
 
 export const metadata = { robots: { index: false, follow: false } };
 

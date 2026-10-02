@@ -9,7 +9,8 @@ export function generateStaticParams() {
     return blogs.map((b) => ({ id: b.id }));
 }
 
-export default function Image({ params }: { params: { id: string } }) {
+export default async function Image(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const post = blogs.find((b) => b.id === params.id);
     const date = post && new Date(post.date).toLocaleDateString("en-US", { month: "long", year: "numeric" });
     return ogCard({ eyebrow: post ? `Blog · ${date} · ${post.readTime}` : "Blog", title: post?.title ?? "Blogs" });

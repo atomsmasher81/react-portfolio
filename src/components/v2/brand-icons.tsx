@@ -1,5 +1,7 @@
 // Official brand marks (via Simple Icons), drawn in currentColor so they pick up theme colours.
 
+import type { JSX } from "react";
+
 type IconProps = { className?: string };
 
 export function GitHubIcon({ className }: IconProps) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef } from "react";
+import type { ThreeElements } from "@react-three/fiber";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { PALETTE } from "@/components/v2/theatre3d/layout";
@@ -95,7 +96,7 @@ export function makeFigureMaterial(rim = 1) {
     return mat;
 }
 
-export type SilhouetteProps = JSX.IntrinsicElements["group"] & {
+export type SilhouetteProps = ThreeElements["group"] & {
     /** Brightness of the warm rim along the outline (1 is the default, 0 is a flat black shape). */
     rim?: number;
     /** Put the figure on this layer only (the mirror uses MIRROR_LAYER). Default: layer 0, like everything else. */

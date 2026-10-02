@@ -14,13 +14,15 @@ export function generateStaticParams() {
     return blogs.map((b) => ({ id: b.id }));
 }
 
-export function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const post = blogs.find((b) => b.id === params.id);
     if (!post) return { title: "Blogs" };
     return pageMeta({ title: post.title, description: post.description, path: `/blogs/${post.id}`, type: "article", publishedTime: post.date, ownImage: true });
 }
 
-export default function PostPage({ params }: { params: { id: string } }) {
+export default async function PostPage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const post = blogs.find((b) => b.id === params.id);
     if (!post) notFound();
 

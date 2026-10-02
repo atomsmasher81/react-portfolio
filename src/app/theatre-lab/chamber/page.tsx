@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
-import dynamic from "next/dynamic";
+import { ChamberLab } from "@/app/theatre-lab/benches";
 
 // Dev-only workbench for the room behind a door. Not built for production.
-const ChamberLab = dynamic(() => import("@/components/v2/theatre3d/chamber-lab").then((m) => m.ChamberLab), { ssr: false });
 
 export const metadata = { robots: { index: false, follow: false } };
 

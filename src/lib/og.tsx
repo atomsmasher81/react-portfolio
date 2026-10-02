@@ -1,9 +1,15 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 // The share card for links posted to X, LinkedIn, Slack and friends: the
 // page's title large, who wrote it underneath. 1200×630 is what every
 // platform crops to.
 export const ogSize = { width: 1200, height: 630 };
+
+// Set in Noto Sans, which next/og drew every card in until Next 16 switched its
+// default to Geist; given the same name and weight it had, so cards look as they did.
+const fonts = [{ name: "sans serif", data: readFileSync(join(process.cwd(), "src/lib/fonts/noto-sans-v27-latin-regular.ttf")), weight: 700 as const, style: "normal" as const }];
 
 export function ogCard({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
     const size = title.length > 70 ? 56 : title.length > 40 ? 68 : 84;
@@ -48,6 +54,6 @@ export function ogCard({ eyebrow, title, subtitle }: { eyebrow: string; title: s
                 </div>
             </div>
         ),
-        ogSize,
+        { ...ogSize, fonts },
     );
 }

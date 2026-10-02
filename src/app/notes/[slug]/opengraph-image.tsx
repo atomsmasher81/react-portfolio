@@ -9,7 +9,8 @@ export function generateStaticParams() {
     return notes.map((n) => ({ slug: n.slug }));
 }
 
-export default function Image({ params }: { params: { slug: string } }) {
+export default async function Image(props: { params: Promise<{ slug: string }> }) {
+    const params = await props.params;
     const note = notes.find((n) => n.slug === params.slug);
     return ogCard({ eyebrow: "Notes", title: note?.title ?? "Notes", subtitle: note?.excerpt });
 }

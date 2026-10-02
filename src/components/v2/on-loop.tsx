@@ -28,7 +28,7 @@ export function OnLoop({ song }: { song: Song }) {
     const ready = useRef(false);
     const want = useRef(false);
     const confirmed = useRef(false);
-    const watchdog = useRef<number>();
+    const watchdog = useRef<number>(undefined);
     const [near, setNear] = useState(false);
     const [started, setStarted] = useState(false);
     const [playing, setPlaying] = useState(false);

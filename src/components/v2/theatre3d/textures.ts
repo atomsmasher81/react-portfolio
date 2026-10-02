@@ -401,3 +401,22 @@ export function flicker(t: number, seed: number) {
     const dropout = cycle > 0.965 ? 0.55 * Math.sin(((cycle - 0.965) / 0.035) * Math.PI) : 0;
     return Math.max(0.05, 1 + wobble - dropout);
 }
+
+/**
+ * React Three Fiber 8 marked every 8-bit texture handed to a material as a JSX prop
+ * as sRGB, data maps (normal, roughness, alpha) included, and the theatre's look was
+ * tuned with that. Fiber 9 only does it for colour maps, so the textures passed as
+ * props go through this to look as they did. Takes a texture, or an object of them
+ * (nested once, as the corridor's surfaces are), marks them and returns it unchanged.
+ */
+export function srgbLikeFiber8<T>(value: T): T {
+    const mark = (v: unknown, depth: number) => {
+        if (v instanceof THREE.Texture) {
+            if (v.format === THREE.RGBAFormat && v.type === THREE.UnsignedByteType) v.colorSpace = THREE.SRGBColorSpace;
+        } else if (v && typeof v === "object" && depth < 2) {
+            for (const x of Object.values(v)) mark(x, depth + 1);
+        }
+    };
+    mark(value, 0);
+    return value;
+}

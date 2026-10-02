@@ -4,7 +4,7 @@ import { memo, useLayoutEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { PALETTE } from "@/components/v2/theatre3d/layout";
-import { flicker } from "@/components/v2/theatre3d/textures";
+import { flicker, srgbLikeFiber8 } from "@/components/v2/theatre3d/textures";
 import { envTextures, smoothstep } from "@/components/v2/theatre3d/env-textures";
 import { LAMP_OUT, LAMP_Y, getLamps, getShell, type Lamp } from "@/components/v2/theatre3d/env-shell";
 
@@ -234,7 +234,7 @@ export const Lamps = memo(function Lamps({ state, quality }: { state: LampState;
                 <meshBasicMaterial map={envTextures.chimney()} transparent depthWrite={false} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} toneMapped={false} />
             </instancedMesh>
             <instancedMesh ref={halos} args={[getQuad(), undefined, n]} frustumCulled={false} renderOrder={7}>
-                <meshBasicMaterial alphaMap={envTextures.glow()} transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+                <meshBasicMaterial alphaMap={srgbLikeFiber8(envTextures.glow())} transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
             </instancedMesh>
         </group>
     );

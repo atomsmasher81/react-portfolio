@@ -4,6 +4,7 @@ import { memo, useCallback, useMemo } from "react";
 import { MeshReflectorMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import { envTextures } from "@/components/v2/theatre3d/env-textures";
+import { srgbLikeFiber8 } from "@/components/v2/theatre3d/textures";
 import { getShell } from "@/components/v2/theatre3d/env-shell";
 import { Lamps, useLampDriver, useStandIn, withStandIn, type StandIn } from "@/components/v2/theatre3d/env-lamps";
 import { Dust, GroundFog } from "@/components/v2/theatre3d/env-atmosphere";
@@ -77,8 +78,9 @@ const Shell = memo(function Shell({ high, standIn }: { high: boolean; standIn: S
         },
         [standIn],
     );
+    // all handed to the materials below as props (textures.ts: srgbLikeFiber8)
     const t = useMemo(
-        () => ({
+        () => srgbLikeFiber8({
             paper: envTextures.wallpaper(),
             wood: envTextures.wood(),
             floor: envTextures.floor(),

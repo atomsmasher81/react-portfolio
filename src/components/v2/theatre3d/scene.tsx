@@ -513,7 +513,7 @@ function DoorVisit({
     quality: Quality;
     visit: React.MutableRefObject<Visit>;
     onVisit: (e: VisitEvent, door: number) => void;
-    door: React.RefObject<THREE.Group>;
+    door: React.RefObject<THREE.Group | null>;
 }) {
     const group = useRef<THREE.Group>(null);
     const portal = useRef<THREE.Mesh>(null);
@@ -725,7 +725,7 @@ function seenBy(camera: THREE.Camera) {
     return [camera, floor, mirror];
 }
 
-function usePower(onReady: () => void, introduce: boolean, place: React.RefObject<THREE.Group>) {
+function usePower(onReady: () => void, introduce: boolean, place: React.RefObject<THREE.Group | null>) {
     const [power, setPower] = useState(introduce ? 0 : 1);
     const started = useRef<number | null>(null);
     const last = useRef(0);
