@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { track } from "@/lib/analytics";
@@ -30,14 +31,8 @@ export function ReadingPhoto({ image, title, author, caption }: { image: string;
 
     return (
         <>
-            <motion.figure
-                className="w-[58%] max-w-[190px] sm:w-full"
-                initial={{ opacity: 0, y: 24, rotate: 0 }}
-                whileInView={{ opacity: 1, y: 0, rotate: 3 }}
-                whileHover={{ rotate: 0, y: -6, scale: 1.03 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ type: "spring", stiffness: 180, damping: 18 }}
-            >
+            {/* settling in and the hover are CSS (v2-print in v2.css), so the print shows before the page's JS has run */}
+            <figure className="v2-print w-[58%] max-w-[190px] sm:w-full">
                 <button
                     type="button"
                     onClick={() => {
@@ -47,11 +42,10 @@ export function ReadingPhoto({ image, title, author, caption }: { image: string;
                     aria-label={`View ${alt} larger`}
                     className="block w-full cursor-zoom-in rounded-[3px] bg-white p-2 pb-7 text-left shadow-[0_14px_36px_-14px_rgba(14,28,51,0.45)]"
                 >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={image} alt={alt} loading="lazy" className="aspect-[3/4] w-full object-cover" />
+                    <Image src={image} alt={alt} width={480} height={640} sizes="(min-width: 640px) 260px, 190px" priority className="aspect-[3/4] w-full object-cover" />
                     <figcaption className="mt-2 text-center text-[11px] text-neutral-500">{caption}</figcaption>
                 </button>
-            </motion.figure>
+            </figure>
 
             {/* Rendered on <body>: the tilted print's transform would otherwise trap a fixed overlay. */}
             {mounted &&

@@ -88,7 +88,7 @@ function snapshot(): HTMLElement | null {
     const copy = page.cloneNode(true) as HTMLElement;
     copy.querySelectorAll("[data-dock]").forEach((n) => n.remove());
     // CSS entrances (v2.css) would play again in the copy; it should look as the page does now.
-    copy.querySelectorAll<HTMLElement>(".v2-word-in, .v2-fade-in, .v2-rise-in").forEach((n) => (n.style.animation = "none"));
+    copy.querySelectorAll<HTMLElement>(".v2-word-in, .v2-fade-in, .v2-rise-in, .v2-print").forEach((n) => (n.style.animation = "none"));
     // IDs are left as-is: SVG gradients (the moon) reference them, and the copy only lives ~1s.
     Object.assign(copy.style, { position: "absolute", left: "0", top: `${-window.scrollY}px`, width: `${page.offsetWidth}px` });
     // The sticky header would otherwise sit at the top of the copied document, off screen.
