@@ -35,6 +35,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      // Claude Code's worktrees and local config: other checkouts, not this one
+      ".claude/**",
     ],
   },
 ];
