@@ -22,8 +22,8 @@ import { THEATRE_FADE, THEATRE_WAKE } from "@/components/v2/theatre3d/keyhole-ti
 // `warmth` says when that's going on: the keyhole's sign waits for it before it
 // shows itself, so nothing is animating meanwhile.
 //
-// The theatre's page itself only draws the hand-drawn 2D theatre, for when
-// 3D isn't possible (no WebGL, `?mode=2d`, or the 3D failing).
+// The theatre's page itself only draws what's shown when 3D isn't possible
+// (no WebGL, `?mode=2d`, or the 3D failing): a note to come back on a computer.
 
 const Theatre3D = dynamic(() => import("@/components/v2/theatre3d/theatre").then((m) => m.Theatre3D), {
     ssr: false,
@@ -49,7 +49,7 @@ interface Host {
     reveal: (done: () => void, rest?: number) => void;
     /** Something on the page has to run smoothly now: if it hasn't got as far as its first frame, stop building it (warm it again later). */
     hold: () => void;
-    /** Its page should draw the 2D theatre. */
+    /** 3D isn't possible here: its page should say so. */
     flat: boolean;
     warmth: Warmth;
 }

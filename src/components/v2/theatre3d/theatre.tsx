@@ -12,7 +12,7 @@ import { fetchRoom, useOpened, usePlates } from "@/components/v2/theatre-data";
 import { Neon } from "@/components/v2/theatre-sign";
 import { fell, fellSC } from "@/components/v2/theatre-fonts";
 import { theatre, type DoorPlate, type Room } from "@/data/v2/theatre";
-import { AboutPanel, ActionBar, DoorRail, MirrorAsk, barFor, momentFor, takeMirrorReturn, useFirstVisit, walkAt, type RailStop } from "@/components/v2/theatre3d/theatre-nav";
+import { AboutPanel, ActionBar, DoorRail, MirrorAsk, NavToggle, barFor, momentFor, takeMirrorReturn, useFirstVisit, useNavVisible, walkAt, type RailStop } from "@/components/v2/theatre3d/theatre-nav";
 
 // The Magic Theatre in 3D: a fixed canvas, and a tall page you scroll to walk
 // the corridor. Behind each door is a room (chamber.tsx): knock, and the door
@@ -125,6 +125,7 @@ export function Theatre3D({
     const [about, setAbout] = useState(false); // the programme is open
     const [overBill, setOverBill] = useState(false); // the pointer is on the playbill
     const first = useFirstVisit();
+    const navShown = useNavVisible(); // the rail and the bar can be put away (NavToggle)
     const firstRef = useRef(first);
     firstRef.current = first;
     const visit = useRef<Visit>(newVisit());
@@ -624,12 +625,18 @@ export function Theatre3D({
                         current={railAt}
                         progress={progress}
                         onGo={go}
-                        hidden={!ready || (stage !== "walk" && stage !== "door")}
+                        hidden={!ready || !navShown.visible || (stage !== "walk" && stage !== "door")}
                         onAbout={() => setAbout(true)}
                         fold={spot === "entrance"}
                     />
-                    {/* at the entrance it's there from the start, waiting (Walk in not yet lit) until it's ready */}
-                    <ActionBar {...bar} waiting={!ready} hidden={(!ready && moment.kind !== "start") || bar.hidden} />
+                    {/* at the entrance it's there from the start, waiting (Walk in not yet lit) until it's ready;
+                        put away with the rail, all but the camera's card (the way to look away) */}
+                    <ActionBar
+                        {...bar}
+                        waiting={!ready}
+                        hidden={(!ready && moment.kind !== "start") || (ready && !navShown.visible && moment.kind !== "camera") || bar.hidden}
+                    />
+                    <NavToggle visible={navShown.visible} onToggle={navShown.toggle} hidden={!ready} />
                     <MirrorAsk
                         open={asking && spot === "mirror" && stage === "walk"}
                         touch={!!env?.touch}

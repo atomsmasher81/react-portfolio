@@ -1,7 +1,7 @@
 'use client';
 
 import { Footprints } from "lucide-react";
-import { MagicTheatre } from "@/components/v2/magic-theatre";
+import { TheatreUnsupported } from "@/components/v2/theatre-unsupported";
 import { useTheatreHost } from "@/components/v2/theatre-host";
 import { Neon } from "@/components/v2/theatre-sign";
 import { fellSC } from "@/components/v2/theatre-fonts";
@@ -10,9 +10,11 @@ import { ActionBar } from "@/components/v2/theatre3d/theatre-nav-bar";
 import { useReadiness } from "@/components/v2/theatre3d/readiness";
 
 // The theatre in 3D is drawn by the site's shell (see theatre-host.tsx), so it
-// can be built before you arrive and carry on across the change of page. This
-// page draws the hand-drawn 2D corridor when 3D isn't possible: no WebGL,
-// `?mode=2d`, or the 3D failing.
+// can be built before you arrive and carry on across the change of page. When
+// 3D isn't possible (no WebGL, or the 3D failing; `?mode=2d` shows it too), this
+// page says so and where to see it instead (theatre-unsupported.tsx). The
+// hand-drawn 2D corridor (magic-theatre.tsx) is put away for now; to bring it
+// back, render <MagicTheatre /> there instead.
 //
 // Until the 3D theatre's code has arrived (a few seconds on a slow phone), the
 // page holds its dark cover with the sign, and its start card, waiting, just
@@ -25,7 +27,7 @@ const noop = () => {};
 export function MagicTheatrePage() {
     const { flat } = useTheatreHost();
     const { mounted } = useReadiness();
-    if (flat) return <MagicTheatre />;
+    if (flat) return <TheatreUnsupported />;
     if (mounted) return null;
     return (
         <>

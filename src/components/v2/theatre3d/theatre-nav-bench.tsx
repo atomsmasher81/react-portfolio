@@ -9,8 +9,10 @@ import {
     DoorRail,
     MirrorAsk,
     MirrorAskView,
+    NavToggle,
     barFor,
     momentFor,
+    useNavVisible,
     useNearestStop,
     walkAt,
     type MirrorAskState,
@@ -121,6 +123,7 @@ function Bench({ scenario, bare, touchParam, guides }: { scenario: string; bare:
     const [touch, setTouch] = useState(touchParam === "1");
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [note, setNote] = useState("");
+    const navShown = useNavVisible();
     const timers = useRef<number[]>([]);
     useEffect(() => {
         if (touchParam === null) setTouch(window.matchMedia("(pointer: coarse)").matches);
@@ -220,8 +223,9 @@ function Bench({ scenario, bare, touchParam, guides }: { scenario: string; bare:
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-black transition-opacity duration-[450ms]" style={{ opacity: sim.stage === "dark" ? 1 : 0 }} />
             <GhostShell guides={guides} />
 
-            <DoorRail stops={stops} current={near} progress={progress} onGo={go} hidden={railHidden} peek={sim.peek} onAbout={() => patch({ about: true })} fold={near === 0} />
-            <ActionBar {...bar} />
+            <DoorRail stops={stops} current={near} progress={progress} onGo={go} hidden={railHidden || !navShown.visible} peek={sim.peek} onAbout={() => patch({ about: true })} fold={near === 0} />
+            <ActionBar {...bar} hidden={(!navShown.visible && moment.kind !== "camera") || bar.hidden} />
+            <NavToggle visible={navShown.visible} onToggle={navShown.toggle} />
             <AboutPanel open={sim.about} onClose={() => patch({ about: false })} />
             {asking === "live" ? (
                 <MirrorAsk

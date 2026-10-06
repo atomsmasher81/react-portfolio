@@ -11,6 +11,7 @@
  *   MirrorAsk    the mirror asking for the camera, and every way that can fail
  *   AboutPanel   the programme: what this place is (Steppenwolf), why it's here, the book
  *   useFirstVisit  whether it's the visitor's first time (the start card then says how to walk)
+ *   NavToggle    a small button, top left, that puts the rail and the bar away (useNavVisible remembers it)
  *
  * ONE THING AT A TIME AT THE FOOT OF THE SCREEN. The bottom of the screen is a
  * single slot: the ActionBar draws one card at a time, and nothing else is
@@ -48,6 +49,9 @@
  *   First visit  useFirstVisit(): pass .show as momentFor's firstVisit; dismiss it on Walk in,
  *                the first rail tap, or walking past door I. (No separate note: the tips live in
  *                the start card, so the opening view keeps clear.)
+ *   NavToggle    once the theatre is ready. With useNavVisible().visible false, hide the rail,
+ *                and the bar too except the "camera" card (the way to look away) and the
+ *                waiting start card while it gets ready.
  *
  * Wiring:
  *   - Rail stops: the entrance (at 0), doors I–VI, the mirror (at 1). A door's
@@ -71,7 +75,7 @@
  *   - The ActionBar publishes its height as --theatre-bar on <html> (0 when
  *     hidden). The rail keeps clear of it; readingPose could too, to frame the
  *     shrine above it on a phone.
- *   - Z-order: rail and bar at z-30, MirrorAsk at z-35 (above the
+ *   - Z-order: rail, bar and toggle at z-30, MirrorAsk at z-35 (above the
  *     theatre's overlays, ≤ z-20; below the site's header and dock, z-40);
  *     AboutPanel at z-60, over everything. On phones the controls stay below
  *     the header (76 px) and above the dock (96 px from the bottom); the dock
@@ -102,6 +106,7 @@ export {
     type MirrorAskState,
 } from "@/components/v2/theatre3d/theatre-nav-mirror";
 export { useFirstVisit } from "@/components/v2/theatre3d/theatre-nav-hint";
+export { NavToggle, useNavVisible, type NavToggleProps } from "@/components/v2/theatre3d/theatre-nav-toggle";
 export { AboutPanel, type AboutPanelProps } from "@/components/v2/theatre3d/theatre-nav-about";
 export { useProgressValue, useTheatreDialogOpen, railFraction, type ProgressSource } from "@/components/v2/theatre3d/theatre-nav-ui";
 
