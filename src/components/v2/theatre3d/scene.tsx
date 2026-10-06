@@ -171,15 +171,16 @@ export function TheatreScene(props: TheatreSceneProps) {
                 camera.lookAt(onArc(MARQUEE_S, CORRIDOR.radius, MARQUEE_Y));
             }}
         >
-            {/* Drop the resolution, not the frame rate, when a device struggles. */}
-            <PerformanceMonitor onDecline={() => setDpr((d) => Math.max(0.75, d - 0.3))} onIncline={() => setDpr((d) => Math.min(quality === "high" ? 1.75 : 1.25, d + 0.2))} />
+            {/* Drop the resolution, not the frame rate, when a device struggles. Never
+                below 1 on a desktop: on a big (retina) screen anything less looks blocky. */}
+            <PerformanceMonitor onDecline={() => setDpr((d) => Math.max(quality === "high" ? 1 : 0.75, d - 0.3))} onIncline={() => setDpr((d) => Math.min(quality === "high" ? 1.75 : 1.25, d + 0.2))} />
             <color attach="background" args={[PALETTE.void]} />
             <fogExp2 attach="fog" args={[PALETTE.fog, 0.07]} />
             <Suspense fallback={null}>
                 <World {...props} mirrorLive={mirrorLive} />
             </Suspense>
             <Rig progress={props.progress} focus={props.focus} reducedMotion={props.reducedMotion} portrait={portrait} mirrorLive={mirrorLive} visit={props.visit} onVisit={props.onVisit} />
-            <Effects quality={quality} />
+            <Effects quality={quality} grain={dpr >= 1.3} />
         </Canvas>
     );
 }
@@ -1110,13 +1111,17 @@ function Rig({
 
 /* --------------------------------------------------------- the film */
 
-function Effects({ quality }: { quality: Quality }) {
+// The grain is drawn one speck per rendered pixel, so it only goes on while the
+// resolution is high enough for the specks to stay fine; at a lowered resolution
+// they'd be scaled up into a coarse, sandy noise. It's premultiplied, so it
+// follows the light and leaves the dark walls clean.
+function Effects({ quality, grain }: { quality: Quality; grain: boolean }) {
     const fringe = useMemo(() => new THREE.Vector2(0.0008, 0.0005), []);
     return quality === "high" ? (
         <EffectComposer multisampling={0}>
             <Bloom mipmapBlur luminanceThreshold={0.72} luminanceSmoothing={0.25} intensity={1.15} radius={0.72} />
             <ChromaticAberration offset={fringe} radialModulation modulationOffset={0.35} />
-            <Noise opacity={0.07} />
+            <Noise premultiply opacity={grain ? 0.05 : 0} />
             <Vignette offset={0.2} darkness={0.9} />
         </EffectComposer>
     ) : (
