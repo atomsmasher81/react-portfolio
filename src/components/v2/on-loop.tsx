@@ -223,6 +223,10 @@ export function OnLoop({ song }: { song: Song }) {
 const W = 156;
 const H = 116;
 const PIVOT = { x: 132, y: 22 };
+// The arm and cue lever origins are in view-box units. framer-motion 12 gives
+// animated SVG elements transform-box: fill-box unless told otherwise, which
+// would measure them from each element's own bounds and swing the arm off the plinth.
+const ARM_ORIGIN = { originX: `${PIVOT.x}px`, originY: `${PIVOT.y}px`, transformBox: "view-box" } as const;
 const DOTS = Array.from({ length: 72 }, (_, i) => (i / 72) * Math.PI * 2);
 
 function Turntable({ cover, playing, progress, onClick, label }: { cover: string; playing: boolean; progress: number; onClick: () => void; label: string }) {
@@ -329,7 +333,7 @@ function Turntable({ cover, playing, progress, onClick, label }: { cover: string
                     height="2.6"
                     rx="1.2"
                     fill="url(#tt-metal)"
-                    style={{ originX: "144px", originY: "52.3px" }}
+                    style={{ originX: "144px", originY: "52.3px", transformBox: "view-box" }}
                     animate={{ rotate: playing ? 18 : -12 }}
                     transition={{ duration: 0.3 }}
                 />
@@ -339,7 +343,7 @@ function Turntable({ cover, playing, progress, onClick, label }: { cover: string
                 <rect x="127.5" y="71" width="7" height="3.5" rx="1.4" fill="#cfd5df" stroke="rgba(14,28,51,0.25)" strokeWidth="0.5" />
 
                 {/* arm shadow: grows while the arm is up and travelling */}
-                <motion.g style={{ originX: `${PIVOT.x}px`, originY: `${PIVOT.y}px` }} initial={false} animate={{ rotate: arm }} transition={armSpring}>
+                <motion.g style={ARM_ORIGIN} initial={false} animate={{ rotate: arm }} transition={armSpring}>
                     <motion.g
                         key={lifts}
                         opacity="0.2"
@@ -353,7 +357,7 @@ function Turntable({ cover, playing, progress, onClick, label }: { cover: string
                 </motion.g>
 
                 {/* tonearm */}
-                <motion.g style={{ originX: `${PIVOT.x}px`, originY: `${PIVOT.y}px` }} initial={false} animate={{ rotate: arm }} transition={armSpring}>
+                <motion.g style={ARM_ORIGIN} initial={false} animate={{ rotate: arm }} transition={armSpring}>
                     {/* counterweight */}
                     <rect x="127" y="2.5" width="10" height="11" rx="2" fill="url(#tt-weight)" />
                     {[5.5, 8, 10.5].map((y) => (
