@@ -99,3 +99,6 @@ export const PALETTE = {
     neon: "#ff6a3d",
     room: "#ffc58a",
 };
+
+/** How thick the corridor's air is (its fog, in PALETTE.fog). */
+export const FOG_DENSITY = 0.07;

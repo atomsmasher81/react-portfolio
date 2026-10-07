@@ -8,6 +8,7 @@ import { prepareEntrance } from "@/components/v2/theatre3d/prepare";
 import { theatreMounted, theatreReady } from "@/components/v2/theatre3d/readiness";
 import { hurry } from "@/components/v2/theatre3d/textures";
 import { CAMERA, DOOR_S } from "@/components/v2/theatre3d/layout";
+import { detectQuality } from "@/components/v2/theatre3d/look";
 import { fetchRoom, useOpened, usePlates } from "@/components/v2/theatre-data";
 import { Neon } from "@/components/v2/theatre-sign";
 import { fell, fellSC } from "@/components/v2/theatre-fonts";
@@ -60,14 +61,6 @@ export interface TheatreNav {
     goToDoor: (i: number) => void;
     /** Walk (scroll) to the mirror at the end. */
     goToMirror: () => void;
-}
-
-function detectQuality(): Quality {
-    const forced = new URLSearchParams(window.location.search).get("quality");
-    if (forced === "low" || forced === "high") return forced;
-    const coarse = window.matchMedia("(pointer: coarse)").matches;
-    const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8;
-    return coarse || (navigator.hardwareConcurrency ?? 8) <= 4 || memory <= 4 ? "low" : "high";
 }
 
 // The camera stays on only while you're standing at the mirror: it stops when you

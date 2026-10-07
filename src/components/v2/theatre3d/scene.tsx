@@ -11,7 +11,7 @@ import { roomGeometry } from "@/components/v2/theatre3d/door-geometry";
 import { Environment } from "@/components/v2/theatre3d/environment";
 import { Marquee } from "@/components/v2/theatre3d/marquee";
 import { HIDDEN_FROM_MIRROR, MIRROR_LAYER, SteppenwolfMirror } from "@/components/v2/theatre3d/mirror";
-import { CAMERA, CORRIDOR, DOOR_S, MARQUEE_S, MARQUEE_Y, MIRROR_S, OUTER, PALETTE, onArc, yawFacingBack, yawFromOuterWall } from "@/components/v2/theatre3d/layout";
+import { CAMERA, CORRIDOR, DOOR_S, FOG_DENSITY, MARQUEE_S, MARQUEE_Y, MIRROR_S, OUTER, PALETTE, onArc, yawFacingBack, yawFromOuterWall } from "@/components/v2/theatre3d/layout";
 import { ROOM_ENTRY, isPortrait, readingPose, theatreFov, viewAt } from "@/components/v2/theatre3d/walk";
 import { Chamber, type ChamberShot } from "@/components/v2/theatre3d/chamber";
 import { ROOM } from "@/components/v2/theatre3d/chamber-geometry";
@@ -20,6 +20,7 @@ import { prepareCorridor, prepareDoor, prepareEntrance } from "@/components/v2/t
 import { lampsLit } from "@/components/v2/theatre3d/readiness";
 import { prepareChamberTextures } from "@/components/v2/theatre3d/chamber-textures";
 import { suspendUntil } from "@/components/v2/theatre3d/textures";
+import { FILM } from "@/components/v2/theatre3d/look";
 import type { Room } from "@/data/v2/theatre";
 
 // The whole theatre in one canvas. The page around it owns the content and
@@ -175,7 +176,7 @@ export function TheatreScene(props: TheatreSceneProps) {
                 below 1 on a desktop: on a big (retina) screen anything less looks blocky. */}
             <PerformanceMonitor onDecline={() => setDpr((d) => Math.max(quality === "high" ? 1 : 0.75, d - 0.3))} onIncline={() => setDpr((d) => Math.min(quality === "high" ? 1.75 : 1.25, d + 0.2))} />
             <color attach="background" args={[PALETTE.void]} />
-            <fogExp2 attach="fog" args={[PALETTE.fog, 0.07]} />
+            <fogExp2 attach="fog" args={[PALETTE.fog, FOG_DENSITY]} />
             <Suspense fallback={null}>
                 <World {...props} mirrorLive={mirrorLive} />
             </Suspense>
@@ -1115,19 +1116,21 @@ function Rig({
 // resolution is high enough for the specks to stay fine; at a lowered resolution
 // they'd be scaled up into a coarse, sandy noise. It's premultiplied, so it
 // follows the light and leaves the dark walls clean.
+// (The film itself is in look.ts: the keyhole's view comes through it too.)
 function Effects({ quality, grain }: { quality: Quality; grain: boolean }) {
-    const fringe = useMemo(() => new THREE.Vector2(0.0008, 0.0005), []);
+    const { high, low } = FILM;
+    const fringe = useMemo(() => new THREE.Vector2(...FILM.high.fringe.offset), []);
     return quality === "high" ? (
         <EffectComposer multisampling={0}>
-            <Bloom mipmapBlur luminanceThreshold={0.72} luminanceSmoothing={0.25} intensity={1.15} radius={0.72} />
-            <ChromaticAberration offset={fringe} radialModulation modulationOffset={0.35} />
-            <Noise premultiply opacity={grain ? 0.05 : 0} />
-            <Vignette offset={0.2} darkness={0.9} />
+            <Bloom {...high.bloom} />
+            <ChromaticAberration {...high.fringe} offset={fringe} />
+            <Noise blendFunction={high.grain.blendFunction} premultiply={high.grain.premultiply} opacity={grain ? high.grain.opacity : 0} />
+            <Vignette {...high.vignette} />
         </EffectComposer>
     ) : (
         <EffectComposer multisampling={0}>
-            <Bloom mipmapBlur luminanceThreshold={0.75} intensity={1} radius={0.6} />
-            <Vignette offset={0.2} darkness={0.85} />
+            <Bloom {...low.bloom} />
+            <Vignette {...low.vignette} />
         </EffectComposer>
     );
 }

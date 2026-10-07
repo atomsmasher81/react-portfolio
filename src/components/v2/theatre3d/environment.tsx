@@ -17,7 +17,8 @@ import { Dust, GroundFog } from "@/components/v2/theatre3d/env-atmosphere";
 //
 // `power` (0..1) is how far the lights have come back on: each lamp catches
 // with a sputter as it passes its own threshold. `quality` "low" is for phones
-// and the keyhole: no floor reflections, four real lights, less dust and fog.
+// (and the keyhole's view on them): no floor reflections, four real lights, less
+// dust and fog.
 // Lamps without a real light still light the walls and floor around them,
 // through a cheap stand-in worked out in the shell's own shaders.
 

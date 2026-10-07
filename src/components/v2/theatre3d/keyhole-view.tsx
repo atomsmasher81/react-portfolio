@@ -8,13 +8,15 @@ import { TheatreDoor } from "@/components/v2/theatre3d/door";
 import { Environment } from "@/components/v2/theatre3d/environment";
 import { Marquee } from "@/components/v2/theatre3d/marquee";
 import { Silhouette } from "@/components/v2/theatre3d/mirror-figure";
-import { CAMERA, CORRIDOR, DOOR_S, INNER, MARQUEE_S, MARQUEE_Y, OUTER, PALETTE, onArc, yawFacingBack, yawFromOuterWall } from "@/components/v2/theatre3d/layout";
+import { CAMERA, CORRIDOR, DOOR_S, FOG_DENSITY, INNER, MARQUEE_S, MARQUEE_Y, OUTER, PALETTE, onArc, yawFacingBack, yawFromOuterWall } from "@/components/v2/theatre3d/layout";
 import { canvasTextureWork, fbm, heightCanvasWork, normalFromHeightWork, once, paintPixelsWork, srgbLikeFiber8, suspendUntil, type Work } from "@/components/v2/theatre3d/textures";
 import { prepareCorridorShell, prepareDoors, prepareMarquee } from "@/components/v2/theatre3d/prepare";
 import { usePlates } from "@/components/v2/theatre-data";
 import { AT_REST, TIMELINES, TIMELINE_REDUCED, moment, type Entry, type KeyholeMoment, type Timeline } from "@/components/v2/theatre3d/keyhole-timeline";
 import { isPortrait, theatreFov, viewAt } from "@/components/v2/theatre3d/walk";
 import { compileQuietly } from "@/components/v2/theatre3d/gpu";
+import { detectQuality, filmPass } from "@/components/v2/theatre3d/look";
+import type { Quality } from "@/components/v2/theatre3d/scene";
 
 // The way into the theatre on the Now and Journey pages: an old iron keyhole
 // plate, in 3D, sitting on the page. Through the hole you see the real
@@ -32,9 +34,11 @@ import { compileQuietly } from "@/components/v2/theatre3d/gpu";
 // thread where the browser can) and a frame drawn out of sight, so the first
 // frame anyone sees is as quick as every other. Until then it draws nothing
 // (the sign shows it being made meanwhile, as far as `onProgress` says it has
-// got, and then it takes over from that drawing: `takeover`). And once the hole
-// fills the screen, the view through it takes on the theatre's own look (VIEW_FRAG), so the theatre
-// itself can fade in over it without anything changing (theatre-host.tsx).
+// got, and then it takes over from that drawing: `takeover`). The corridor through
+// the hole is the theatre's own, drawn as the theatre draws it on this device; as
+// the hole fills the screen it goes through the theatre's film too (look.ts), and
+// it has settled on the theatre's first view and look before the theatre itself
+// fades in over it (theatre-host.tsx), so nothing changes.
 
 /** Where the keyhole's canvas sits around its 120 × 200 box on the page (css px): room for its shadow and its light. */
 export const KEYHOLE_BOX = { left: -170, top: -78, width: 460, height: 620 };
@@ -53,6 +57,17 @@ const CLOSE = 0.02; // and at the end: inside the keyhole
 const REST_PP = { x: KEYHOLE_BOX.width / 2, y: KEYHOLE_BOX.height / 2 - (FOCAL * BOWL_Y) / REST };
 // the view through the hole is drawn with this focal length (a 48° view over the box at rest)
 const EYE_FOCAL = KEYHOLE_BOX.height / 2 / Math.tan((24 * Math.PI) / 180);
+
+// Going through, it draws the theatre's own corridor over the whole screen: on a big
+// screen at a lower resolution, never more pixels than on a 1440 × 900 one, so the
+// dive keeps its frame rate (as the theatre lowers its own when it struggles).
+const FULL_PIXELS = 1440 * 900 * 1.5 * 1.5;
+const fullDpr = () => Math.min(window.devicePixelRatio || 1, 1.5, Math.max(1, Math.sqrt(FULL_PIXELS / (window.innerWidth * window.innerHeight))));
+
+/** How close to the plate you are (0..1), `dive` of the way through (see aim). */
+const nearAt = (dive: number) => Math.pow(dive, 1.9);
+/** How close you are when the theatre starts to come in over the view: by then the view is the theatre's own. */
+const handNear = (tl: Timeline) => nearAt(moment(tl.handoff, tl).dive);
 
 /** Run `f` once the page is idle (or after `timeout` ms at the latest). Returns a cancel. */
 function idle(f: () => void, timeout: number) {
@@ -220,7 +235,7 @@ export function KeyholeView({
                 <Canvas
                     // nothing is drawn until it's all ready (it draws its frames out of sight itself)
                     frameloop={full || (visible && ready) ? "always" : "never"}
-                    dpr={full ? [1, 1.5] : [1, 2]}
+                    dpr={full ? fullDpr() : [1, 2]}
                     camera={{ manual: true, fov: FOV, near: 0.015, far: 30, position: [0, BOWL_Y, FACE + REST], rotation: [0, 0, 0] }}
                     onCreated={(state) => {
                         root.current = state;
@@ -251,7 +266,7 @@ function aim({ gl, camera }: RootState, live: Live, dive: number) {
     // Distance falls geometrically (a steady approach feels like a steady zoom), slow at
     // first, so the hole only fills the screen about three quarters of the way in; the
     // rest is the passage through the iron. The hole drifts to the middle as it grows.
-    const near = Math.pow(dive, 1.9);
+    const near = nearAt(dive);
     const cam = camera as THREE.PerspectiveCamera;
     cam.position.set(0, BOWL_Y, FACE + REST * Math.pow(CLOSE / REST, near));
     cam.rotation.set(0, 0, 0);
@@ -500,16 +515,30 @@ function Keyhole({ live }: { live: MutableRefObject<Live> }) {
 // enough to fill the screen, at a fixed scale, so as you come closer you see
 // more of the corridor through it, as you would.
 function View({ live }: { live: MutableRefObject<Live> }) {
-    // with mip levels: the theatre's glow, as you come through, is made from them (VIEW_FRAG)
-    const fbo = useFBO({ type: THREE.HalfFloatType, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter });
+    // drawn as the theatre will be on this device (its lights, its floor, its dust)
+    const quality = useMemo(() => detectQuality(), []);
+    const fbo = useFBO({ type: THREE.HalfFloatType });
     const get = useThree((s) => s.get);
     const world = useMemo(() => {
         const s = new THREE.Scene();
         s.background = new THREE.Color(PALETTE.void);
-        s.fog = new THREE.FogExp2(PALETTE.fog, 0.075);
+        s.fog = new THREE.FogExp2(PALETTE.fog, FOG_DENSITY);
         return s;
     }, []);
     const eye = useMemo(() => new THREE.PerspectiveCamera(48, 0.6, 0.05, 40), []);
+    // and, as you come through, put through the theatre's film, into a picture of its own
+    const film = useMemo(() => {
+        const f = filmPass(quality, eye);
+        f.pass.initialize(get().gl, false, THREE.HalfFloatType);
+        return { ...f, target: new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, depthBuffer: false }) };
+    }, [quality, eye, get]);
+    useEffect(
+        () => () => {
+            film.pass.dispose();
+            film.target.dispose();
+        },
+        [film],
+    );
     const [built, setBuilt] = useState(false);
 
     // Getting ready, before it's ever seen: compile every shader that will be drawn,
@@ -573,6 +602,7 @@ function View({ live }: { live: MutableRefObject<Live> }) {
     const uniforms = useMemo(
         () => ({
             uView: { value: fbo.texture },
+            uFilm: { value: film.target.texture },
             uCenter: { value: new THREE.Vector2() },
             uSpan: { value: new THREE.Vector2(1, 1) },
             uLight: { value: 0 },
@@ -582,25 +612,25 @@ function View({ live }: { live: MutableRefObject<Live> }) {
             uEmber: { value: 0 },
             uTime: { value: 0 },
             uTheatre: { value: 0 },
-            uScreen: { value: new THREE.Vector2(1, 1) },
         }),
-        [fbo],
+        [fbo, film],
     );
     const shaderArgs = useShaderArgs(uniforms);
 
-    useFrame(({ gl, scene, camera, clock }) => {
+    useFrame(({ gl, scene, camera, clock }, delta) => {
         const L = live.current;
         const dpr = gl.getPixelRatio();
+        const by = handNear(L.tl);
         const { x: px, y: py } = L.pp;
         const { x: w, y: h } = L.size;
         const hx = Math.max(px, w - px, 1);
         const hy = Math.max(py, h - py, 1);
         // through the hole, a fixed scale (never wider than 75° top to bottom on tall
-        // screens); once the hole fills the screen, ease to the theatre's own lens, so
-        // the last frame here is the theatre's first
+        // screens); as the hole fills the screen, ease to the theatre's own lens, there
+        // by the time the theatre comes in
         const peek = Math.max(EYE_FOCAL, window.innerHeight / 2 / Math.tan((37.5 * Math.PI) / 180));
         const own = h / 2 / Math.tan((theatreFov(isPortrait()) * Math.PI) / 360);
-        const focal = THREE.MathUtils.lerp(peek, own, THREE.MathUtils.smoothstep(L.near, 0.55, 1));
+        const focal = THREE.MathUtils.lerp(peek, own, THREE.MathUtils.smoothstep(L.near, 0.55, by));
         eye.fov = (2 * Math.atan(hy / focal) * 180) / Math.PI;
         eye.aspect = hx / hy;
         eye.updateProjectionMatrix();
@@ -610,26 +640,43 @@ function View({ live }: { live: MutableRefObject<Live> }) {
         uniforms.uEclipse.value = L.m.eclipse;
         uniforms.uFade.value = L.m.fade;
         uniforms.uBoost.value = THREE.MathUtils.lerp(1.6, 1.15, THREE.MathUtils.smoothstep(L.near, 0.3, 1));
-        // once the hole fills the screen, the view takes on the theatre's own look (what
-        // its film does: see VIEW_FRAG), so the theatre comes in over a view just like it
-        uniforms.uTheatre.value = THREE.MathUtils.smoothstep(L.near, 0.5, 0.98);
-        uniforms.uScreen.value.set(w * dpr, h * dpr);
+        // as the hole fills the screen, the view takes on the theatre's own look (its
+        // film: see VIEW_FRAG), all of it by the time the theatre comes in over it
+        uniforms.uTheatre.value = THREE.MathUtils.smoothstep(L.near, 0.5, by);
         // the ember far in catches last, unsteadily (taking over from the drawing of it, it's already alight there)
         const kindle = L.takeover ? 1 : THREE.MathUtils.smoothstep(L.reveal, 0.6, 1);
         uniforms.uEmber.value = kindle * (kindle < 1 ? 0.6 + 0.4 * Math.abs(Math.sin(clock.elapsedTime * 23) * Math.sin(clock.elapsedTime * 7.3)) : 1);
         uniforms.uTime.value = clock.elapsedTime;
+        // Once the theatre starts to come in, the view has settled on its first view and
+        // look (still, but for the lamps and the dust): it's kept as last drawn, rather
+        // than drawn again under the theatre, so the two aren't both being drawn. So is
+        // the dark, once it's dark.
+        const t = L.startedAt === null ? -1 : performance.now() - L.startedAt;
+        const kept = (t >= L.tl.handoff && film.target.width === fbo.width && film.target.height === fbo.height) || L.m.fade >= 1;
+        world.visible = !kept; // (the floor's reflection draws it too)
         // the corridor first, into the texture (once it's ready to be drawn; until then
         // it's dark in there), then the page-side scene on top
-        gl.setRenderTarget(fbo);
-        gl.clear();
-        if (L.prepared || L.preparing) gl.render(world, eye);
+        if (!kept) {
+            gl.setRenderTarget(fbo);
+            gl.clear();
+            if (L.prepared || L.preparing) gl.render(world, eye);
+            // and through the film once it's wanted (and getting ready, so it's compiled)
+            if (uniforms.uTheatre.value > 0 || L.preparing) {
+                if (film.target.width !== fbo.width || film.target.height !== fbo.height) {
+                    film.target.setSize(fbo.width, fbo.height);
+                    film.pass.setSize(fbo.width, fbo.height);
+                }
+                film.grain(dpr >= 1.3);
+                film.pass.render(gl, fbo, film.target, delta, false);
+            }
+        }
         gl.setRenderTarget(null);
         gl.render(scene, camera);
     }, 1);
 
     return (
         <>
-            {createPortal(<Glimpse eye={eye} live={live} onBuilt={setBuilt} />, world, { camera: eye })}
+            {createPortal(<Glimpse eye={eye} live={live} quality={quality} onBuilt={setBuilt} />, world, { camera: eye })}
             <mesh position={[0, -0.03, -0.09]}>
                 <planeGeometry args={[0.6, 1.2]} />
                 <shaderMaterial args={shaderArgs} vertexShader={QUAD_VERT} fragmentShader={VIEW_FRAG} toneMapped />
@@ -641,7 +688,7 @@ function View({ live }: { live: MutableRefObject<Live> }) {
 // Just inside the entrance, looking down the curve, a little restless. As you
 // come through the keyhole the view settles, exactly, on where the theatre's
 // walk begins, so the theatre can take over from this very frame.
-function Glimpse({ eye, live, onBuilt }: { eye: THREE.PerspectiveCamera; live: MutableRefObject<Live>; onBuilt: (built: true) => void }) {
+function Glimpse({ eye, live, quality, onBuilt }: { eye: THREE.PerspectiveCamera; live: MutableRefObject<Live>; quality: Quality; onBuilt: (built: true) => void }) {
     const { plates } = usePlates();
     // Built a part at a time, each when the page is idle (the corridor, the marquee,
     // the doors are each a good deal of work), so the page never stops for long.
@@ -670,7 +717,7 @@ function Glimpse({ eye, live, onBuilt }: { eye: THREE.PerspectiveCamera; live: M
         onArc(CAMERA.from + 0.03, CAMERA.radius + 0.15, CAMERA.eye - 0.05 + Math.sin(t * 0.7) * 0.012, v.pos);
         onArc(0.2, CORRIDOR.radius + 0.4, 1.55, v.look);
         v.look.x += Math.sin(t * 0.23) * 0.3;
-        const settle = THREE.MathUtils.smoothstep(live.current.near, 0.15, 0.9);
+        const settle = THREE.MathUtils.smoothstep(live.current.near, 0.15, handNear(live.current.tl));
         if (settle > 0) {
             viewAt(CAMERA.from, isPortrait(), v.startPos, v.startLook);
             v.pos.lerp(v.startPos, settle);
@@ -681,8 +728,9 @@ function Glimpse({ eye, live, onBuilt }: { eye: THREE.PerspectiveCamera; live: M
     });
     return (
         <>
-            <hemisphereLight args={["#3a2418", "#080404", 0.15]} />
-            <Environment power={1} quality="low" />
+            {/* as the theatre lights it (scene.tsx) */}
+            <hemisphereLight args={["#3a2418", "#080404", 0.12]} />
+            <Environment power={1} quality={quality} />
             {parts >= 2 && (
                 <group position={onArc(MARQUEE_S, CORRIDOR.radius, MARQUEE_Y)} rotation-y={yawFacingBack(MARQUEE_S)}>
                     <Marquee power={1} />
@@ -810,13 +858,13 @@ void main() {
 // nothing is happening. The golden light fills the hole; when it turns dark
 // the hole goes black; and on the far side, the dark (uFade).
 //
-// Coming through (uTheatre), the view takes on the theatre's own look, which
-// is what its film does to the same picture (scene.tsx, Effects): no tone
-// mapping, a glow round everything bright (its bloom: thresholded at 0.72 and
-// screened on), and a heavy vignette. So when the theatre itself fades in
-// over it, nothing changes: the lamps already glow.
+// Coming through (uTheatre), the view becomes the same picture put through the
+// theatre's own film (uFilm: look.ts), as the theatre shows it: no tone mapping,
+// its glow, fringe, grain and vignette. So when the theatre itself fades in over
+// it, nothing changes: the lamps already glow.
 const VIEW_FRAG = /* glsl */ `
 uniform sampler2D uView;
+uniform sampler2D uFilm;
 uniform vec2 uCenter;
 uniform vec2 uSpan;
 uniform float uLight;
@@ -826,16 +874,7 @@ uniform float uBoost;
 uniform float uEmber;
 uniform float uTime;
 uniform float uTheatre;
-uniform vec2 uScreen;
 varying vec2 vUv;
-
-// what the theatre's bloom picks out, at one size of blur (a mip level of the
-// view): the bright parts only (blurring spreads a light thin, so the threshold
-// comes down with the blur)
-vec3 bright(vec2 p, float lod, float threshold) {
-    vec3 s = textureLod(uView, p, lod).rgb;
-    return s * smoothstep(threshold, threshold + 0.25, dot(s, vec3(0.2126, 0.7152, 0.0722)));
-}
 
 void main() {
     vec2 uv = (gl_FragCoord.xy - uCenter) / uSpan + 0.5;
@@ -853,18 +892,7 @@ void main() {
         c = toneMapping(c);
     #endif
 
-    if (uTheatre > 0.0) {
-        // its bloom, roughly: the bright parts, blurred near and far, screened on
-        vec3 glow = bright(uv, 1.0, 0.72) * 0.33 + bright(uv, 2.0, 0.55) * 0.23 + bright(uv, 3.0, 0.4) * 0.17
-            + bright(uv, 4.0, 0.28) * 0.12 + bright(uv, 5.0, 0.2) * 0.09 + bright(uv, 6.0, 0.15) * 0.06;
-        glow *= 1.15;
-        vec3 s = min(scene, vec3(1.0));
-        vec3 t = min(s + glow - s * glow, vec3(1.0));
-        // its vignette (offset 0.2, darkness 0.9), over the whole screen
-        float v = distance(gl_FragCoord.xy / uScreen, vec2(0.5));
-        t *= smoothstep(0.8, 0.2 * 0.799, v * (0.9 + 0.2));
-        c = mix(c, t, uTheatre);
-    }
+    if (uTheatre > 0.0) c = mix(c, texture2D(uFilm, uv).rgb, uTheatre);
     c *= 1.0 - uFade;
     gl_FragColor = vec4(c, 1.0);
     #include <colorspace_fragment>
