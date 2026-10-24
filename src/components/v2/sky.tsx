@@ -9,6 +9,7 @@ import { Reveal, SectionTitle, StaggerText } from "@/components/v2/motion";
 import { Pulsar } from "@/components/v2/pulsar";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
 export function SkyPage() {
     return (
@@ -220,9 +221,12 @@ export function SkyTeaser({ href }: { href: string }) {
     const phase = useMoon();
     const ref = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
-    const moonY = useTransform(scrollYProgress, [0, 1], [160, 0]);
-    const stars = useTransform(scrollYProgress, [0.05, 0.55], [0, 1]);
-    const text = useTransform(scrollYProgress, [0.3, 0.7], [0, 1]);
+    // Worked out in JS on purpose: framer-motion 12 hands plain range transforms
+    // like these to the browser's ViewTimeline, which doesn't keep this offset,
+    // and the text and stars went back to nothing at the foot of the page.
+    const moonY = useTransform(scrollYProgress, (v) => 160 * (1 - clamp01(v)));
+    const stars = useTransform(scrollYProgress, (v) => clamp01((v - 0.05) / 0.5));
+    const text = useTransform(scrollYProgress, (v) => clamp01((v - 0.3) / 0.4));
 
     return (
         <div ref={ref} data-sky-band className="relative left-1/2 w-screen -translate-x-1/2" style={NIGHT_VARS}>
